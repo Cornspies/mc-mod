@@ -5,13 +5,13 @@ The full design, including what is decided and what is still open, is in **@DESI
 
 ## Current status
 
-- **Phase 1, milestone M0 (setup): not started.**
-- Blocking open decisions before scaffolding: **OD-01** (mod name / mod ID / package) and **OD-02** (license). Ask the owner for these first.
+- Mod: **Fusion Factions**, mod ID `fusionfactions`, package `com.cornspies.fusionfactions`, MIT license.
+- **M0 (setup): done.** Next up: **M1 (supply crate MVP)**.
 
 ## Version pins (do not change without asking)
 
 - Minecraft **26.3**
-- NeoForge **26.3.0.x-beta**, pinned in `gradle.properties`
+- NeoForge **26.3.0.52-beta**, pinned in `gradle.properties`
 - Java **25**
 - ModDevGradle, from the NeoForge MDK: <https://github.com/NeoForgeMDKs/MDK-26.3-ModDevGradle>
 
@@ -26,6 +26,22 @@ On Windows use `gradlew.bat` instead of `./gradlew`.
 - `./gradlew runServer` — start a dedicated dev server (must work before a feature counts as done)
 - `./gradlew runData` — data generation (loot tables, models, lang) into `src/generated/resources`
 - `./gradlew runGameTestServer` — run game tests
+
+### Running the server or client from the CLI
+
+- `runServer` and `runClient` never exit on their own. Run them in the background with output going to a log file.
+- The server is up when the log shows `Done (…)! For help, type "help"`. The client is up when the log shows `Sound engine started`.
+- Gradle doesn't pass stdin through, so typing `stop` does nothing. Send SIGTERM to the game JVM instead (the java process with `fml.modFolders=fusionfactions` in its command line). It still saves and shuts down cleanly. Gradle then reports `BUILD FAILED`; that's expected.
+- First startup logs `Failed to load properties from file: server.properties`. That's harmless.
+
+### Reading the 26.3 sources (rule 2)
+
+After a build, the sources are here:
+
+- Minecraft with NeoForge patches: `build/moddev/artifacts/minecraft-patched-<neo_version>-sources.jar`
+- NeoForge's own classes: `~/.gradle/caches/modules-2/files-2.1/net.neoforged/neoforge/<neo_version>/*/neoforge-<neo_version>-sources.jar`
+
+Unzip them into `build/sources/` (gitignored) and search there.
 
 ## Rules
 

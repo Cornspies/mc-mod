@@ -55,6 +55,7 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 - Start from the official NeoForge MDK for 26.3 (ModDevGradle): <https://github.com/NeoForgeMDKs/MDK-26.3-ModDevGradle>.
   - As of 2026-09-27 the MDK ships ModDevGradle `2.0.147`, Gradle `9.2.1`, Java toolchain `25`, and `neo_version=26.3.0.23-beta`.
 - At project start, **bump `neo_version` to the newest `26.3.0.x` build**. Mekanism builds against `26.3.0.52-beta` as of 2026-10-06.
+  - Done in M0: pinned to **`26.3.0.52-beta`**, the newest build on 2026-10-06.
 - **Pin the NeoForge version and only bump it on purpose.** NeoForge for 26.3 is still beta and breaking changes are still landing. Read the changelog when bumping.
 - IDE: IntelliJ IDEA **2025.3 or newer** (needed for full Java 25 support).
 - Gradle run tasks from the MDK: `runClient`, `runServer`, `runGameTestServer`, `runData`.
@@ -274,7 +275,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 
 | Milestone | Deliverables |
 |---|---|
-| **M0 Setup** | OD-01 and OD-02 answered. Project created from the 26.3 MDK; NeoForge bumped and pinned; mod ID and package set; `.gitignore`; git repo. Builds, and runs on both `runClient` and `runServer`. |
+| **M0 Setup** ✅ *done 2026-10-06* | OD-01 and OD-02 answered. Project created from the 26.3 MDK; NeoForge bumped and pinned; mod ID and package set; `.gitignore`; git repo. Builds, and runs on both `runClient` and `runServer`. |
 | **M1 Supply crate MVP** | Crate block and block entity, three rarity loot tables (placeholder vanilla loot), falling-crate entity, scheduler with SavedData, location picking, announcements and countdown, chunk ticket, despawn, admin commands, server config. |
 | **M2 Weapon framework** | Weapon base item, central stats record, ammo item, ammo/reload data components, reload keybind and packet, projectile entity, custom damage type, placeholder sounds, ammo HUD. One working test gun. |
 | **M3 Weapon roster** | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
