@@ -1,6 +1,6 @@
-# Faction Warfare Mod — Design Document
+# Fusion Factions — Design Document
 
-> **Working title** (real name is open decision OD-01).
+> **Mod ID:** `fusionfactions` · **Package:** `com.cornspies.fusionfactions` · **License:** MIT
 > **Status:** Draft v0.1 · **Last updated:** 2026-10-06
 > **Audience:** the project owner and the coding agent (Claude Code). Read together with `CLAUDE.md`.
 
@@ -16,8 +16,6 @@
 | §7 Open decisions | **Do not decide these silently.** If an open decision blocks the current task, ask the owner. If it doesn't block, implement the listed recommendation as a default (behind a constant or config option) and record it in §10. |
 | §9 Technical notes | Facts about Minecraft 26.x / NeoForge that may be newer than the agent's training data. |
 | §10 Decision log | Append a row whenever something gets decided. |
-
-`<modid>` is a placeholder until OD-01 is answered.
 
 ---
 
@@ -45,6 +43,8 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 | D7 | **Phase 2 scope:** missile launcher | |
 | D8 | Phase 2 is **partially based on Mekanism** | How deep the integration goes is OD-24. |
 | D9 | Everything else from Fusion Warfare is **out of scope** | Machines, generators, reactors, cables and beacons, auras and turrets, team GUI, reinforced blocks, scuba gear, tools and armor, ore generation. Can be revisited later. |
+| D10 | Name **Fusion Factions**, mod ID **`fusionfactions`**, Java package and group ID **`com.cornspies.fusionfactions`** | Was OD-01. |
+| D11 | License: **MIT** | Was OD-02. |
 
 ---
 
@@ -87,7 +87,7 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 - `./gradlew build` passes.
 - A dedicated server (`runServer`) starts with the mod and the feature works there.
 - Tested with **at least two players** (two clients on `runServer`).
-- New config options are commented. All player-facing text is in `assets/<modid>/lang/en_us.json`.
+- New config options are commented. All player-facing text is in `assets/fusionfactions/lang/en_us.json`.
 - No client classes are referenced from common code.
 - §10 is updated if any decision was made along the way.
 
@@ -149,7 +149,7 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 5. **Drop:** spawn a falling-crate entity high above the target. It descends slowly (parachute look) with a visible smoke trail.
 6. **Land:** place a crate block.
    - It is a block entity container, with the rarity stored in its block state.
-   - Loot comes from the loot table `<modid>:supply_crate/<rarity>`.
+   - Loot comes from the loot table `fusionfactions:supply_crate/<rarity>`.
    - Show a visible marker (smoke or beam) until it's opened.
    - Announce the landing.
 7. **Claim and open** *(OD-16)*.
@@ -157,10 +157,10 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 
 ### 5.3 Admin commands (permission level 2)
 
-- `/<modid> drop now [rarity] [x z]` — force a drop now.
-- `/<modid> drop next` — show when the next drop is due.
-- `/<modid> drop list` — list active crates.
-- `/<modid> drop clear` — remove all active crates.
+- `/fusionfactions drop now [rarity] [x z]` — force a drop now.
+- `/fusionfactions drop next` — show when the next drop is due.
+- `/fusionfactions drop list` — list active crates.
+- `/fusionfactions drop clear` — remove all active crates.
 
 ### 5.4 Server config
 
@@ -213,13 +213,6 @@ What Fusion Warfare's missiles did, and what to avoid, is in Appendix A.3.
 ## 7. Open decisions
 
 **Blocks** = the milestone (§8) that needs the answer.
-
-### Project
-
-| ID | Question | Options | Recommendation | Blocks |
-|---|---|---|---|---|
-| OD-01 | Mod name, mod ID, Java package / group ID | — | Pick before scaffolding | **M0** |
-| OD-02 | License of this mod | MIT / LGPL / GPL / All Rights Reserved | Free choice, since no Fusion Warfare code or assets are reused. MIT is simple and common | **M0** |
 
 ### Weapons
 
@@ -341,6 +334,8 @@ The supply crate comes first because it is self-contained and proves out the sha
 | Date | ID | Decision | By |
 |---|---|---|---|
 | 2026-10-06 | D1–D9 | Initial decisions from planning (see §2) | Owner |
+| 2026-10-06 | OD-01 → D10 | Name Fusion Factions, mod ID `fusionfactions`, package `com.cornspies.fusionfactions` | Owner |
+| 2026-10-06 | OD-02 → D11 | License MIT | Owner |
 
 ---
 
