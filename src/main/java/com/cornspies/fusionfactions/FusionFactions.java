@@ -3,6 +3,8 @@ package com.cornspies.fusionfactions;
 import org.slf4j.Logger;
 
 import com.cornspies.fusionfactions.config.ServerConfig;
+import com.cornspies.fusionfactions.registry.ModBlockEntityTypes;
+import com.cornspies.fusionfactions.registry.ModBlocks;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.resources.Identifier;
@@ -19,6 +21,9 @@ public class FusionFactions {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public FusionFactions(IEventBus modEventBus, ModContainer modContainer) {
+        ModBlocks.BLOCKS.register(modEventBus);
+        ModBlockEntityTypes.BLOCK_ENTITY_TYPES.register(modEventBus);
+
         modContainer.registerConfig(ModConfig.Type.SYNCED, ServerConfig.SPEC);
     }
 

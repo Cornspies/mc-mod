@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "fusionfactions:block/supply_crate_rare_top",
+    "side": "fusionfactions:block/supply_crate_rare_side",
+    "top": "fusionfactions:block/supply_crate_rare_top"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "rarity=common": {
+      "model": "fusionfactions:block/supply_crate_common"
+    },
+    "rarity=legendary": {
+      "model": "fusionfactions:block/supply_crate_legendary"
+    },
+    "rarity=rare": {
+      "model": "fusionfactions:block/supply_crate_rare"
+    }
+  }
+}

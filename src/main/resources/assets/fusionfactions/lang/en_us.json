@@ -15,5 +15,10 @@
   "fusionfactions.configuration.countdownSeconds": "Countdown (seconds)",
   "fusionfactions.configuration.despawnMinutes": "Despawn Time (minutes)",
   "fusionfactions.configuration.announcePrecision": "Announcement Precision",
-  "fusionfactions.configuration.dimension": "Dimension"
+  "fusionfactions.configuration.dimension": "Dimension",
+  "block.fusionfactions.supply_crate": "Supply Crate",
+  "container.fusionfactions.supply_crate": "%s Supply Crate",
+  "fusionfactions.rarity.common": "Common",
+  "fusionfactions.rarity.rare": "Rare",
+  "fusionfactions.rarity.legendary": "Legendary"
 }
