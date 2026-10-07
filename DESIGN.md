@@ -1,7 +1,7 @@
 # Fusion Factions — Design Document
 
 > **Mod ID:** `fusionfactions` · **Package:** `com.cornspies.fusionfactions` · **License:** MIT
-> **Status:** Draft v0.1 · **Last updated:** 2026-10-07
+> **Status:** Draft v0.1 · **Last updated:** 2026-10-08
 > **Audience:** the project owner and the coding agent (Claude Code). Read together with `CLAUDE.md`.
 
 ---
@@ -82,7 +82,7 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 
 - Item state such as ammo and reload progress lives in **data components**, not NBT.
 - Supply-crate loot lives in **loot table JSON** files, one per rarity. Generate them with `runData` where practical.
-- Gameplay numbers (schedules, weights, ranges, toggles) go in a **SERVER config** (`ModConfigSpec`).
+- Gameplay numbers (schedules, weights, ranges, toggles) go in a **server-side config** (`ModConfigSpec`). In FML 12 (26.x) that is the `SYNCED` config type: `config/fusionfactions-synced.toml`, overridable per world in `<world>/syncedconfig`.
 - Weapon stats start as one central record/table in code (single source of truth). Whether to move them to datapack JSON later is OD-29.
 
 ### 3.4 Integration policy
@@ -165,7 +165,7 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 
 ### 5.3 Admin commands (permission level 2)
 
-- `/fusionfactions drop now [rarity] [x z]` — force a drop now.
+- `/fusionfactions drop now [<rarity>|random [<x z>]]` — force a drop now.
 - `/fusionfactions drop next` — show when the next drop is due.
 - `/fusionfactions drop list` — list active crates.
 - `/fusionfactions drop clear` — remove all active crates.
@@ -174,8 +174,8 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 
 - `enabled`
 - `intervalMinutes`, `minPlayersOnline`
-- `zoneMode`, `zoneCenter`, `zoneRadius`
-- `rarityWeights`
+- `zoneMode` (`SPAWN` / `CENTER`), `zoneCenterX`, `zoneCenterZ`, `zoneRadius`
+- `rarityWeights.common`, `.rare`, `.legendary`
 - `countdownSeconds`, `despawnMinutes`
 - `announcePrecision`
 - `dimension`
@@ -276,7 +276,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | Milestone | Deliverables |
 |---|---|
 | **M0 Setup** ✅ *done 2026-10-06* | OD-01 and OD-02 answered. Project created from the 26.3 MDK; NeoForge bumped and pinned; mod ID and package set; `.gitignore`; git repo. Builds, and runs on both `runClient` and `runServer`. |
-| **M1 Supply crate MVP** | Crate block and block entity, three rarity loot tables (placeholder vanilla loot), falling-crate entity, scheduler with SavedData, location picking, announcements and countdown, chunk ticket, despawn, admin commands, server config. |
+| **M1 Supply crate MVP** 🟡 *implemented 2026-10-08; two-player test pending* | Crate block and block entity, three rarity loot tables (placeholder vanilla loot), falling-crate entity, scheduler with SavedData, location picking, announcements and countdown, chunk ticket, despawn, admin commands, server config. |
 | **M2 Weapon framework** | Weapon base item, central stats record, ammo item, ammo/reload data components, reload keybind and packet, projectile entity, custom damage type, placeholder sounds, ammo HUD. One working test gun. |
 | **M3 Weapon roster** | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
 | **M4 Integration & polish** | Weapons in crate loot (OD-19), optional OPAC integration (OD-22), config documentation, two-player playtest on a dedicated server, release v0.1.0. |
@@ -313,6 +313,15 @@ The supply crate comes first because it is self-contained and proves out the sha
   - Reloadable datapack registries.
   - New loot data types; number providers split into int and float; loot condition and function changes.
   - Command response changes.
+
+### Learned while building M1 (verified against 26.3 sources)
+
+- **Config types:** FML 12 has `LOCAL`, `CLIENT`, `SYNCED` and `STARTUP`. There is no `SERVER` type any more; `SYNCED` is the per-server one.
+- **SavedData** is codec-based (`SavedDataType` with an `Identifier`, a constructor and a `Codec`). Server-wide data lives in `MinecraftServer.getDataStorage()`, not in the overworld's storage. A namespaced ID is saved as `data/<namespace>/<path>.dat`.
+- **Loot tables** are a reloadable registry. `LootTableProvider` is a `SingleRegistryBootstrap`; generate it with `GatherDataEvent.createReloadableRegistryObjects(new RegistrySetBuilder().add(Registries.LOOT_TABLE, ...))`. Counts use `ContextIntProviders`, and the JSON uses `modifier` instead of `functions`.
+- **Chunk tickets:** `TicketController.forceChunk` uses vanilla's `FORCED` ticket (persists, loads and simulates). Mod tickets don't show up in `/forceload query`.
+- **Dedicated server:** spawn chunks are no longer kept loaded, and the server stops ticking after `pause-when-empty-seconds` (default 60) with nobody online.
+- **Renamed or moved:** `PushReaction.IMMOVEABLE` (no `BLOCK`), `BlockEntityTypes` / `EntityTypes` hold the vanilla constants, the world spawn is `server.getRespawnData().globalPos()`, `Player.playNotifySound` is gone (send a `ClientboundSoundPacket`), and `Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)` is permission level 2.
 - If your knowledge stops around 1.21.1, also skim the 1.21.2 – 1.21.11 primers. Rendering, item models and GUIs changed a lot in that span.
 
 ### Reference code
@@ -345,6 +354,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-07 | OD-18 → D16 | ±250 blocks around world spawn, configurable | Owner |
 | 2026-10-07 | OD-20 → D17 | Crates are unbreakable until emptied or despawned | Owner |
 | 2026-10-07 | OD-21 → D18 | Overworld only, configurable | Owner |
+| 2026-10-08 | M1 details | The crate falls from 100 blocks above the landing spot at 4 blocks/s with a smoke trail. Reminders come at 30 s and 10 s. Extra announcements when a crate is looted or despawns. A despawned or admin-removed crate deletes its contents instead of spilling them. Crates have no item form. *Provisional.* | Agent |
 
 ---
 

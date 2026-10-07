@@ -6,7 +6,8 @@ The full design, including what is decided and what is still open, is in **@DESI
 ## Current status
 
 - Mod: **Fusion Factions**, mod ID `fusionfactions`, package `com.cornspies.fusionfactions`, MIT license.
-- **M0 (setup): done.** Next up: **M1 (supply crate MVP)**.
+- **M0 (setup): done.**
+- **M1 (supply crate MVP): implemented** on branch `m1-supply-crate`. Still needs the two-player test on `runServer` (DESIGN.md §3.5) before it counts as done. Next after that: **M2 (weapon framework)**.
 
 ## Version pins (do not change without asking)
 
@@ -33,6 +34,9 @@ On Windows use `gradlew.bat` instead of `./gradlew`.
 - The server is up when the log shows `Done (…)! For help, type "help"`. The client is up when the log shows `Sound engine started`.
 - Gradle doesn't pass stdin through, so typing `stop` does nothing. Send SIGTERM to the game JVM instead (the java process with `fml.modFolders=fusionfactions` in its command line). It still saves and shuts down cleanly. Gradle then reports `BUILD FAILED`; that's expected.
 - First startup logs `Failed to load properties from file: server.properties`. That's harmless.
+- Don't stop the JVM with `pkill -f <pattern>`: the pattern also matches your own shell command and kills it. Loop over `pgrep -x java` and check each `/proc/<pid>/cmdline` instead.
+- To run commands on the dev server without a client, temporarily set `enable-rcon=true` and an `rcon.password` in `run/server.properties`, and talk to port 25575. Also set `pause-when-empty-seconds=0`, or an empty server stops ticking after 60 s. Undo all three afterwards.
+- Spawn chunks aren't kept loaded in 26.x. Use `/forceload add` before `/setblock` or `/data` near spawn on an empty server.
 
 ### Reading the 26.3 sources (rule 2)
 
