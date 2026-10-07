@@ -43,5 +43,19 @@
   "fusionfactions.direction.south": "south",
   "fusionfactions.direction.south_west": "south-west",
   "fusionfactions.direction.west": "west",
-  "fusionfactions.direction.north_west": "north-west"
+  "fusionfactions.direction.north_west": "north-west",
+  "commands.fusionfactions.drop.now": "Started supply drop #%1$s: %2$s crate at %3$s.",
+  "commands.fusionfactions.drop.position": "%1$s, %2$s, %3$s",
+  "commands.fusionfactions.drop.next": "Next automatic drop in %s.",
+  "commands.fusionfactions.drop.next.paused": "Next automatic drop in %1$s of running time. The timer is paused until %2$s players are online (now %3$s).",
+  "commands.fusionfactions.drop.next.disabled": "Automatic drops are disabled in the config.",
+  "commands.fusionfactions.drop.list": "Active supply crates: %s",
+  "commands.fusionfactions.drop.list.empty": "No active supply crates.",
+  "commands.fusionfactions.drop.list.countdown": "#%1$s %2$s: drops at %3$s (%4$s) in %5$s",
+  "commands.fusionfactions.drop.list.falling": "#%1$s %2$s: falling at %3$s (%4$s)",
+  "commands.fusionfactions.drop.list.landed": "#%1$s %2$s: landed at %3$s (%4$s), despawns in %5$s",
+  "commands.fusionfactions.drop.clear": "Removed %s supply crates.",
+  "fusionfactions.duration.hours": "%sh %sm %ss",
+  "fusionfactions.duration.minutes": "%sm %ss",
+  "fusionfactions.duration.seconds": "%ss"
 }

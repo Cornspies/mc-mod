@@ -6,6 +6,7 @@ import com.cornspies.fusionfactions.config.ServerConfig;
 import com.cornspies.fusionfactions.registry.ModBlockEntityTypes;
 import com.cornspies.fusionfactions.registry.ModBlocks;
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
+import com.cornspies.fusionfactions.supplydrop.SupplyDropCommands;
 import com.cornspies.fusionfactions.supplydrop.SupplyDropManager;
 import com.mojang.logging.LogUtils;
 
@@ -32,6 +33,7 @@ public class FusionFactions {
 
         modEventBus.addListener(SupplyDropManager::registerTicketController);
         NeoForge.EVENT_BUS.addListener(SupplyDropManager::onServerTick);
+        NeoForge.EVENT_BUS.addListener(SupplyDropCommands::register);
     }
 
     public static Identifier id(String path) {
