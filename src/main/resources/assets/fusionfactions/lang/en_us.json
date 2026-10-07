@@ -1,3 +1,19 @@
 {
-  "fusionfactions.configuration.title": "Fusion Factions Configs"
+  "fusionfactions.configuration.title": "Fusion Factions Configs",
+  "fusionfactions.configuration.supplyCrates": "Supply Crates",
+  "fusionfactions.configuration.enabled": "Automatic Drops",
+  "fusionfactions.configuration.intervalMinutes": "Drop Interval (minutes)",
+  "fusionfactions.configuration.minPlayersOnline": "Minimum Players Online",
+  "fusionfactions.configuration.zoneMode": "Drop Zone Mode",
+  "fusionfactions.configuration.zoneCenterX": "Zone Center X",
+  "fusionfactions.configuration.zoneCenterZ": "Zone Center Z",
+  "fusionfactions.configuration.zoneRadius": "Zone Radius",
+  "fusionfactions.configuration.rarityWeights": "Rarity Weights",
+  "fusionfactions.configuration.common": "Common",
+  "fusionfactions.configuration.rare": "Rare",
+  "fusionfactions.configuration.legendary": "Legendary",
+  "fusionfactions.configuration.countdownSeconds": "Countdown (seconds)",
+  "fusionfactions.configuration.despawnMinutes": "Despawn Time (minutes)",
+  "fusionfactions.configuration.announcePrecision": "Announcement Precision",
+  "fusionfactions.configuration.dimension": "Dimension"
 }
