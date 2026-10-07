@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import com.cornspies.fusionfactions.config.ServerConfig;
 import com.cornspies.fusionfactions.registry.ModBlockEntityTypes;
 import com.cornspies.fusionfactions.registry.ModBlocks;
+import com.cornspies.fusionfactions.registry.ModEntityTypes;
+import com.cornspies.fusionfactions.supplydrop.SupplyDropManager;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.resources.Identifier;
@@ -12,6 +14,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.NeoForge;
 
 // Common entry point. Must not reference anything in the client package.
 @Mod(FusionFactions.MODID)
@@ -23,8 +26,12 @@ public class FusionFactions {
     public FusionFactions(IEventBus modEventBus, ModContainer modContainer) {
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlockEntityTypes.BLOCK_ENTITY_TYPES.register(modEventBus);
+        ModEntityTypes.ENTITY_TYPES.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.SYNCED, ServerConfig.SPEC);
+
+        modEventBus.addListener(SupplyDropManager::registerTicketController);
+        NeoForge.EVENT_BUS.addListener(SupplyDropManager::onServerTick);
     }
 
     public static Identifier id(String path) {
