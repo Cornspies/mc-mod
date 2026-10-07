@@ -52,6 +52,10 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 | D16 | Drop zone: random X/Z within **±250 blocks of world spawn** (square) | Was OD-18. Configurable. |
 | D17 | Crates are **unbreakable and immovable** until emptied or despawned (default 30 min) | Was OD-20. |
 | D18 | Crates drop in the **overworld only** | Was OD-21. The dimension is a config option. |
+| D19 | Ballistics: **fast projectile entities** for all v1 weapons | Was OD-04. Revisit for the sniper. |
+| D20 | Ammo: **one shared ammo item** for every weapon | Was OD-05. |
+| D21 | Weapon damage **bypasses the hurt cooldown** (i-frames), via the `minecraft:bypasses_cooldown` damage-type tag on our damage type only | Was OD-07. Other damage keeps vanilla i-frames. |
+| D22 | Latency: **server authority plus a cosmetic client tracer** (muzzle flash, tracer, recoil) on the shooter's client | Was OD-12. |
 
 ---
 
@@ -112,11 +116,11 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 ### 4.2 Behaviour (baseline)
 
 - **Firing:** use the vanilla item-use flow (right-click starts using the item; while held, the use-tick callback runs on the server). The **server** spawns projectiles at the weapon's fire rate. Weapons are either semi-auto (one shot per click) or full-auto (fires while held). Verify the exact method names in 26.3; don't rely on memory.
-- **Ammo:** the magazine count is a data component on the weapon. **Reload** is a keybind (default **R**). The client sends a "reload" intent and the server consumes ammo from the player's inventory over the reload time. *(Ammo model: OD-05.)*
+- **Ammo:** the magazine count is a data component on the weapon. **Reload** is a keybind (default **R**). The client sends a "reload" intent and the server consumes ammo from the player's inventory over the reload time. *(One shared ammo item: D20.)*
   - **26.3 caveat:** input moved from GLFW to SDL and key codes changed. Define default keys with the `InputConstants` constants, not raw numbers.
-- **Projectiles:** fast server-side entities with an owner and slight gravity. Hits apply the custom damage type (§3.2.4). *(Projectiles vs hitscan: OD-04.)*
+- **Projectiles:** fast server-side entities with an owner and slight gravity. Hits apply the custom damage type (§3.2.4). *(Projectile entities: D19.)*
 - **Spread** is calculated on the server. **Recoil** is a cosmetic camera kick on the client.
-- **Invulnerability frames:** vanilla's hurt cooldown would swallow rapid-fire hits. *(OD-07.)*
+- **Invulnerability frames:** vanilla's hurt cooldown would swallow rapid-fire hits, so our damage type bypasses it *(D21)*.
 - **HUD:** ammo counter while a weapon is held. The item durability bar shows the magazine level (Fusion Warfare did this).
 - **Melee:** bashing with a gun does small damage. Optional.
 
@@ -227,15 +231,11 @@ What Fusion Warfare's missiles did, and what to avoid, is in Appendix A.3.
 | ID | Question | Options | Recommendation | Blocks |
 |---|---|---|---|---|
 | OD-03 | Weapon roster for v1 | See §4.3 | Pistol, SMG, shotgun, sniper; others later | M3 |
-| OD-04 | Ballistics | Projectile entities / hitscan / mixed | Fast projectile entities for all v1 weapons; revisit for the sniper | M2 |
-| OD-05 | Ammo model | One shared ammo item / ammo per weapon class / FE-charged weapons | One shared ammo item, which keeps a loot and crafting economy | M2 |
 | OD-06 | Damage scale and armor interaction | Keep the original's scale (12–60 HP per hit, far above vanilla) / rebalance around vanilla armor | Rebalance against target time-to-kill vs. diamond and netherite armor; armor applies | M3 |
-| OD-07 | Invulnerability frames vs rapid fire | Keep vanilla i-frames / bypass for weapon damage only | Bypass for our damage type only, e.g. via the vanilla damage-type tag for bypassing the hurt cooldown (verify it still exists in 26.3) | M2 |
 | OD-08 | How weapons are obtained | Craftable / crate-only, per weapon | Low tier craftable; sniper and future heavy weapons crate-only (config toggle) | M3 |
 | OD-09 | Recipe materials | Vanilla / own components / Mekanism parts | Vanilla plus a few own components (barrel, core, grip) | M3 |
 | OD-10 | Aiming UX | Zoom / aim-down-sights / crosshair style / scope levels | Hip-fire for all; sniper gets zoom levels | M3 |
 | OD-11 | Headshots / hit zones | Yes / no | No for v1 | M3 |
-| OD-12 | Latency feel | Pure server / client-side cosmetic tracer for instant feedback | Server authority plus a cosmetic client tracer | M2–M4 |
 | OD-13 | Art and animation depth | Static 3D item models / simple recoil and reload animations | Static models plus simple held pose for v1 | M3 |
 
 ### Supply crate
@@ -355,6 +355,10 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-07 | OD-20 → D17 | Crates are unbreakable until emptied or despawned | Owner |
 | 2026-10-07 | OD-21 → D18 | Overworld only, configurable | Owner |
 | 2026-10-08 | M1 details | The crate falls from 100 blocks above the landing spot at 4 blocks/s with a smoke trail. Reminders come at 30 s and 10 s. Extra announcements when a crate is looted or despawns. A despawned or admin-removed crate deletes its contents instead of spilling them. Crates have no item form. *Provisional.* | Agent |
+| 2026-10-08 | OD-04 → D19 | Projectile entities for all v1 weapons | Owner |
+| 2026-10-08 | OD-05 → D20 | One shared ammo item | Owner |
+| 2026-10-08 | OD-07 → D21 | Bypass the hurt cooldown for our damage type only | Owner |
+| 2026-10-08 | OD-12 → D22 | Server authority plus a cosmetic client tracer | Owner |
 
 ---
 
