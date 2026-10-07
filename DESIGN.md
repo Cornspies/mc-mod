@@ -1,7 +1,7 @@
 # Fusion Factions — Design Document
 
 > **Mod ID:** `fusionfactions` · **Package:** `com.cornspies.fusionfactions` · **License:** MIT
-> **Status:** Draft v0.1 · **Last updated:** 2026-10-06
+> **Status:** Draft v0.1 · **Last updated:** 2026-10-07
 > **Audience:** the project owner and the coding agent (Claude Code). Read together with `CLAUDE.md`.
 
 ---
@@ -45,6 +45,13 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 | D9 | Everything else from Fusion Warfare is **out of scope** | Machines, generators, reactors, cables and beacons, auras and turrets, team GUI, reinforced blocks, scuba gear, tools and armor, ore generation. Can be revisited later. |
 | D10 | Name **Fusion Factions**, mod ID **`fusionfactions`**, Java package and group ID **`com.cornspies.fusionfactions`** | Was OD-01. |
 | D11 | License: **MIT** | Was OD-02. |
+| D12 | Crate schedule: **fixed interval** (default 90 min), only while at least `minPlayersOnline` players are online (default 2) | Was OD-15. Both values are config options. See §10 for how the player minimum is applied. |
+| D13 | Crate claim: **instant open** in v1 | Was OD-16. A capture timer is a v1.1 candidate. |
+| D14 | Announcement precision: **exact coordinates** by default | Was OD-14. Configurable (`announcePrecision`). |
+| D15 | **3 rarity tiers**: common / rare / legendary (blue / orange / red), weights 60 / 30 / 10 | Was OD-17. Weights are configurable. |
+| D16 | Drop zone: random X/Z within **±250 blocks of world spawn** (square) | Was OD-18. Configurable. |
+| D17 | Crates are **unbreakable and immovable** until emptied or despawned (default 30 min) | Was OD-20. |
+| D18 | Crates drop in the **overworld only** | Was OD-21. The dimension is a config option. |
 
 ---
 
@@ -140,12 +147,12 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 
 ### 5.2 Flow
 
-1. **Schedule** *(OD-15)*: a server-side manager decides when the next drop happens. Store the next drop time and any active drops in **SavedData**, so restarts don't reset the timer or lose an active crate.
-2. **Pick a location** *(OD-18)* inside the drop zone:
+1. **Schedule** *(D12)*: a server-side manager decides when the next drop happens. Store the next drop time and any active drops in **SavedData**, so restarts don't reset the timer or lose an active crate.
+2. **Pick a location** *(D16)* inside the drop zone:
    - Find the surface with a heightmap.
    - Reject water, lava and unsafe spots, and claimed land if claims integration is enabled (OD-22).
    - Retry up to N times; if nothing valid is found, skip this drop and log it.
-3. **Announce** *(OD-14)* to all players: rarity, location, and a countdown (e.g. 60 seconds) with reminders. Optionally play a server-wide sound.
+3. **Announce** *(D14)* to all players: rarity, location, and a countdown (e.g. 60 seconds) with reminders. Optionally play a server-wide sound.
 4. **Force-load the landing chunk** (§3.2.5).
 5. **Drop:** spawn a falling-crate entity high above the target. It descends slowly (parachute look) with a visible smoke trail.
 6. **Land:** place a crate block.
@@ -153,7 +160,7 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
    - Loot comes from the loot table `fusionfactions:supply_crate/<rarity>`.
    - Show a visible marker (smoke or beam) until it's opened.
    - Announce the landing.
-7. **Claim and open** *(OD-16)*.
+7. **Claim and open** *(D13)*: anyone can open the crate as soon as it lands.
 8. **Clean up:** remove the crate when it's emptied or the despawn timer runs out *(default 30 min, like the original)*. Release the chunk ticket.
 
 ### 5.3 Admin commands (permission level 2)
@@ -166,7 +173,7 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 ### 5.4 Server config
 
 - `enabled`
-- `intervalMinMinutes`, `intervalMaxMinutes`, `minPlayersOnline`
+- `intervalMinutes`, `minPlayersOnline`
 - `zoneMode`, `zoneCenter`, `zoneRadius`
 - `rarityWeights`
 - `countdownSeconds`, `despawnMinutes`
@@ -235,14 +242,7 @@ What Fusion Warfare's missiles did, and what to avoid, is in Appendix A.3.
 
 | ID | Question | Options | Recommendation | Blocks |
 |---|---|---|---|---|
-| OD-14 | Announcement precision | Exact coordinates / rounded area / direction + distance | Exact (like the original); configurable | M1 |
-| OD-15 | Schedule | Fixed interval / random window / moon phase / min players online | Random 60–120 real minutes, only with ≥ N players online | M1 |
-| OD-16 | Claim mechanic | Instant open / capture timer (stand near it X s, reset by taking damage) / locks to first team | Instant open for v1; capture timer as v1.1 | M1 |
-| OD-17 | Rarity tiers and weights | Original: 3 tiers, 60% / 30% / 10% | Keep 3 tiers, configurable | M1 |
-| OD-18 | Drop zone | Radius around spawn / anywhere inside world border / admin-defined zones | Radius around spawn (original: ±250), configurable | M1 |
 | OD-19 | Loot contents per tier | — | Define once weapons exist | M4 |
-| OD-20 | Can crates be broken or moved? | Yes / no | No (unbreakable until emptied or despawned) | M1 |
-| OD-21 | Dimensions | Overworld only / configurable list | Overworld only | M1 |
 
 ### Server and faction
 
@@ -337,6 +337,14 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-06 | D1–D9 | Initial decisions from planning (see §2) | Owner |
 | 2026-10-06 | OD-01 → D10 | Name Fusion Factions, mod ID `fusionfactions`, package `com.cornspies.fusionfactions` | Owner |
 | 2026-10-06 | OD-02 → D11 | License MIT | Owner |
+| 2026-10-07 | OD-15 → D12 | Fixed drop interval, default 90 min, with a minimum player count | Owner |
+| 2026-10-07 | D12 detail | The countdown to the next drop only runs while at least `minPlayersOnline` (default 2) players are online, and it is saved across restarts. Server downtime and empty hours don't count. *Provisional.* | Agent |
+| 2026-10-07 | OD-16 → D13 | Instant open | Owner |
+| 2026-10-07 | OD-14 → D14 | Exact coordinates, configurable | Owner |
+| 2026-10-07 | OD-17 → D15 | 3 tiers common / rare / legendary, 60 / 30 / 10, configurable | Owner |
+| 2026-10-07 | OD-18 → D16 | ±250 blocks around world spawn, configurable | Owner |
+| 2026-10-07 | OD-20 → D17 | Crates are unbreakable until emptied or despawned | Owner |
+| 2026-10-07 | OD-21 → D18 | Overworld only, configurable | Owner |
 
 ---
 
