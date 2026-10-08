@@ -319,7 +319,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | **M0 Setup** ✅ *done 2026-10-06* | OD-01 and OD-02 answered. Project created from the 26.3 MDK; NeoForge bumped and pinned; mod ID and package set; `.gitignore`; git repo. Builds, and runs on both `runClient` and `runServer`. |
 | **M1 Supply crate MVP** ✅ *done 2026-10-08* | Crate block and block entity, three rarity loot tables (placeholder vanilla loot), falling-crate entity, scheduler with SavedData, location picking, announcements and countdown, chunk ticket, despawn, admin commands, server config. |
 | **M2 Weapon framework** ✅ *done 2026-10-08* | Weapon base item, central stats record, ammo item, ammo/reload data components, reload keybind and packet, projectile entity, custom damage type, placeholder sounds, ammo HUD. One working test gun. |
-| **M3 Weapon roster** 🟡 *implemented 2026-10-08; two-player test pending* | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
+| **M3 Weapon roster** ✅ *done 2026-10-08* | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
 | **M4 Integration & polish** | Weapons in crate loot (OD-19), optional OPAC integration (OD-22), config documentation, two-player playtest on a dedicated server, release v0.1.0. |
 
 ---
@@ -435,6 +435,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | M3 knockback | Per weapon: sniper 0.8, pistol 0.4, auto pistol 0.25, shotgun 0.2 per pellet, SMG 0.15, gatling 0.05 (a vanilla melee hit is 0.4). *Provisional.* | Agent |
 | 2026-10-08 | M3 recipes | Parts and recipes as in §4.3. The auto pistol and SMG are upgrades of the previous weapon. The heavy-weapon recipe switch is a startup config (`heavyWeaponRecipes`, off), not a synced one, because recipes load before the synced config. So it is per server, not per world, and needs a restart. *Provisional.* | Agent |
 | 2026-10-08 | M3 aiming and models | Zoom is 3× and 6× on the Z key, first person only, with slower mouse movement. The scope overlay was first the vanilla spyglass; after owner feedback it is a typical shooter sniper scope (§4.2), with its texture from `tools/scope_overlay.py`. Weapons are held in the crossbow aiming pose in third person. Models come from `tools/weapon_models.py`; sounds are vanilla placeholders. *Provisional.* | Agent |
+| 2026-10-08 | M3 done | Two-player test on a dedicated server passed. The owner approved the sniper scope HUD. | Owner |
 
 ---
 
