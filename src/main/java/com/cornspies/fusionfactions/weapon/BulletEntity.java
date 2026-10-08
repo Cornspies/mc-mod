@@ -26,6 +26,9 @@ import net.neoforged.neoforge.event.EventHooks;
 public class BulletEntity extends Projectile {
     private static final double GRAVITY = 0.01;
     private static final int TRAIL_PARTICLES_PER_TICK = 3;
+    // Underwater the trail is a dense line of bubbles, one per this many blocks, so the bullet's
+    // slow-down is easy to follow (there's no instant tracer underwater, see WeaponClientEffects).
+    private static final double BUBBLE_SPACING = 0.3;
     // Same as vanilla arrows.
     private static final double WATER_INERTIA = 0.6;
     // Blocks per tick. Slower bullets are spent and disappear.
@@ -68,8 +71,9 @@ public class BulletEntity extends Projectile {
         }
         boolean inWater = this.isInWater();
         if (this.level().isClientSide()) {
-            for (int i = 0; i < TRAIL_PARTICLES_PER_TICK; i++) {
-                double part = i / (double) TRAIL_PARTICLES_PER_TICK;
+            int particles = inWater ? Math.max(TRAIL_PARTICLES_PER_TICK, (int) Math.ceil(movement.length() / BUBBLE_SPACING)) : TRAIL_PARTICLES_PER_TICK;
+            for (int i = 0; i < particles; i++) {
+                double part = i / (double) particles;
                 this.level().addParticle(inWater ? ParticleTypes.BUBBLE : ParticleTypes.ELECTRIC_SPARK,
                         this.getX() + movement.x * part, this.getY() + movement.y * part, this.getZ() + movement.z * part, 0.0, 0.0, 0.0);
             }

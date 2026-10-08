@@ -21,8 +21,6 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 // timing from the same stats; the server alone decides what is actually fired and hit.
 public final class WeaponClientEffects {
     private static final double TRACER_RANGE = 48.0;
-    // Bullets slow down quickly in water (see BulletEntity), so the tracer is short there too.
-    private static final double TRACER_RANGE_UNDERWATER = 9.0;
     private static final double TRACER_STEP = 0.8;
 
     private static int cooldown;
@@ -61,20 +59,26 @@ public final class WeaponClientEffects {
         Vec3 right = Vec3.directionFromRotation(0.0F, player.getYRot() + 90.0F);
         Vec3 muzzle = eye.add(look.scale(0.7)).add(right.scale(0.3)).add(0.0, -0.2, 0.0);
 
-        level.addParticle(ParticleTypes.SMALL_FLAME, muzzle.x, muzzle.y, muzzle.z, 0.0, 0.0, 0.0);
-        for (int i = 0; i < 3; i++) {
-            level.addParticle(ParticleTypes.SMOKE, muzzle.x, muzzle.y, muzzle.z, look.x * 0.05, look.y * 0.05 + 0.01, look.z * 0.05);
-        }
-
-        // Tracer from the muzzle to whatever block the crosshair is on.
-        double range = player.isUnderWater() ? TRACER_RANGE_UNDERWATER : TRACER_RANGE;
-        HitResult hit = player.pick(range, 1.0F, false);
-        Vec3 end = hit.getType() == HitResult.Type.MISS ? eye.add(look.scale(range)) : hit.getLocation();
-        Vec3 path = end.subtract(muzzle);
-        double length = path.length();
-        for (double distance = 1.0; distance < length; distance += TRACER_STEP) {
-            Vec3 point = muzzle.add(path.scale(distance / length));
-            level.addParticle(ParticleTypes.ELECTRIC_SPARK, point.x, point.y, point.z, 0.0, 0.0, 0.0);
+        if (player.isUnderWater()) {
+            // Water slows bullets down (see BulletEntity), so an instant tracer would be wrong here.
+            // The bullet's own bubble trail shows how far it gets; the muzzle just puffs bubbles.
+            for (int i = 0; i < 6; i++) {
+                level.addParticle(ParticleTypes.BUBBLE, muzzle.x, muzzle.y, muzzle.z, look.x * 0.2, look.y * 0.2, look.z * 0.2);
+            }
+        } else {
+            level.addParticle(ParticleTypes.SMALL_FLAME, muzzle.x, muzzle.y, muzzle.z, 0.0, 0.0, 0.0);
+            for (int i = 0; i < 3; i++) {
+                level.addParticle(ParticleTypes.SMOKE, muzzle.x, muzzle.y, muzzle.z, look.x * 0.05, look.y * 0.05 + 0.01, look.z * 0.05);
+            }
+            // Tracer from the muzzle to whatever block the crosshair is on.
+            HitResult hit = player.pick(TRACER_RANGE, 1.0F, false);
+            Vec3 end = hit.getType() == HitResult.Type.MISS ? eye.add(look.scale(TRACER_RANGE)) : hit.getLocation();
+            Vec3 path = end.subtract(muzzle);
+            double length = path.length();
+            for (double distance = 1.0; distance < length; distance += TRACER_STEP) {
+                Vec3 point = muzzle.add(path.scale(distance / length));
+                level.addParticle(ParticleTypes.ELECTRIC_SPARK, point.x, point.y, point.z, 0.0, 0.0, 0.0);
+            }
         }
 
         // Recoil: a camera kick up and a little sideways (DESIGN.md §4.2).

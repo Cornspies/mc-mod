@@ -369,7 +369,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | OD-12 → D22 | Server authority plus a cosmetic client tracer | Owner |
 | 2026-10-08 | M2 weapon handling | Test pistol: 5 HP per hit, 12 rounds, 4 ticks between shots, 6 ticks per round to reload (placeholder until OD-06). New weapons come loaded. Firing an empty magazine starts a reload. Holding the trigger doesn't interrupt a reload, pulling it again does, and switching items cancels it (rounds already loaded stay). Creative players reload for free, like bows. *Provisional.* | Agent |
 | 2026-10-08 | M2 bullet damage | The bullet damage type is also tagged `minecraft:is_projectile`, so Projectile Protection reduces it. Vanilla knockback is kept for now; with the i-frame bypass, rapid fire knocks targets back a lot. Revisit both in the M3 balance pass (OD-06). Bullets are not saved with chunks. *Provisional.* | Agent |
-| 2026-10-08 | Bullets underwater | Bullets keep flying in water but slow down like arrows (0.6 drag per tick) and disappear once spent, about 9 blocks of range. Same damage on a hit. | Owner |
+| 2026-10-08 | Bullets underwater | Bullets keep flying in water but slow down like arrows (0.6 drag per tick) and disappear once spent, about 9 blocks of range. Same damage on a hit. Underwater the shooter sees a bubble puff and the bullet's dense bubble trail instead of the instant spark tracer (agent detail after owner feedback). | Owner |
 
 ---
 
