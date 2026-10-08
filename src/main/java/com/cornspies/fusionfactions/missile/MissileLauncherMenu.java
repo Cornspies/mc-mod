@@ -83,10 +83,15 @@ public class MissileLauncherMenu extends AbstractContainerMenu {
         return this.data.get(2) / 1000.0F;
     }
 
+    // Called on both sides: the screen only sends the click to the server if the client's menu accepts the
+    // button, so it must say yes there too. Only the server launches.
     @Override
     public boolean clickMenuButton(Player player, int buttonId) {
-        if (buttonId != LAUNCH_BUTTON || !(player instanceof ServerPlayer serverPlayer)) {
+        if (buttonId != LAUNCH_BUTTON) {
             return false;
+        }
+        if (!(player instanceof ServerPlayer serverPlayer)) {
+            return true;
         }
         this.access.execute((level, blockPos) -> {
             if (level instanceof ServerLevel serverLevel && level.getBlockEntity(blockPos) instanceof MissileLauncherBlockEntity launcher) {
