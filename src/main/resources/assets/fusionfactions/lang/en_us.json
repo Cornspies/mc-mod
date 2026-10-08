@@ -87,5 +87,6 @@
   "subtitles.fusionfactions.weapon.shotgun.fire": "Shotgun fires",
   "subtitles.fusionfactions.weapon.sniper_rifle.fire": "Sniper rifle fires",
   "subtitles.fusionfactions.weapon.gatling_gun.fire": "Gatling gun fires",
-  "subtitles.fusionfactions.weapon.gatling_gun.spin": "Gatling gun spins up"
+  "subtitles.fusionfactions.weapon.gatling_gun.spin": "Gatling gun spins up",
+  "key.fusionfactions.zoom": "Zoom (Scoped Weapons)"
 }

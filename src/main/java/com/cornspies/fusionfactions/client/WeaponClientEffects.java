@@ -80,8 +80,9 @@ public final class WeaponClientEffects {
             }
         }
 
-        // Recoil: a camera kick up and a little sideways (DESIGN.md §4.2).
-        float kick = stats.recoilDegrees();
+        // Recoil: a camera kick up and a little sideways (DESIGN.md §4.2). Zoomed in, it's scaled down so
+        // it moves the scope picture as much as an unzoomed kick moves the normal view.
+        float kick = stats.recoilDegrees() / SniperScope.zoom();
         player.setXRot(Mth.clamp(player.getXRot() - kick, -90.0F, 90.0F));
         player.setYRot(player.getYRot() + (player.getRandom().nextFloat() - 0.5F) * kick * 0.5F);
 

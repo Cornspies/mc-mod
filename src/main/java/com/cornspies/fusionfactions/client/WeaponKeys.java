@@ -14,7 +14,7 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 
 public final class WeaponKeys {
-    private static final KeyMapping.Category CATEGORY = new KeyMapping.Category(FusionFactions.id("weapons"));
+    static final KeyMapping.Category CATEGORY = new KeyMapping.Category(FusionFactions.id("weapons"));
     // 26.3 uses SDL key codes: always use the InputConstants names, never raw numbers.
     public static final KeyMapping RELOAD = new KeyMapping("key.fusionfactions.reload", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYBOARD, InputConstants.KEY_R, CATEGORY);
@@ -22,6 +22,7 @@ public final class WeaponKeys {
     public static void register(RegisterKeyMappingsEvent event) {
         event.registerCategory(CATEGORY);
         event.register(RELOAD);
+        event.register(SniperScope.ZOOM);
     }
 
     public static void onClientTick(ClientTickEvent.Post event) {

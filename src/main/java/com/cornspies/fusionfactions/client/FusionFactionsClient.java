@@ -29,6 +29,9 @@ public class FusionFactionsClient {
         modEventBus.addListener(FusionFactionsClient::registerGuiLayers);
         NeoForge.EVENT_BUS.addListener(WeaponKeys::onClientTick);
         NeoForge.EVENT_BUS.addListener(WeaponClientEffects::onClientTick);
+        NeoForge.EVENT_BUS.addListener(SniperScope::onClientTick);
+        NeoForge.EVENT_BUS.addListener(SniperScope::onComputeFov);
+        NeoForge.EVENT_BUS.addListener(SniperScope::onPlayerTurn);
     }
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -38,6 +41,7 @@ public class FusionFactionsClient {
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {
+        event.registerAbove(VanillaGuiLayers.CAMERA_OVERLAYS, FusionFactions.id("scope"), SniperScope::renderOverlay);
         event.registerAbove(VanillaGuiLayers.HOTBAR, FusionFactions.id("ammo"), AmmoHud::render);
     }
 }
