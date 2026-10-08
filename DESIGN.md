@@ -118,10 +118,11 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 - **Firing:** use the vanilla item-use flow (right-click starts using the item; while held, the use-tick callback runs on the server). The **server** spawns projectiles at the weapon's fire rate. Weapons are either semi-auto (one shot per click) or full-auto (fires while held). Verify the exact method names in 26.3; don't rely on memory.
 - **Ammo:** the magazine count is a data component on the weapon. **Reload** is a keybind (default **R**). The client sends a "reload" intent and the server consumes ammo from the player's inventory over the reload time. *(One shared ammo item: D20.)*
   - **26.3 caveat:** input moved from GLFW to SDL and key codes changed. Define default keys with the `InputConstants` constants, not raw numbers.
-- **Projectiles:** fast server-side entities with an owner and slight gravity. Hits apply the custom damage type (§3.2.4). *(Projectile entities: D19.)* In water they slow down like arrows, which gives roughly 9 blocks of range, then curve down and sink harmlessly to the ground (§10).
+- **Projectiles:** fast server-side entities with an owner and slight gravity. Hits apply the custom damage type (§3.2.4). *(Projectile entities: D19.)* In water they slow down like arrows, which gives roughly 9 blocks of range, then curve down and sink harmlessly to the ground. A bullet that leaves the water keeps its lost speed and drops in a short arc (§10).
 - **Spread** is calculated on the server. **Recoil** is a cosmetic camera kick on the client.
 - **Invulnerability frames:** vanilla's hurt cooldown would swallow rapid-fire hits, so our damage type bypasses it *(D21)*.
 - **HUD:** ammo counter while a weapon is held. The item durability bar shows the magazine level (Fusion Warfare did this).
+- **Knockback:** vanilla knockback on hits for now; a per-weapon value from M3 on. Armor that reduces or removes it is OD-30.
 - **Melee:** bashing with a gun does small damage. Optional.
 
 ### 4.3 Proposed roster (draft; final list is OD-03)
@@ -266,6 +267,7 @@ What Fusion Warfare's missiles did, and what to avoid, is in Appendix A.3.
 | ID | Question | Options | Recommendation | Blocks |
 |---|---|---|---|---|
 | OD-29 | Weapon stats source | Code table / server config / datapack JSON | Code table now; datapack later if admins want tuning | Later |
+| OD-30 | Armor against weapons (owner wants it later; D9 had armor out of scope) | Armor that reduces or removes weapon knockback / also damage / enchantment instead of armor | — | Later |
 
 ---
 
@@ -276,8 +278,8 @@ The supply crate comes first because it is self-contained and proves out the sha
 | Milestone | Deliverables |
 |---|---|
 | **M0 Setup** ✅ *done 2026-10-06* | OD-01 and OD-02 answered. Project created from the 26.3 MDK; NeoForge bumped and pinned; mod ID and package set; `.gitignore`; git repo. Builds, and runs on both `runClient` and `runServer`. |
-| **M1 Supply crate MVP** 🟡 *implemented 2026-10-08; two-player test pending* | Crate block and block entity, three rarity loot tables (placeholder vanilla loot), falling-crate entity, scheduler with SavedData, location picking, announcements and countdown, chunk ticket, despawn, admin commands, server config. |
-| **M2 Weapon framework** 🟡 *implemented 2026-10-08; two-player test pending* | Weapon base item, central stats record, ammo item, ammo/reload data components, reload keybind and packet, projectile entity, custom damage type, placeholder sounds, ammo HUD. One working test gun. |
+| **M1 Supply crate MVP** ✅ *done 2026-10-08* | Crate block and block entity, three rarity loot tables (placeholder vanilla loot), falling-crate entity, scheduler with SavedData, location picking, announcements and countdown, chunk ticket, despawn, admin commands, server config. |
+| **M2 Weapon framework** ✅ *done 2026-10-08* | Weapon base item, central stats record, ammo item, ammo/reload data components, reload keybind and packet, projectile entity, custom damage type, placeholder sounds, ammo HUD. One working test gun. |
 | **M3 Weapon roster** | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
 | **M4 Integration & polish** | Weapons in crate loot (OD-19), optional OPAC integration (OD-22), config documentation, two-player playtest on a dedicated server, release v0.1.0. |
 
@@ -370,6 +372,9 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | M2 weapon handling | Test pistol: 5 HP per hit, 12 rounds, 4 ticks between shots, 6 ticks per round to reload (placeholder until OD-06). New weapons come loaded. Firing an empty magazine starts a reload. Holding the trigger doesn't interrupt a reload, pulling it again does, and switching items cancels it (rounds already loaded stay). Creative players reload for free, like bows. *Provisional.* | Agent |
 | 2026-10-08 | M2 bullet damage | The bullet damage type is also tagged `minecraft:is_projectile`, so Projectile Protection reduces it. Vanilla knockback is kept for now; with the i-frame bypass, rapid fire knocks targets back a lot. Revisit both in the M3 balance pass (OD-06). Bullets are not saved with chunks. *Provisional.* | Agent |
 | 2026-10-08 | Bullets underwater | Bullets keep flying in water but slow down like arrows (0.6 drag per tick), about 9 blocks of range. Same damage on a hit. Once spent (slower than 0.25 blocks/tick) they don't hurt anything; stronger water gravity makes them curve down and sink at about 2 blocks/s until they touch the ground and disappear (at most 30 s). Underwater the shooter sees a bubble puff and the bullet's dense bubble trail instead of the instant spark tracer (agent detail after owner feedback). | Owner |
+| 2026-10-08 | Water exit | A bullet that has been in water keeps losing speed after it leaves the water (10% per tick) and uses the heavy water gravity, so it drops in a short arc. The more water it went through, the shorter the arc (about 15 / 9 / 5 blocks after 1 / 2 / 3 ticks in water). | Owner |
+| 2026-10-08 | Knockback | Vanilla knockback on bullet hits is fine for now. Knockback becomes a per-weapon value in the M3 balance pass. The owner also wants armor that reduces or removes knockback later (OD-30). | Owner |
+| 2026-10-08 | M1, M2 done | Two-player test on a dedicated server passed for both checklists. | Owner |
 
 ---
 
