@@ -8,7 +8,7 @@ Install the mod jar on the server **and** on every client. It has no other mod d
 
 | File | What's in it | When changes apply |
 |---|---|---|
-| `config/fusionfactions-synced.toml` | Supply crates and weapon upgrades | Restart the server. Clients receive the values when they join. |
+| `config/fusionfactions-synced.toml` | Supply crates, weapon upgrades and missiles | Restart the server. Clients receive the values when they join. |
 | `<world>/syncedconfig/fusionfactions-synced.toml` | Optional per-world copy of the file above; overrides it for that world | Restart the server. |
 | `config/fusionfactions-startup.toml` | Heavy weapon recipes | Restart the server. Also applies to the whole server, not per world. |
 
@@ -53,6 +53,28 @@ Reductions are capped at 95%.
 
 **Updating from an older version:** a config written by an older version keeps its old field lists. When a version adds a new upgrade type, add it to the lists yourself, or delete the `[weaponUpgrades.fields]` section to get the new defaults.
 
+### Missiles: `[missiles]`
+
+New in the upcoming 0.2.0 (Phase 2, in development).
+
+| Option | Default | Meaning |
+|---|---|---|
+| `raidWindows` | `[]` | When missiles can be launched. Entries like `"SAT 18:00-23:00"`, `"MON-FRI 20:00-22:00"`, `"SAT,SUN 14:00-02:00"` or `"DAILY 20:00-22:00"`. An end before the start runs past midnight. Empty: any time. Missiles already in the air still land. |
+| `raidTimeZone` | `""` | Time zone for the raid windows, e.g. `Europe/Berlin`. Empty: the server's time zone. |
+| `requirePower` | `false` | Whether launchers need FE from another mod (Mekanism or any mod with FE cables). Minecraft itself has no power source, so leave it off without such a mod. |
+| `range` | `[500, 1000, 2000]` | Maximum distance to the target for missile tiers I, II and III, in blocks. |
+| `minRange` | `64` | Minimum distance to the target, in blocks. |
+| `flightSpeed` | `25.0` | Blocks per second on the way to the target. Flight time is this plus a 3 s climb and a 4 s descent. |
+| `launcherCooldownSeconds` | `60` | Time a launcher needs between launches. |
+| `launchEnergy` | `[50000, 100000, 200000]` | FE per launch by tier, if `requirePower` is on. |
+| `designatorRange` | `256` | How far away the target designator can mark a block. |
+| `hardBlockResistance` | `600.0` | Blocks with at least this blast resistance (obsidian is 1200) stop missile blasts. |
+| `explosivePower` | `[6, 9, 12]` | Blast power of explosive missiles by tier (TNT is 4). |
+
+Missile blasts break blocks without dropping them; containers spill their contents. Blocks in the block tag `fusionfactions:missile_immune` never break (bedrock, barriers, portals, command blocks and supply crates by default). Add your own with a datapack at `data/fusionfactions/tags/block/missile_immune.json`. Protection and claim mods that stop explosions also stop missiles.
+
+Missiles in flight are saved with the world and keep flying after a restart. Their launch and target areas are kept loaded, so they work with nobody nearby.
+
 ### Heavy weapon recipes: `fusionfactions-startup.toml`
 
 `heavyWeaponRecipes = false` (default): the sniper rifle and gatling gun can't be crafted and only come from supply crates. Set it to `true` to enable their recipes.
@@ -82,9 +104,13 @@ Permission level 2 (operators).
 | `/fusionfactions drop next` | Shows when the next automatic drop is due. |
 | `/fusionfactions drop list` | Lists active crates. |
 | `/fusionfactions drop clear` | Removes all active crates (their contents are deleted). |
+| `/fusionfactions missile launch <type> <tier> <x> <z> [<from x> <from z>]` | Launches a missile at the surface of a column, from another column or from where you are. Ignores raid windows, range and power. |
+| `/fusionfactions missile list` | Lists missiles in flight with their target and time to impact. |
+| `/fusionfactions missile clear [<id>]` | Removes all missiles in flight, or one, without detonating them. |
 
 ## Things players should know
 
 - **Left click** fires, **right click** (hold) aims down sights, **R** reloads, **Z** or the mouse wheel switches the sniper's zoom while scoped. Keys can be changed under Controls → Fusion Factions.
 - With a gun in hand, left click doesn't hit or break blocks.
 - Weapon damage counts as the shooter's attack, so vanilla team friendly-fire settings and PvP-protection mods apply.
+- Missiles: mark a target with the target designator (right click a block, up to 256 blocks away), put it and a missile into a missile launcher under open sky, and press Launch. Anyone can use any launcher.

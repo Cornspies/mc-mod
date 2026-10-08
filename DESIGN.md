@@ -377,9 +377,9 @@ Anyone can use the blocks (D58). Anyone can also break them; they are as hard as
 ### 6.5 Launch and flight (D46, D49, D50, D53, D56)
 
 1. A player puts a missile and a designator into a launcher (or the silo controller) and presses **Launch**.
-2. The **server** checks: a missile and a target in the same dimension; the target within the tier's range (I 500, II 1000, III 2000 blocks, horizontal) and at least 64 blocks away; the launcher can fire that tier; the launcher's cooldown is over (launcher 60 s, silo 120 s); the current time is inside a raid window; enough power if `requirePower` is on. The status line says which check failed.
-3. **Launch:** the missile takes off as an entity with a smoke trail and climbs for 3 seconds. The launch chunk is held by a chunk ticket meanwhile.
-4. **Cruise:** above the sky the entity is removed and the flight becomes a record in SavedData (launch spot, target, type, tier, launching player, time of impact). Flight time is the distance at 25 blocks per second, so 1000 blocks take 40 s. Its position on the straight line between launch and target is what radars see. Flights survive a restart.
+2. The **server** checks: a missile and a target in the same dimension; the target within the tier's range (I 500, II 1000, III 2000 blocks, horizontal) and at least 64 blocks away; the launcher can fire that tier; open sky above the launcher; the launcher's cooldown is over (launcher 60 s, silo 120 s); the current time is inside a raid window; enough power if `requirePower` is on. The status line says which check failed.
+3. **Launch:** the missile takes off as an entity with a smoke trail and climbs for 3 seconds, through anything in its way. The launch chunk is held by a chunk ticket meanwhile.
+4. **Cruise:** above the sky the entity is removed and the flight becomes a record in SavedData (launch spot, target, type, tier, launching player, time of impact). Flight time is the 3 s climb, the distance at 25 blocks per second and the 4 s descent, so 1000 blocks take 47 s. Its position on the straight line between launch and target is what radars see. Flights survive a restart.
 5. **Descent:** 10 s before impact the target chunks are force-loaded; 4 s before impact the missile appears 160 blocks above the target as an entity and falls onto it. It can be **shot**: health 10 / 20 / 40 by tier, bullets and interceptors damage it, and a missile destroyed in the air explodes harmlessly.
 6. **Impact:** it detonates on the first block or entity it touches (§6.6), then the tickets are released.
 
@@ -434,7 +434,7 @@ Anyone can use the blocks (D58). Anyone can also break them; they are as hard as
 ### 6.10 Admin commands (permission level 2)
 
 - `/fusionfactions missile list`: missiles in flight, with launch spot, target and time to impact.
-- `/fusionfactions missile clear`: removes all missiles in flight.
+- `/fusionfactions missile clear [<id>]`: removes all missiles in flight, or one.
 - `/fusionfactions missile launch <type> <tier> <x> <z> [<from x> <from z>]`: launches a missile without a launcher, for testing (ignores raid windows and power).
 
 ### 6.11 Reference
@@ -574,6 +574,18 @@ The supply crate comes first because it is self-contained and proves out the sha
 - **Never compare item stacks by identity on the client.** When the server changes a stack's components (every shot, every loaded round), the client gets a new `ItemStack` object, applied between render frames. `player.getUseItem()` only catches up on the next tick (`LivingEntity.updatingUsingItem`, which keeps the use going while the item type matches). Check the hand and the item type instead.
 - If your knowledge stops around 1.21.1, also skim the 1.21.2 – 1.21.11 primers. Rendering, item models and GUIs changed a lot in that span.
 
+### Learned while building M7 (verified against 26.3 sources)
+
+- **Energy** moved to NeoForge's transfer API: `Capabilities.Energy.BLOCK` is a `BlockCapability<EnergyHandler, Direction>` (no `IEnergyStorage`). `SimpleEnergyHandler` is a ready buffer (`serialize` / `deserialize` to a `ValueOutput` child), and changes go through transactions (`Transaction.openRoot()`); `onEnergyChanged` fires on commit. Register with `RegisterCapabilitiesEvent.registerBlockEntity`.
+- **Explosions:** `ServerExplosion` keeps its ray casting private. For a custom blast, compute the blocks yourself, but build a `ServerExplosion` anyway and pass it to `EventHooks.onExplosionStart` (cancellable) and `onExplosionDetonate` (mods edit the block and entity lists), so claim mods see it. `BlockState.onBlockExploded` sets air (container block entities spill their contents in `preRemoveSideEffects`, shulker boxes don't). Players get explosion knockback and effects through `ClientboundExplodePacket`.
+- **Menus with extra data:** `IMenuTypeExtension.create((id, inventory, buffer) -> ...)` and `player.openMenu(provider, pos)` (writes the position). Menu data slots (`ContainerData`) are synced as **shorts**: clamp or scale larger numbers. Menu buttons: `clickMenuButton` on both sides, the screen sends `gameMode.handleInventoryButtonClick`.
+- **Items in entity renderers:** `ItemModelResolver.updateForNonLiving(state, stack, ItemDisplayContext.NONE, entity)` and `ItemStackRenderState.submit`. An item definition can pick a flat model for inventories and a 3D one elsewhere with `ItemModelGenerators.createFlatModelDispatch`. Rotate a `PoseStack` with `rotateDegrees(Axis.XP, angle)`.
+- **Entities are drawn only if their render section is compiled and visible** (`LevelExtractor.isEntityVisible`), on top of `shouldRenderAtSqrDistance`. Thin models are hard to see beyond ~30 blocks; trails of long-lived particles (`CAMPFIRE_COSY_SMOKE`) with `alwaysShow` carry the visibility.
+- **Heightmaps** of unloaded chunks read as the world's bottom: load the chunk (`level.getChunk`) before `getHeightmapPos`.
+- **Player messages:** `sendOverlayMessage` (action bar) and `sendSystemMessage`.
+- **Config:** `defineListAllowEmpty` for lists that may be empty. Two config options with the same leaf name share one translation key (`fusionfactions.configuration.<name>`).
+- **GameTests:** the framework's own test block sits at the test's origin; keep things that fall from the sky off that column.
+
 ### Reference code
 
 - **Mekanism `26.3` branch** (MIT): <https://github.com/mekanism/Mekanism/tree/26.3>. Real-world code for block entities, menus and screens, energy, models and data generation on this exact version.
@@ -651,6 +663,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | OD-28 → D53, D54 | Cooldown, interceptor, shooting down, and a radar that reports the launch area to the placer's team | Owner |
 | 2026-10-08 | D55–D59 | Launcher for I–II and silo for III; up-then-down flight; tier III crate-only; anyone can use the blocks; FE with `requirePower` off by default | Owner |
 | 2026-10-08 | Phase 2 spec | Numbers and details in §6.4–§6.10 (radii, flight speed, cooldowns, health, silo shape, power costs). *Provisional* until the Phase 2 playtests. | Agent |
+| 2026-10-08 | M7 details | The launcher needs open sky above it. Blast model: rays lose 1.3 strength per block of air and a quarter of a block's blast resistance per block (vanilla loses about 3.3 times the resistance), so explosive missiles reach about 5 / 7 / 9 blocks in the open and dig a few blocks into stone. Entity damage uses vanilla's formula over twice the reach; the damage type is in `minecraft:is_explosion`, so Blast Protection counts. Hard blocks: blast resistance 600 and up. Blasts break at most 1024 blocks per tick. The flying missile is drawn 3 times the item's size (about 5.5 blocks long) with a continuous smoke trail. Missiles stack to 4. Recipes: designator from a spyglass, redstone, iron and a fusion core; launcher from barrels, obsidian, iron blocks, a fusion core and a dispenser; explosive missile I from TNT, iron, gunpowder and a fusion core; II from missile I, TNT, diamonds and a fusion core. *Provisional.* | Agent |
 
 ---
 
