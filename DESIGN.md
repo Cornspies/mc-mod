@@ -1,7 +1,7 @@
 # Fusion Factions — Design Document
 
 > **Mod ID:** `fusionfactions` · **Package:** `com.cornspies.fusionfactions` · **License:** MIT
-> **Status:** Draft v0.1 · **Last updated:** 2026-10-08
+> **Status:** Phase 1 released as v0.1.0 · **Last updated:** 2026-10-08
 > **Audience:** the project owner and the coding agent (Claude Code). Read together with `CLAUDE.md`.
 
 ---
@@ -400,7 +400,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | **M3 Weapon roster** ✅ *done 2026-10-08* | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
 | **M4 Weapon modification** ✅ *done 2026-10-08* | Weapon workbench block, menu and screen; 21 upgrade parts; installed-parts data component and effective stats; visible parts on the weapon models; tooltips; game tests (§4.5, D30–D36). |
 | **M5 Aiming and controls** ✅ *done 2026-10-08* | Left click fires (trigger packet, server-side firing), right click aims down sights for every weapon, aimed spread and movement, sight upgrade with three tiers and reticles, sniper scope on right click with 3× / 6× (D37–D42). |
-| **M6 Integration & polish** 🟡 *implemented 2026-10-08; two-player playtest and release pending* | Weapons and upgrade parts in crate loot (D43, D44), config documentation (`docs/SERVER.md`, README), version 0.1.0, two-player playtest on a dedicated server, release v0.1.0. No claims integration (D45). |
+| **M6 Integration & polish** ✅ *done 2026-10-08, released as v0.1.0* | Weapons and upgrade parts in crate loot (D43, D44), config documentation (`docs/SERVER.md`, README), version 0.1.0, two-player playtest on a dedicated server, release v0.1.0. No claims integration (D45). |
 
 ---
 
@@ -547,6 +547,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | OD-19 → D43, D44 | Crates hold only mod items; heavy weapons are a chance in legendary crates | Owner |
 | 2026-10-08 | OD-22 → D45 | No claims integration for now | Owner |
 | 2026-10-08 | M6 loot details | Pool layout and odds as in §5.6 (50% heavy weapon in legendary crates, 50% sidearm in common, 70% weapon in rare). Rare crates may add a tier I part, legendary crates hold tier II parts besides tier III. *Provisional.* | Agent |
+| 2026-10-08 | M6 done, v0.1.0 | Two-player playtest passed. Phase 1 released as v0.1.0. | Owner |
 
 ---
 
