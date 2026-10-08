@@ -26,6 +26,10 @@ import net.neoforged.neoforge.event.EventHooks;
 public class BulletEntity extends Projectile {
     private static final double GRAVITY = 0.01;
     private static final int TRAIL_PARTICLES_PER_TICK = 3;
+    // Same as vanilla arrows.
+    private static final double WATER_INERTIA = 0.6;
+    // Blocks per tick. Slower bullets are spent and disappear.
+    private static final double MIN_SPEED = 0.25;
 
     private float damage;
     private int lifetimeTicks = 60;
@@ -62,17 +66,22 @@ public class BulletEntity extends Projectile {
         if (this.isRemoved()) {
             return;
         }
+        boolean inWater = this.isInWater();
         if (this.level().isClientSide()) {
             for (int i = 0; i < TRAIL_PARTICLES_PER_TICK; i++) {
                 double part = i / (double) TRAIL_PARTICLES_PER_TICK;
-                this.level().addParticle(ParticleTypes.ELECTRIC_SPARK,
+                this.level().addParticle(inWater ? ParticleTypes.BUBBLE : ParticleTypes.ELECTRIC_SPARK,
                         this.getX() + movement.x * part, this.getY() + movement.y * part, this.getZ() + movement.z * part, 0.0, 0.0, 0.0);
             }
         }
         this.setPos(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
         this.updateRotation();
+        if (inWater) {
+            // Water slows bullets like arrows, which limits the underwater range to about 9 blocks.
+            this.setDeltaMovement(this.getDeltaMovement().scale(WATER_INERTIA));
+        }
         this.applyGravity();
-        if (!this.level().isClientSide() && (this.tickCount > this.lifetimeTicks || this.isInWater())) {
+        if (!this.level().isClientSide() && (this.tickCount > this.lifetimeTicks || this.getDeltaMovement().lengthSqr() < MIN_SPEED * MIN_SPEED)) {
             this.discard();
         }
     }

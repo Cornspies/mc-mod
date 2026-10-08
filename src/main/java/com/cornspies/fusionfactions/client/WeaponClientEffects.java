@@ -21,6 +21,8 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 // timing from the same stats; the server alone decides what is actually fired and hit.
 public final class WeaponClientEffects {
     private static final double TRACER_RANGE = 48.0;
+    // Bullets slow down quickly in water (see BulletEntity), so the tracer is short there too.
+    private static final double TRACER_RANGE_UNDERWATER = 9.0;
     private static final double TRACER_STEP = 0.8;
 
     private static int cooldown;
@@ -65,8 +67,9 @@ public final class WeaponClientEffects {
         }
 
         // Tracer from the muzzle to whatever block the crosshair is on.
-        HitResult hit = player.pick(TRACER_RANGE, 1.0F, false);
-        Vec3 end = hit.getType() == HitResult.Type.MISS ? eye.add(look.scale(TRACER_RANGE)) : hit.getLocation();
+        double range = player.isUnderWater() ? TRACER_RANGE_UNDERWATER : TRACER_RANGE;
+        HitResult hit = player.pick(range, 1.0F, false);
+        Vec3 end = hit.getType() == HitResult.Type.MISS ? eye.add(look.scale(range)) : hit.getLocation();
         Vec3 path = end.subtract(muzzle);
         double length = path.length();
         for (double distance = 1.0; distance < length; distance += TRACER_STEP) {

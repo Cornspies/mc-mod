@@ -118,7 +118,7 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 - **Firing:** use the vanilla item-use flow (right-click starts using the item; while held, the use-tick callback runs on the server). The **server** spawns projectiles at the weapon's fire rate. Weapons are either semi-auto (one shot per click) or full-auto (fires while held). Verify the exact method names in 26.3; don't rely on memory.
 - **Ammo:** the magazine count is a data component on the weapon. **Reload** is a keybind (default **R**). The client sends a "reload" intent and the server consumes ammo from the player's inventory over the reload time. *(One shared ammo item: D20.)*
   - **26.3 caveat:** input moved from GLFW to SDL and key codes changed. Define default keys with the `InputConstants` constants, not raw numbers.
-- **Projectiles:** fast server-side entities with an owner and slight gravity. Hits apply the custom damage type (§3.2.4). *(Projectile entities: D19.)*
+- **Projectiles:** fast server-side entities with an owner and slight gravity. Hits apply the custom damage type (§3.2.4). *(Projectile entities: D19.)* In water they slow down like arrows, which gives roughly 9 blocks of range (§10).
 - **Spread** is calculated on the server. **Recoil** is a cosmetic camera kick on the client.
 - **Invulnerability frames:** vanilla's hurt cooldown would swallow rapid-fire hits, so our damage type bypasses it *(D21)*.
 - **HUD:** ammo counter while a weapon is held. The item durability bar shows the magazine level (Fusion Warfare did this).
@@ -369,6 +369,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | OD-12 → D22 | Server authority plus a cosmetic client tracer | Owner |
 | 2026-10-08 | M2 weapon handling | Test pistol: 5 HP per hit, 12 rounds, 4 ticks between shots, 6 ticks per round to reload (placeholder until OD-06). New weapons come loaded. Firing an empty magazine starts a reload. Holding the trigger doesn't interrupt a reload, pulling it again does, and switching items cancels it (rounds already loaded stay). Creative players reload for free, like bows. *Provisional.* | Agent |
 | 2026-10-08 | M2 bullet damage | The bullet damage type is also tagged `minecraft:is_projectile`, so Projectile Protection reduces it. Vanilla knockback is kept for now; with the i-frame bypass, rapid fire knocks targets back a lot. Revisit both in the M3 balance pass (OD-06). Bullets are not saved with chunks. *Provisional.* | Agent |
+| 2026-10-08 | Bullets underwater | Bullets keep flying in water but slow down like arrows (0.6 drag per tick) and disappear once spent, about 9 blocks of range. Same damage on a hit. | Owner |
 
 ---
 

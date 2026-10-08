@@ -42,16 +42,21 @@ public final class WeaponGameTests {
 
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> PISTOL_HITS_TARGET =
             TEST_FUNCTIONS.register("pistol_hits_target", () -> WeaponGameTests::pistolHitsTarget);
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> PISTOL_HITS_TARGET_UNDERWATER =
+            TEST_FUNCTIONS.register("pistol_hits_target_underwater", () -> WeaponGameTests::pistolHitsTargetUnderwater);
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> PISTOL_RANGE_UNDERWATER =
+            TEST_FUNCTIONS.register("pistol_range_underwater", () -> WeaponGameTests::pistolRangeUnderwater);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> RELOAD_CONSUMES_AMMO =
             TEST_FUNCTIONS.register("reload_consumes_ammo", () -> WeaponGameTests::reloadConsumesAmmo);
 
     private static final int MAX_TICKS = 100;
-    // The firing test uses a 7-block lane outside the 1x1x1 structure, so keep other tests away from it.
-    private static final int PADDING = 8;
+    // The firing tests use lanes of up to 15 blocks outside the 1x1x1 structure, so keep other tests away from them.
+    private static final int PADDING = 16;
 
     public static void registerTests(RegisterGameTestsEvent event) {
         Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(FusionFactions.id("default"));
-        for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function : List.of(PISTOL_HITS_TARGET, RELOAD_CONSUMES_AMMO)) {
+        for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function
+                : List.of(PISTOL_HITS_TARGET, PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, RELOAD_CONSUMES_AMMO)) {
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
             event.registerTest(function.getId(), new FunctionGameTestInstance(function.key(), data));
@@ -60,14 +65,40 @@ public final class WeaponGameTests {
 
     // One shot from the pistol hurts a pig 5.5 blocks away, with the right damage attribution.
     private static void pistolHitsTarget(GameTestHelper helper) {
-        for (int z = 0; z <= 6; z++) {
+        assertShotHits(helper, shootAtPig(helper, 6, false));
+    }
+
+    // Underwater, bullets slow down but still reach a pig 5.5 blocks away.
+    private static void pistolHitsTargetUnderwater(GameTestHelper helper) {
+        assertShotHits(helper, shootAtPig(helper, 6, true));
+    }
+
+    // Underwater, a pig 13.5 blocks away is out of range.
+    private static void pistolRangeUnderwater(GameTestHelper helper) {
+        Shot shot = shootAtPig(helper, 14, true);
+        helper.runAfterDelay(40, () -> {
+            helper.assertTrue(shot.pig().getHealth() >= shot.pig().getMaxHealth(), "the pig should be out of range underwater");
+            helper.succeed();
+        });
+    }
+
+    private record Shot(Player player, Pig pig) {
+    }
+
+    // Builds a lane, puts a pig `distance` blocks away and fires one pistol shot at its middle.
+    private static Shot shootAtPig(GameTestHelper helper, int distance, boolean underwater) {
+        for (int z = 0; z <= distance; z++) {
             helper.setBlock(0, 0, z, Blocks.STONE);
+            if (underwater) {
+                helper.setBlock(0, 1, z, Blocks.WATER);
+                helper.setBlock(0, 2, z, Blocks.WATER);
+            }
             // The runner only keeps the 1x1x1 structure's chunk active. Bullets freeze in chunks that
             // don't tick, so force-load the lane. The runner un-forces all chunks after the batch.
             BlockPos lane = helper.absolutePos(new BlockPos(0, 0, z));
             helper.getLevel().setChunkForced(SectionPos.blockToSectionCoord(lane.getX()), SectionPos.blockToSectionCoord(lane.getZ()), true);
         }
-        Pig pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(0, 1, 6));
+        Pig pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(0, 1, distance));
         Player player = helper.makeMockServerPlayer(GameType.SURVIVAL);
 
         // Aim from where the bullet starts (just below the eyes) at the middle of the pig.
@@ -80,9 +111,13 @@ public final class WeaponGameTests {
 
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.PISTOL.get()));
         player.getMainHandItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+        return new Shot(player, pig);
+    }
 
+    private static void assertShotHits(GameTestHelper helper, Shot shot) {
+        Pig pig = shot.pig();
         helper.succeedWhen(() -> {
-            helper.assertTrue(WeaponItem.getAmmo(player.getMainHandItem()) == Weapons.PISTOL.magazineSize() - 1, "one round should be used");
+            helper.assertTrue(WeaponItem.getAmmo(shot.player().getMainHandItem()) == Weapons.PISTOL.magazineSize() - 1, "one round should be used");
             helper.assertTrue(pig.getHealth() <= pig.getMaxHealth() - Weapons.PISTOL.damage() + 0.01F, "the pig should take one bullet of damage");
             DamageSource source = pig.getLastDamageSource();
             if (source == null) {
@@ -90,7 +125,7 @@ public final class WeaponGameTests {
                 return;
             }
             helper.assertTrue(source.is(ModDamageTypes.BULLET), "damage should use the bullet damage type");
-            helper.assertTrue(source.getEntity() == player, "the shooter should be the causing entity");
+            helper.assertTrue(source.getEntity() == shot.player(), "the shooter should be the causing entity");
             helper.assertTrue(source.getDirectEntity() instanceof BulletEntity, "the bullet should be the direct entity");
         });
     }
