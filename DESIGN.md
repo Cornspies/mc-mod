@@ -61,7 +61,7 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 | D25 | **Headshots do bonus damage** | Was OD-11. |
 | D26 | Pistol, auto pistol, SMG and shotgun are **craftable**; the **sniper and gatling are crate-only** by default, with a config option to enable their recipes | Was OD-08. |
 | D27 | Recipes use **vanilla items plus our own parts** (barrel, core, grip) | Was OD-09. |
-| D28 | **Hip-fire** for all weapons; the **sniper has a zoom key** that cycles zoom levels | Was OD-10. |
+| D28 | **Hip-fire** for all weapons; the **sniper has a zoom key** that cycles zoom levels | Was OD-10. Superseded by D38–D41. |
 | D29 | **Static 3D item models** with a simple held pose, no animations, in v1 | Was OD-13. |
 | D30 | Phase 1 adds **weapon modification**: a craftable **weapon workbench** with the weapon in a center field and **upgrade fields around it, depending on the weapon** | Owner idea, 2026-10-08. Spec in §4.5. |
 | D31 | Upgrades are **tiered pure upgrades**: tiers **I / II / III**, each improves one stat with no downside | Higher tiers are rarer. |
@@ -70,6 +70,12 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 | D34 | Installed parts are **visible on the weapon model** | First and third person, so enemies can read a loadout. |
 | D35 | Parts can be **removed at the workbench and are returned** intact. Installing is **free** apart from the part | |
 | D36 | Weapon modification is the **new M4**, before crate loot and the v0.1.0 release (now M5) | So the crate loot (OD-19) includes parts from the start. |
+| D37 | **Left click (attack) fires**; with a weapon in hand it no longer hits or mines | Owner, 2026-10-08. The client sends trigger pressed / released only. |
+| D38 | **Every weapon aims down sights** while **right click is held**: the weapon moves to the middle of the view, the crosshair goes, the view zooms a little (1.1×) | Owner, 2026-10-08. Like first-person shooters. |
+| D39 | **Aiming halves the spread and slows the player** (no sprinting). The **sniper is inaccurate from the hip** and only fully accurate when scoped | Owner, 2026-10-08. |
+| D40 | **Sights are an upgrade field** on every weapon but the sniper, tiered: **I red dot (1.25×), II holographic (1.5×), III 2× optic**, each with its own reticle | Owner, 2026-10-08. |
+| D41 | The **sniper scopes in** with right click; **zoom key and mouse wheel** switch 3× / 6× while scoped | Owner, 2026-10-08. |
+| D42 | Aiming and controls are the **new M5**, before crate loot and the release (now M6) | Agent, following D36's reasoning: sights go into the crate loot. *Provisional.* |
 
 ---
 
@@ -129,7 +135,7 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 
 ### 4.2 Behaviour (baseline)
 
-- **Firing:** use the vanilla item-use flow (right-click starts using the item; while held, the use-tick callback runs on the server). The **server** spawns projectiles at the weapon's fire rate. Weapons are either semi-auto (one shot per click) or full-auto (fires while held). Verify the exact method names in 26.3; don't rely on memory.
+- **Firing** *(D37)*: the attack button (left click, or whatever it is bound to) is the trigger. The client sends only "trigger pressed" / "trigger released" (`TriggerPayload`); the **server** fires on its own ticks while the trigger is held (`Trigger`), at the weapon's fire rate. Weapons are either semi-auto (one shot per pull) or full-auto (fires while held). With a weapon in hand the attack button no longer hits or mines.
 - **Ammo:** the magazine count is a data component on the weapon. **Reload** is a keybind (default **R**). The client sends a "reload" intent and the server consumes ammo from the player's inventory over the reload time. *(One shared ammo item: D20.)*
   - **26.3 caveat:** input moved from GLFW to SDL and key codes changed. Define default keys with the `InputConstants` constants, not raw numbers.
 - **Projectiles:** fast server-side entities with an owner and slight gravity. Hits apply the custom damage type (§3.2.4). *(Projectile entities: D19.)* In water they slow down like arrows, which gives roughly 9 blocks of range, then curve down and sink harmlessly to the ground. A bullet that leaves the water keeps its lost speed and drops in a short arc (§10).
@@ -139,8 +145,14 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 - **Knockback:** a per-weapon value (§4.3); knockback resistance reduces it. Armor that reduces or removes it is OD-30.
 - **Headshots** *(D25)* do 1.5× damage. A hit counts as a headshot if it lands no more than 0.3 blocks below the target's eyes. The shooter hears a hit marker on every hit, and a different one for headshots.
 - **Armor piercing** *(D24)*: bullets ignore 30% of the armor's protection (the sniper 50%). Enchantments such as Protection and Projectile Protection still count in full.
-- **Aiming** *(D28)*: hip-fire for all weapons. In third person, players hold every weapon with both arms raised (the crossbow aiming pose). The sniper's zoom key (default **Z**) cycles off / 3× / 6× in first person. Zoom slows the mouse to match and shows a sniper scope: black around a round lens, with a duplex mil-dot reticle (thin crosshair, thick posts left, right and below, a red center dot) and the zoom level next to it. The vanilla crosshair and the held weapon are hidden while zoomed.
-- **Melee:** bashing with a gun does small damage. Optional.
+- **Aiming down sights** *(D38–D41)*: holding the use button (right click) aims. It is vanilla's item use, so the server knows who aims.
+  - First person: the weapon moves from the hip to the middle of the view in 4 ticks, so the iron sights (or the sight) line up with the middle of the screen. The crosshair is hidden; the view zooms 1.1×, or by the sight (§4.5). Each shot kicks the weapon back a little.
+  - Aiming halves the spread and slows the player to 80% of walking speed, no sprinting. The sniper has ±4° hip-fire spread and none when scoped.
+  - Sights show their reticle on the HUD at the middle of the screen, inside the sight's frame: a red dot (I), a red ring with a dot (II), an amber chevron with stadia lines (III).
+  - The sniper shows a scope instead: black around a round lens, a duplex mil-dot reticle and the zoom level. Zoom key (default **Z**) or mouse wheel switch 3× / 6×. The weapon is hidden while scoped.
+  - Zoom slows the mouse to match. Third person: players hold every weapon with both arms raised (the crossbow aiming pose).
+  - Right clicking a block that has an action (door, chest, workbench) still uses the block instead of aiming, as in vanilla.
+- **Melee:** none: the attack button fires (D37).
 
 ### 4.3 Roster (D23)
 
@@ -150,7 +162,7 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 | Auto pistol | Full-auto sidearm | Craftable |
 | SMG | Full-auto, close range | Craftable |
 | Shotgun | Pellet burst, close range | Craftable |
-| Sniper rifle | High damage, long range, zoom (D28) | **Crate-only** (recipe behind a config option) |
+| Sniper rifle | High damage, long range, scope (D41) | **Crate-only** (recipe behind a config option) |
 | Gatling gun | Spins up before firing, very high rate of fire | **Crate-only** (recipe behind a config option) |
 
 **Later candidates:** rocket launcher (explosive), grenades (frag / flash / gas). Fusion Warfare's numbers are in Appendix A.1 as inspiration only.
@@ -209,7 +221,7 @@ A sniper headshot kills an unarmored or iron-armored player in one hit.
 - The workbench stores nothing. Closing the menu returns anything still in it to the player, like a crafting table, so nothing can be stolen from it.
 - Every change happens through the server-side menu, which validates the weapon, the field and the part (§3.2).
 
-**Upgrade types and fields.** Field position in the 3×3 grid, where the part shows on the model, and the default effect per tier (I / II / III). The weapon is drawn with its muzzle to the left, like its inventory icon, so muzzle parts sit on the left and the stock on the right. The top-left field stays free for a later type. On the model, every part has a glowing accent in its tier color (blue / orange / red).
+**Upgrade types and fields.** Field position in the 3×3 grid, where the part shows on the model, and the default effect per tier (I / II / III). The weapon is drawn with its muzzle to the left, like its inventory icon, so muzzle parts sit on the left and the stock on the right. The sight sits on top, like on the gun. On the model, every part has a glowing accent in its tier color (blue / orange / red).
 
 | Type | Field | On the model | Effect per tier |
 |---|---|---|---|
@@ -218,25 +230,26 @@ A sniper headshot kills an unarmored or iron-armored player in one hit.
 | Noise (suppressor) | left | suppressor on the muzzle | fire sound carries 25 / 50 / 75% less far |
 | Recoil | right | recoil pad (a brace on the pistols) | −20 / −35 / −50% camera kick |
 | Reload speed | bottom right | magazine coupler | −15 / −30 / −45% reload time per round |
-| Accuracy | top | sight on top | −20 / −35 / −50% spread |
+| Accuracy | top left | stabilizer under the barrel | −20 / −35 / −50% spread |
+| Sight (D40) | top | I red dot, II holographic, III 2× optic, on the top rail | zoom while aiming 1.25× / 1.5× / 2× (+25 / +50 / +100%) |
 | Range | bottom left | accelerator rings on the barrel | +15 / +30 / +50% bullet speed, so the same lifetime carries that much further, with less drop |
 
-**Fields per weapon (default).** Upgrades that would do nothing are left out, e.g. accuracy on the sniper, which has no spread.
+**Fields per weapon (default).** Upgrades that would do nothing are left out, e.g. a sight on the sniper, which has its scope.
 
-| Weapon | Penetration | Magazine | Noise | Recoil | Reload | Accuracy | Range |
-|---|---|---|---|---|---|---|---|
-| Pistol | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ |
-| Auto pistol | | ✓ | ✓ | ✓ | ✓ | ✓ | |
-| SMG | | ✓ | ✓ | ✓ | ✓ | ✓ | |
-| Shotgun | | ✓ | | ✓ | ✓ | ✓ | ✓ |
-| Sniper rifle | ✓ | ✓ | ✓ | ✓ | ✓ | | ✓ |
-| Gatling gun | ✓ | ✓ | | ✓ | ✓ | ✓ | |
+| Weapon | Penetration | Magazine | Noise | Recoil | Reload | Accuracy | Range | Sight |
+|---|---|---|---|---|---|---|---|---|
+| Pistol | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ | ✓ |
+| Auto pistol | | ✓ | ✓ | ✓ | ✓ | ✓ | | ✓ |
+| SMG | | ✓ | ✓ | ✓ | ✓ | ✓ | | ✓ |
+| Shotgun | | ✓ | | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Sniper rifle | ✓ | ✓ | ✓ | ✓ | ✓ | | ✓ | |
+| Gatling gun | ✓ | ✓ | | ✓ | ✓ | ✓ | | ✓ |
 
-**Parts** are items, one per type and tier (7 × 3 = 21), named like "Magazine Upgrade II". They come only from supply crates (D33). Proposal for OD-19: tier I mostly in common crates, tier II in rare, tier III in legendary.
+**Parts** are items, one per type and tier (8 × 3 = 24), named like "Magazine Upgrade II"; the sights are "Red Dot Sight", "Holographic Sight" and "2x Optic". They come only from supply crates (D33). Proposal for OD-19: tier I mostly in common crates, tier II in rare, tier III in legendary.
 
 **Stats.** The installed parts are a data component on the weapon (`fusionfactions:upgrades`, type → tier). The server computes the effective stats from the base stats in `Weapons` plus the parts (`UpgradeRules`); the client uses the same calculation for cosmetic effects, the ammo HUD and tooltips. A weapon's tooltip lists its parts. Taking out a magazine upgrade drops the rounds that no longer fit.
 
-**Tuning (owner request).** The tier values and the fields per weapon are in the synced server config, section `[weaponUpgrades]` of `config/fusionfactions-synced.toml` (per world: `<world>/syncedconfig/`). Clients get the values when they join. Restart the server after editing. A part whose type is removed from a weapon's list stays on the weapon, shown as "no effect on this server", and can still be taken out at the workbench. The defaults live in `UpgradeType` (values) and `UpgradeConfig` (fields).
+**Tuning (owner request).** The tier values and the fields per weapon are in the synced server config, section `[weaponUpgrades]` of `config/fusionfactions-synced.toml` (per world: `<world>/syncedconfig/`). Clients get the values when they join. Restart the server after editing. A config written by an older version keeps its old field lists: when a new upgrade type is added (like `sight`), add it to the lists by hand or delete the `[weaponUpgrades.fields]` section to get the new defaults. A part whose type is removed from a weapon's list stays on the weapon, shown as "no effect on this server", and can still be taken out at the workbench. The defaults live in `UpgradeType` (values) and `UpgradeConfig` (fields).
 
 **Noise and hearing range.** Every weapon has a hearing range (48 blocks; the sniper 96). Shots are sent to players within that range by our own packet, and the sound fades out at that distance. The suppressor shortens the range.
 
@@ -332,13 +345,13 @@ None open. All v1 weapon decisions are in §2 (D19–D29); armor against weapons
 
 | ID | Question | Options | Recommendation | Blocks |
 |---|---|---|---|---|
-| OD-19 | Loot contents per tier | — | Define once weapons and upgrade parts exist. Parts: tier I in common, II in rare, III in legendary crates (§4.5) | M5 |
+| OD-19 | Loot contents per tier | — | Define once weapons and upgrade parts exist. Parts: tier I in common, II in rare, III in legendary crates (§4.5) | M6 |
 
 ### Server and faction
 
 | ID | Question | Options | Recommendation | Blocks |
 |---|---|---|---|---|
-| OD-22 | Team and claims mod | Open Parties and Claims (OPAC) / other / none | OPAC as an optional integration. NeoForge 26.3 beta builds exist (latest 0.32.8, 2026-10-05) | M5 |
+| OD-22 | Team and claims mod | Open Parties and Claims (OPAC) / other / none | OPAC as an optional integration. NeoForge 26.3 beta builds exist (latest 0.32.8, 2026-10-05) | M6 |
 | OD-23 | Raid rules | Always raidable / raid windows ("War Day", an idea from the original's TODO list) / offline protection | Decide before Phase 2 | Phase 2 |
 
 ### Phase 2
@@ -370,8 +383,9 @@ The supply crate comes first because it is self-contained and proves out the sha
 | **M1 Supply crate MVP** ✅ *done 2026-10-08* | Crate block and block entity, three rarity loot tables (placeholder vanilla loot), falling-crate entity, scheduler with SavedData, location picking, announcements and countdown, chunk ticket, despawn, admin commands, server config. |
 | **M2 Weapon framework** ✅ *done 2026-10-08* | Weapon base item, central stats record, ammo item, ammo/reload data components, reload keybind and packet, projectile entity, custom damage type, placeholder sounds, ammo HUD. One working test gun. |
 | **M3 Weapon roster** ✅ *done 2026-10-08* | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
-| **M4 Weapon modification** 🟡 *implemented 2026-10-08; two-player test pending* | Weapon workbench block, menu and screen; 21 upgrade parts; installed-parts data component and effective stats; visible parts on the weapon models; tooltips; game tests (§4.5, D30–D36). |
-| **M5 Integration & polish** | Weapons and upgrade parts in crate loot (OD-19), optional OPAC integration (OD-22), config documentation, two-player playtest on a dedicated server, release v0.1.0. |
+| **M4 Weapon modification** ✅ *done 2026-10-08* | Weapon workbench block, menu and screen; 21 upgrade parts; installed-parts data component and effective stats; visible parts on the weapon models; tooltips; game tests (§4.5, D30–D36). |
+| **M5 Aiming and controls** 🟡 *implemented 2026-10-08; two-player test pending* | Left click fires (trigger packet, server-side firing), right click aims down sights for every weapon, aimed spread and movement, sight upgrade with three tiers and reticles, sniper scope on right click with 3× / 6× (D37–D42). |
+| **M6 Integration & polish** | Weapons and upgrade parts in crate loot (OD-19), optional OPAC integration (OD-22), config documentation, two-player playtest on a dedicated server, release v0.1.0. |
 
 ---
 
@@ -440,6 +454,13 @@ The supply crate comes first because it is self-contained and proves out the sha
 - **Config lists:** `defineList(path, default, newElement, validator, ModConfigSpec.Range.of(n, n))` checks the list length. Values can be read before the config is loaded through `getDefault()` (check `SPEC.isLoaded()`).
 - **Block loot:** `BlockLootSubProvider` needs `getKnownBlocks()` overridden to the mod's own blocks. Its constructor takes the feature flags (`FeatureFlags.REGISTRY.allFlags()`).
 - **GameTests:** `makeMockServerPlayer` players have no connection, so anything that sends them packets (e.g. putting items back in their inventory) crashes. Mark them removed to take the "drop at their feet" path instead.
+### Learned while building M5 (verified against 26.3 sources)
+
+- **Attack button:** `InputEvent.InteractionKeyMappingTriggered` (with `isAttack()`) fires for both the first click and continued mining; cancel it and `setSwingHand(false)` to stop hitting, mining and swinging. Read the key with `options.keyAttack.isDown()`. While the player uses an item, vanilla already skips mining and swallows attack clicks.
+- **First-person item position:** `IClientItemExtensions.applyForgeHandTransform` replaces vanilla's arm transform and swing (return true). The item is then drawn at hand + display translation + scale × (model point / 16 − 0.5); the hand renders with a fixed 70° FOV, unaffected by zoom.
+- **Renamed in 26.x:** `PlayerRenderState` is in `net.minecraft.client.renderer.state.level`; the open screen is `Minecraft.gui.screen()`.
+- **Client resources:** reload listeners register through `AddClientReloadListenersEvent.addListener(id, listener)`.
+- **Non-saved player state:** a NeoForge `AttachmentType` without a serializer lives on the entity and is gone after death or logout.
 - If your knowledge stops around 1.21.1, also skim the 1.21.2 – 1.21.11 primers. Rendering, item models and GUIs changed a lot in that span.
 
 ### Reference code
@@ -502,6 +523,9 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | Upgrade tuning | Owner asked for easy tuning of the values and of which weapon accepts which upgrade. They are in the synced server config (`[weaponUpgrades]`), so no build is needed. Weapon base stats stay in code (OD-29 unchanged). | Owner / Agent |
 | 2026-10-08 | M4 details | Workbench recipe: iron, fusion core, barrel, crafting table, grip (`IFI / BCG / III`). Parts stack to 16. Taking out a magazine upgrade drops the rounds that no longer fit. Range raises bullet speed only (range follows). Part names are colored by tier. Parts of a type the weapon no longer accepts stay on it, without effect. *Provisional.* | Agent |
 | 2026-10-08 | Gunshot range | Found while building the suppressor: gunshots only reached players within 16 blocks (vanilla's limit for normal sounds). Shots now carry 48 blocks (sniper 96), the distances `sounds.json` already intended, and fade out there. *Provisional.* | Agent |
+| 2026-10-08 | M4 done | Two-player test passed. | Owner |
+| 2026-10-08 | D37–D41 | Left click fires; right click aims down sights for every weapon; aiming halves spread and slows; tiered sights as an upgrade field (not on the sniper); sniper scope zoom on the zoom key and mouse wheel | Owner |
+| 2026-10-08 | M5 details | Aiming takes 4 ticks; without a sight it zooms 1.1×; while aiming players move at 80% of walking speed. The sight field takes the top of the grid and accuracy moves to the top-left field, as a stabilizer under the barrel. Every gun but the sniper got iron sights. A shot kicks the weapon back a little. *Provisional.* | Agent |
 
 ---
 
