@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 
 import com.cornspies.fusionfactions.config.ServerConfig;
 import com.cornspies.fusionfactions.config.StartupConfig;
+import com.cornspies.fusionfactions.gametest.CrateLootGameTests;
 import com.cornspies.fusionfactions.gametest.TriggerGameTests;
 import com.cornspies.fusionfactions.gametest.UpgradeGameTests;
 import com.cornspies.fusionfactions.gametest.WeaponGameTests;
@@ -54,6 +55,7 @@ public class FusionFactions {
         WeaponGameTests.TEST_FUNCTIONS.register(modEventBus);
         UpgradeGameTests.TEST_FUNCTIONS.register(modEventBus);
         TriggerGameTests.TEST_FUNCTIONS.register(modEventBus);
+        CrateLootGameTests.TEST_FUNCTIONS.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.SYNCED, ServerConfig.SPEC);
         modContainer.registerConfig(ModConfig.Type.STARTUP, StartupConfig.SPEC);

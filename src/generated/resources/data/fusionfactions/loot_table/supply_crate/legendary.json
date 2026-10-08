@@ -9,101 +9,130 @@
             "type": "minecraft:set_count",
             "count": {
               "type": "minecraft:uniform",
-              "max": 6,
-              "min": 3
+              "max": 64,
+              "min": 48
             }
           },
-          "name": "minecraft:diamond",
-          "weight": 8
+          "name": "fusionfactions:ammo"
+        }
+      ],
+      "rolls": 1
+    },
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:penetration_upgrade_3"
         },
         {
           "type": "minecraft:item",
-          "modifier": {
-            "type": "minecraft:set_count",
-            "count": {
-              "type": "minecraft:uniform",
-              "max": 6,
-              "min": 3
-            }
-          },
-          "name": "minecraft:golden_apple",
-          "weight": 8
+          "name": "fusionfactions:magazine_upgrade_3"
         },
         {
           "type": "minecraft:item",
-          "modifier": {
-            "type": "minecraft:set_count",
-            "count": {
-              "type": "minecraft:uniform",
-              "max": 8,
-              "min": 4
-            }
-          },
-          "name": "minecraft:ender_pearl",
-          "weight": 6
+          "name": "fusionfactions:noise_upgrade_3"
         },
         {
           "type": "minecraft:item",
-          "modifier": {
-            "type": "minecraft:set_count",
-            "count": {
-              "type": "minecraft:uniform",
-              "max": 16,
-              "min": 8
-            }
-          },
-          "name": "minecraft:experience_bottle",
-          "weight": 6
+          "name": "fusionfactions:recoil_upgrade_3"
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:diamond_helmet",
-          "weight": 4
+          "name": "fusionfactions:reload_upgrade_3"
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:diamond_chestplate",
-          "weight": 4
+          "name": "fusionfactions:accuracy_upgrade_3"
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:diamond_leggings",
-          "weight": 4
+          "name": "fusionfactions:range_upgrade_3"
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:diamond_boots",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "modifier": {
-            "type": "minecraft:set_count",
-            "count": {
-              "type": "minecraft:uniform",
-              "max": 2,
-              "min": 1
-            }
-          },
-          "name": "minecraft:netherite_scrap",
-          "weight": 3
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:totem_of_undying",
-          "weight": 2
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:enchanted_golden_apple",
-          "weight": 2
+          "name": "fusionfactions:sight_upgrade_3"
         }
       ],
       "rolls": {
         "type": "minecraft:uniform",
-        "max": 8,
-        "min": 6
+        "max": 2,
+        "min": 1
       }
+    },
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:penetration_upgrade_2"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:magazine_upgrade_2"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:noise_upgrade_2"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:recoil_upgrade_2"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:reload_upgrade_2"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:accuracy_upgrade_2"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:range_upgrade_2"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:sight_upgrade_2"
+        }
+      ],
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 2,
+        "min": 1
+      }
+    },
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:sniper_rifle"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:gatling_gun"
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 2
+        }
+      ],
+      "rolls": 1
+    },
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:smg"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:shotgun"
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 4
+        }
+      ],
+      "rolls": 1
     }
   ],
   "random_sequence": "fusionfactions:supply_crate/legendary"

@@ -9,64 +9,28 @@
             "type": "minecraft:set_count",
             "count": {
               "type": "minecraft:uniform",
-              "max": 6,
-              "min": 2
+              "max": 32,
+              "min": 16
             }
           },
-          "name": "minecraft:bread",
-          "weight": 10
-        },
+          "name": "fusionfactions:ammo"
+        }
+      ],
+      "rolls": 1
+    },
+    {
+      "entries": [
         {
           "type": "minecraft:item",
           "modifier": {
             "type": "minecraft:set_count",
             "count": {
               "type": "minecraft:uniform",
-              "max": 5,
-              "min": 2
+              "max": 2,
+              "min": 1
             }
           },
-          "name": "minecraft:cooked_beef",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "modifier": {
-            "type": "minecraft:set_count",
-            "count": {
-              "type": "minecraft:uniform",
-              "max": 6,
-              "min": 2
-            }
-          },
-          "name": "minecraft:iron_ingot",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "modifier": {
-            "type": "minecraft:set_count",
-            "count": {
-              "type": "minecraft:uniform",
-              "max": 16,
-              "min": 8
-            }
-          },
-          "name": "minecraft:arrow",
-          "weight": 8
-        },
-        {
-          "type": "minecraft:item",
-          "modifier": {
-            "type": "minecraft:set_count",
-            "count": {
-              "type": "minecraft:uniform",
-              "max": 4,
-              "min": 2
-            }
-          },
-          "name": "minecraft:golden_carrot",
-          "weight": 6
+          "name": "fusionfactions:barrel"
         },
         {
           "type": "minecraft:item",
@@ -78,35 +42,86 @@
               "min": 1
             }
           },
-          "name": "minecraft:ender_pearl",
-          "weight": 2
+          "name": "fusionfactions:fusion_core"
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:iron_sword",
-          "weight": 3
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:shield",
-          "weight": 3
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:iron_helmet",
-          "weight": 2
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:iron_chestplate",
-          "weight": 2
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "max": 2,
+              "min": 1
+            }
+          },
+          "name": "fusionfactions:grip"
         }
       ],
       "rolls": {
         "type": "minecraft:uniform",
-        "max": 6,
-        "min": 4
+        "max": 2,
+        "min": 1
       }
+    },
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:penetration_upgrade_1"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:magazine_upgrade_1"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:noise_upgrade_1"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:recoil_upgrade_1"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:reload_upgrade_1"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:accuracy_upgrade_1"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:range_upgrade_1"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:sight_upgrade_1"
+        }
+      ],
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 2,
+        "min": 1
+      }
+    },
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:pistol",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:auto_pistol",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 5
+        }
+      ],
+      "rolls": 1
     }
   ],
   "random_sequence": "fusionfactions:supply_crate/common"

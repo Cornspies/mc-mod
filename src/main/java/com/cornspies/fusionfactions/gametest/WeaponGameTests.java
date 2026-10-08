@@ -89,6 +89,7 @@ public final class WeaponGameTests {
                 BODY_SHOT_DAMAGE, HEADSHOT_DAMAGE, ARMOR_PIERCING, SHOTGUN_FIRES_PELLETS, WEAPON_RECIPES, RELOAD_CONSUMES_AMMO));
         functions.addAll(UpgradeGameTests.TESTS);
         functions.addAll(TriggerGameTests.TESTS);
+        functions.addAll(CrateLootGameTests.TESTS);
         for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function : functions) {
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);

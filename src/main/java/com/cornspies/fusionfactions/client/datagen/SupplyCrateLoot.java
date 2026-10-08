@@ -1,18 +1,23 @@
 package com.cornspies.fusionfactions.client.datagen;
 
+import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.supplydrop.CrateRarity;
+import com.cornspies.fusionfactions.weapon.upgrade.UpgradeType;
 
 import net.minecraft.data.loot.LootTableSubProvider;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.EmptyLootItem;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
-// Placeholder vanilla loot until the weapons exist. Final contents per tier are OD-19 (M4).
+// Supply crate loot (OD-19 → D43): only our own items. Every crate has ammo, weapon parts and upgrade
+// parts of its tier (tier I in common, II in rare, III in legendary crates); weapons are a chance, the
+// crate-only sniper and gatling only in legendary crates (D44). Each pool is one kind of loot, so the
+// odds stay readable. Servers can override the tables with a datapack (supply_crate/<rarity>).
 public class SupplyCrateLoot implements LootTableSubProvider {
     private final LootTableSubProvider.Context output;
 
@@ -23,47 +28,65 @@ public class SupplyCrateLoot implements LootTableSubProvider {
     @Override
     public void run() {
         this.output.accept(CrateRarity.COMMON.lootTable(), LootTable.lootTable()
-                .withPool(LootPool.lootPool()
-                        .setRolls(ContextIntProviders.between(4, 6))
-                        .add(item(Items.BREAD, 10, 2, 6))
-                        .add(item(Items.COOKED_BEEF, 10, 2, 5))
-                        .add(item(Items.IRON_INGOT, 10, 2, 6))
-                        .add(item(Items.ARROW, 8, 8, 16))
-                        .add(item(Items.GOLDEN_CARROT, 6, 2, 4))
-                        .add(item(Items.ENDER_PEARL, 2, 1, 2))
-                        .add(item(Items.IRON_SWORD, 3))
-                        .add(item(Items.SHIELD, 3))
-                        .add(item(Items.IRON_HELMET, 2))
-                        .add(item(Items.IRON_CHESTPLATE, 2))));
+                .withPool(single(item(ModItems.AMMO.get(), 1, 16, 32)))
+                .withPool(weaponParts(1, 2, 1, 2))
+                .withPool(upgrades(1, 1, 2))
+                // Half the common crates hold a sidearm.
+                .withPool(single(item(ModItems.PISTOL.get(), 3), item(ModItems.AUTO_PISTOL.get(), 2), nothing(5))));
 
         this.output.accept(CrateRarity.RARE.lootTable(), LootTable.lootTable()
-                .withPool(LootPool.lootPool()
-                        .setRolls(ContextIntProviders.between(5, 7))
-                        .add(item(Items.GOLDEN_APPLE, 8, 1, 3))
-                        .add(item(Items.IRON_INGOT, 8, 6, 12))
-                        .add(item(Items.DIAMOND, 6, 1, 3))
-                        .add(item(Items.ENDER_PEARL, 6, 2, 4))
-                        .add(item(Items.ARROW, 6, 16, 32))
-                        .add(item(Items.EXPERIENCE_BOTTLE, 6, 4, 8))
-                        .add(item(Items.IRON_CHESTPLATE, 4))
-                        .add(item(Items.IRON_LEGGINGS, 4))
-                        .add(item(Items.DIAMOND_SWORD, 3))
-                        .add(item(Items.CROSSBOW, 3))));
+                .withPool(single(item(ModItems.AMMO.get(), 1, 32, 48)))
+                .withPool(weaponParts(2, 3, 1, 3))
+                .withPool(upgrades(2, 1, 2))
+                // Half the time a tier I part on top.
+                .withPool(single(upgradeEntries(1, nothing(UpgradeType.values().length))))
+                // Most rare crates hold a weapon, usually a close-range one.
+                .withPool(single(item(ModItems.SMG.get(), 3), item(ModItems.SHOTGUN.get(), 3), item(ModItems.AUTO_PISTOL.get(), 1), nothing(3))));
 
         this.output.accept(CrateRarity.LEGENDARY.lootTable(), LootTable.lootTable()
-                .withPool(LootPool.lootPool()
-                        .setRolls(ContextIntProviders.between(6, 8))
-                        .add(item(Items.DIAMOND, 8, 3, 6))
-                        .add(item(Items.GOLDEN_APPLE, 8, 3, 6))
-                        .add(item(Items.ENDER_PEARL, 6, 4, 8))
-                        .add(item(Items.EXPERIENCE_BOTTLE, 6, 8, 16))
-                        .add(item(Items.DIAMOND_HELMET, 4))
-                        .add(item(Items.DIAMOND_CHESTPLATE, 4))
-                        .add(item(Items.DIAMOND_LEGGINGS, 4))
-                        .add(item(Items.DIAMOND_BOOTS, 4))
-                        .add(item(Items.NETHERITE_SCRAP, 3, 1, 2))
-                        .add(item(Items.TOTEM_OF_UNDYING, 2))
-                        .add(item(Items.ENCHANTED_GOLDEN_APPLE, 2))));
+                .withPool(single(item(ModItems.AMMO.get(), 1, 48, 64)))
+                .withPool(upgrades(3, 1, 2))
+                .withPool(upgrades(2, 1, 2))
+                // Half the legendary crates hold one of the crate-only heavy weapons (D44)...
+                .withPool(single(item(ModItems.SNIPER_RIFLE.get(), 1), item(ModItems.GATLING_GUN.get(), 1), nothing(2)))
+                // ...and some a close-range weapon as well.
+                .withPool(single(item(ModItems.SMG.get(), 1), item(ModItems.SHOTGUN.get(), 1), nothing(4))));
+    }
+
+    // One roll from the given entries.
+    private static LootPool.Builder single(LootPoolEntryContainer.Builder<?>... entries) {
+        LootPool.Builder pool = LootPool.lootPool().setRolls(ContextIntProviders.exactly(1));
+        for (LootPoolEntryContainer.Builder<?> entry : entries) {
+            pool.add(entry);
+        }
+        return pool;
+    }
+
+    // minRolls to maxRolls stacks of barrels, fusion cores and grips, each minCount to maxCount.
+    private static LootPool.Builder weaponParts(int minRolls, int maxRolls, int minCount, int maxCount) {
+        return LootPool.lootPool().setRolls(ContextIntProviders.between(minRolls, maxRolls))
+                .add(item(ModItems.BARREL.get(), 1, minCount, maxCount))
+                .add(item(ModItems.FUSION_CORE.get(), 1, minCount, maxCount))
+                .add(item(ModItems.GRIP.get(), 1, minCount, maxCount));
+    }
+
+    // minRolls to maxRolls upgrade parts of one tier, every type equally likely.
+    private static LootPool.Builder upgrades(int tier, int minRolls, int maxRolls) {
+        return single(upgradeEntries(tier)).setRolls(ContextIntProviders.between(minRolls, maxRolls));
+    }
+
+    private static LootPoolEntryContainer.Builder<?>[] upgradeEntries(int tier, LootPoolEntryContainer.Builder<?>... extra) {
+        UpgradeType[] types = UpgradeType.values();
+        LootPoolEntryContainer.Builder<?>[] entries = new LootPoolEntryContainer.Builder<?>[types.length + extra.length];
+        for (int i = 0; i < types.length; i++) {
+            entries[i] = item(ModItems.upgrade(types[i], tier).get(), 1);
+        }
+        System.arraycopy(extra, 0, entries, types.length, extra.length);
+        return entries;
+    }
+
+    private static LootPoolEntryContainer.Builder<?> nothing(int weight) {
+        return EmptyLootItem.emptyItem().setWeight(weight);
     }
 
     private static LootPoolEntryContainer.Builder<?> item(ItemLike item, int weight) {
