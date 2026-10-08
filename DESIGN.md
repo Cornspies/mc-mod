@@ -56,6 +56,13 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 | D20 | Ammo: **one shared ammo item** for every weapon | Was OD-05. |
 | D21 | Weapon damage **bypasses the hurt cooldown** (i-frames), via the `minecraft:bypasses_cooldown` damage-type tag on our damage type only | Was OD-07. Other damage keeps vanilla i-frames. |
 | D22 | Latency: **server authority plus a cosmetic client tracer** (muzzle flash, tracer, recoil) on the shooter's client | Was OD-12. |
+| D23 | v1 roster: **pistol, auto pistol, SMG, shotgun, sniper rifle, gatling gun** | Was OD-03. Rocket launcher and grenades later. |
+| D24 | Damage is **rebalanced around vanilla armor, with partial armor piercing**: bullets ignore part of the armor | Was OD-06. Numbers are in §4.3 and §10. |
+| D25 | **Headshots do bonus damage** | Was OD-11. |
+| D26 | Pistol, auto pistol, SMG and shotgun are **craftable**; the **sniper and gatling are crate-only** by default, with a config option to enable their recipes | Was OD-08. |
+| D27 | Recipes use **vanilla items plus our own parts** (barrel, core, grip) | Was OD-09. |
+| D28 | **Hip-fire** for all weapons; the **sniper has a zoom key** that cycles zoom levels | Was OD-10. |
+| D29 | **Static 3D item models** with a simple held pose, no animations, in v1 | Was OD-13. |
 
 ---
 
@@ -125,16 +132,18 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 - **Knockback:** vanilla knockback on hits for now; a per-weapon value from M3 on. Armor that reduces or removes it is OD-30.
 - **Melee:** bashing with a gun does small damage. Optional.
 
-### 4.3 Proposed roster (draft; final list is OD-03)
+### 4.3 Roster (D23)
 
-| Weapon | Role | Proposed source |
+| Weapon | Role | Source (D26) |
 |---|---|---|
 | Pistol | Semi-auto sidearm | Craftable |
+| Auto pistol | Full-auto sidearm | Craftable |
 | SMG | Full-auto, close range | Craftable |
 | Shotgun | Pellet burst, close range | Craftable |
-| Sniper rifle | High damage, long range, zoom | **Crate-only** |
+| Sniper rifle | High damage, long range, zoom (D28) | **Crate-only** (recipe behind a config option) |
+| Gatling gun | Spins up before firing, very high rate of fire | **Crate-only** (recipe behind a config option) |
 
-**Later candidates:** auto pistol, gatling gun (spins up before firing), rocket launcher (explosive), grenades (frag / flash / gas). Fusion Warfare's numbers are in Appendix A.1 as inspiration only; they need rebalancing (OD-06).
+**Later candidates:** rocket launcher (explosive), grenades (frag / flash / gas). Fusion Warfare's numbers are in Appendix A.1 as inspiration only; the M3 balance pass sets our own (D24).
 
 ### 4.4 Assets
 
@@ -231,13 +240,6 @@ What Fusion Warfare's missiles did, and what to avoid, is in Appendix A.3.
 
 | ID | Question | Options | Recommendation | Blocks |
 |---|---|---|---|---|
-| OD-03 | Weapon roster for v1 | See §4.3 | Pistol, SMG, shotgun, sniper; others later | M3 |
-| OD-06 | Damage scale and armor interaction | Keep the original's scale (12–60 HP per hit, far above vanilla) / rebalance around vanilla armor | Rebalance against target time-to-kill vs. diamond and netherite armor; armor applies | M3 |
-| OD-08 | How weapons are obtained | Craftable / crate-only, per weapon | Low tier craftable; sniper and future heavy weapons crate-only (config toggle) | M3 |
-| OD-09 | Recipe materials | Vanilla / own components / Mekanism parts | Vanilla plus a few own components (barrel, core, grip) | M3 |
-| OD-10 | Aiming UX | Zoom / aim-down-sights / crosshair style / scope levels | Hip-fire for all; sniper gets zoom levels | M3 |
-| OD-11 | Headshots / hit zones | Yes / no | No for v1 | M3 |
-| OD-13 | Art and animation depth | Static 3D item models / simple recoil and reload animations | Static models plus simple held pose for v1 | M3 |
 
 ### Supply crate
 
@@ -375,6 +377,14 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | Water exit | A bullet that has been in water keeps losing speed after it leaves the water (10% per tick) and uses the heavy water gravity, so it drops in a short arc. The more water it went through, the shorter the arc (about 15 / 9 / 5 blocks after 1 / 2 / 3 ticks in water). | Owner |
 | 2026-10-08 | Knockback | Vanilla knockback on bullet hits is fine for now. Knockback becomes a per-weapon value in the M3 balance pass. The owner also wants armor that reduces or removes knockback later (OD-30). | Owner |
 | 2026-10-08 | M1, M2 done | Two-player test on a dedicated server passed for both checklists. | Owner |
+| 2026-10-08 | OD-03 → D23 | Six weapons: pistol, auto pistol, SMG, shotgun, sniper, gatling | Owner |
+| 2026-10-08 | OD-06 → D24 | Rebalance around vanilla armor, with partial armor piercing | Owner |
+| 2026-10-08 | OD-11 → D25 | Headshot bonus | Owner |
+| 2026-10-08 | OD-08 → D26 | Low tier craftable, heavy weapons crate-only with a config toggle | Owner |
+| 2026-10-08 | D26 detail | "Heavy weapons" read as the sniper **and** the gatling (as in Fusion Warfare). *Provisional.* | Agent |
+| 2026-10-08 | OD-09 → D27 | Vanilla items plus own parts | Owner |
+| 2026-10-08 | OD-10 → D28 | Hip-fire, sniper zoom | Owner |
+| 2026-10-08 | OD-13 → D29 | Static 3D models | Owner |
 
 ---
 
