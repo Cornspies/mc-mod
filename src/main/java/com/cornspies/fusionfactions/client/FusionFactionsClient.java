@@ -27,6 +27,7 @@ public class FusionFactionsClient {
         modEventBus.addListener(FusionFactionsClient::registerRenderers);
         modEventBus.addListener(WeaponKeys::register);
         modEventBus.addListener(FusionFactionsClient::registerGuiLayers);
+        modEventBus.addListener(WeaponItemExtensions::register);
         NeoForge.EVENT_BUS.addListener(WeaponKeys::onClientTick);
         NeoForge.EVENT_BUS.addListener(WeaponClientEffects::onClientTick);
         NeoForge.EVENT_BUS.addListener(SniperScope::onClientTick);

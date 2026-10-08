@@ -1,5 +1,7 @@
 package com.cornspies.fusionfactions.client.datagen;
 
+import java.util.List;
+
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.registry.ModBlocks;
 import com.cornspies.fusionfactions.registry.ModItems;
@@ -10,6 +12,7 @@ import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.blockstates.PropertyDispatch;
+import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
@@ -38,10 +41,9 @@ public class ModModelProvider extends ModelProvider {
                             ModelTemplates.CUBE_BOTTOM_TOP.createWithSuffix(crate, suffix, textures, blockModels.modelOutput));
                 })));
 
-        // Placeholder sprites until the 3D weapon models exist (D29): every weapon uses the pistol's.
-        itemModels.generateFlatItem(ModItems.PISTOL.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
-        for (var weapon : java.util.List.of(ModItems.AUTO_PISTOL, ModItems.SMG, ModItems.SHOTGUN, ModItems.SNIPER_RIFLE, ModItems.GATLING_GUN)) {
-            itemModels.generateFlatItem(weapon.get(), ModItems.PISTOL.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        // Weapons use the 3D models from tools/weapon_models.py (D29), kept in src/main/resources.
+        for (var weapon : List.of(ModItems.PISTOL, ModItems.AUTO_PISTOL, ModItems.SMG, ModItems.SHOTGUN, ModItems.SNIPER_RIFLE, ModItems.GATLING_GUN)) {
+            itemModels.itemModelOutput.accept(weapon.get(), ItemModelUtils.plainModel(weapon.getId().withPrefix("item/")));
         }
         itemModels.generateFlatItem(ModItems.AMMO.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.BARREL.get(), ModelTemplates.FLAT_ITEM);
