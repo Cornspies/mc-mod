@@ -31,8 +31,9 @@ import net.neoforged.neoforge.client.settings.KeyConflictContext;
 
 // Aiming down sights (D38): while the use button is held with a weapon, in first person, the weapon moves
 // to the middle of the view (WeaponItemExtensions), the crosshair goes away and the view zooms in a
-// little, more with a sight (D40), which also shows its reticle. Scoped weapons (the sniper) show the
-// scope instead, at 3x or 6x; the zoom key or the mouse wheel switches between them (D41).
+// little. Once it's raised, a sight (D40) replaces the weapon with its sight picture: a thin frame with
+// a glowing reticle (red dot, holographic), or a scope view (2x optic). Scoped weapons (the sniper) show
+// their scope at 3x or 6x; the zoom key or the mouse wheel switches between them (D41).
 // The client side of aiming is only visual; the server knows from the item use who aims (spread, speed).
 public final class WeaponAim {
     private static final int[] SCOPE_LEVELS = { 3, 6 };
@@ -54,10 +55,22 @@ public final class WeaponAim {
     private static final int RETICLE_COLOR = 0xFF000000;
     private static final int CENTER_DOT_COLOR = 0xFFE01B1B;
     private static final int LABEL_COLOR = 0xFF9A9A9A;
-    // Sight reticles: red dot and holographic ring in red, the 2x optic's chevron in amber.
-    private static final int SIGHT_RED = 0xFFFF2A2A;
-    private static final int SIGHT_RED_GLOW = 0x55FF2A2A;
-    private static final int SIGHT_AMBER = 0xFFFFB428;
+    // Sight pictures (D40). Glowing reticles from tools/scope_overlay.py.
+    private static final Identifier RED_DOT = FusionFactions.id("textures/gui/sight_red_dot.png");
+    private static final Identifier HOLOGRAPHIC = FusionFactions.id("textures/gui/sight_holo.png");
+    private static final Identifier CHEVRON = FusionFactions.id("textures/gui/sight_chevron.png");
+    private static final int SIGHT_FRAME = 0xF0202328;
+    private static final int SIGHT_GLASS = 0x1466B8FF;
+    private static final int[] TIER_ACCENT = { 0xFF4678FF, 0xFFF0961E, 0xFFE63228 };
+    // The optic's scope view is a little smaller than the sniper's.
+    private static final float OPTIC_SIZE = 0.9F;
+    // Frames start a bit larger and settle into place when the sight comes up.
+    private static final float FRAME_OPEN_SCALE = 1.25F;
+
+    // What replaces the weapon once it's raised to the eye.
+    private enum Overlay {
+        NONE, RED_DOT, HOLOGRAPHIC, OPTIC, SCOPE
+    }
 
     public static final KeyMapping ZOOM = new KeyMapping("key.fusionfactions.zoom", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYBOARD, InputConstants.KEY_Z, WeaponKeys.CATEGORY);
@@ -65,8 +78,8 @@ public final class WeaponAim {
     private static int scopeLevel;
     private static float progress;
     private static float previousProgress;
-    private static boolean scoped;
-    private static float scopeScale = OPEN_SCALE;
+    private static Overlay overlay = Overlay.NONE;
+    private static float overlayScale = OPEN_SCALE;
     // Visual kick of the weapon model when firing, decays every tick.
     private static float kick;
     private static float previousKick;
@@ -93,17 +106,37 @@ public final class WeaponAim {
         previousKick = kick;
         kick *= 0.5F;
 
-        boolean nowScoped = isScopedWeapon(weapon) && progress >= 1.0F;
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (nowScoped != scoped && player != null) {
-            player.playSound(nowScoped ? SoundEvents.SPYGLASS_USE : SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
+        Overlay now = overlayFor(weapon);
+        if (now != overlay) {
+            LocalPlayer player = Minecraft.getInstance().player;
+            boolean scopeNow = now == Overlay.SCOPE || now == Overlay.OPTIC;
+            boolean scopeBefore = overlay == Overlay.SCOPE || overlay == Overlay.OPTIC;
+            if (player != null && scopeNow != scopeBefore) {
+                player.playSound(scopeNow ? SoundEvents.SPYGLASS_USE : SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
+            }
+            overlayScale = now == Overlay.RED_DOT || now == Overlay.HOLOGRAPHIC ? FRAME_OPEN_SCALE : OPEN_SCALE;
+            overlay = now;
         }
-        scoped = nowScoped;
         while (ZOOM.consumeClick()) {
             if (isScopedWeapon(weapon)) {
                 setScopeLevel(1 - scopeLevel);
             }
         }
+    }
+
+    private static Overlay overlayFor(@Nullable ItemStack weapon) {
+        if (weapon == null || progress < 1.0F) {
+            return Overlay.NONE;
+        }
+        if (isScopedWeapon(weapon)) {
+            return Overlay.SCOPE;
+        }
+        return switch (sightTier(weapon)) {
+            case 1 -> Overlay.RED_DOT;
+            case 2 -> Overlay.HOLOGRAPHIC;
+            case 3 -> Overlay.OPTIC;
+            default -> Overlay.NONE;
+        };
     }
 
     private static void setScopeLevel(int level) {
@@ -113,7 +146,7 @@ public final class WeaponAim {
         scopeLevel = level;
         if (level == 1) {
             // A short kick when zooming further in.
-            scopeScale = Math.min(scopeScale, LEVEL_CHANGE_SCALE);
+            overlayScale = Math.min(overlayScale, LEVEL_CHANGE_SCALE);
         }
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
@@ -142,9 +175,6 @@ public final class WeaponAim {
         kick = 1.0F;
     }
 
-    public static boolean isScoped() {
-        return scoped;
-    }
 
     // Current zoom, used for the field of view, mouse speed and recoil.
     public static float zoom() {
@@ -153,7 +183,7 @@ public final class WeaponAim {
             return 1.0F;
         }
         if (isScopedWeapon(weapon)) {
-            return scoped ? SCOPE_LEVELS[scopeLevel] : 1.0F;
+            return overlay == Overlay.SCOPE ? SCOPE_LEVELS[scopeLevel] : 1.0F;
         }
         return ((WeaponItem) weapon.getItem()).stats(weapon).aimZoom();
     }
@@ -182,8 +212,8 @@ public final class WeaponAim {
         }
     }
 
-    // Aiming replaces the crosshair (the sights or the reticle show where shots go); the scope also
-    // replaces the weapon in hand.
+    // Aiming replaces the crosshair (the sights or the reticle show where shots go); a sight picture or
+    // scope also replaces the weapon in hand.
     public static void onRenderGuiLayer(RenderGuiLayerEvent.Pre event) {
         if (progress > 0.5F && event.getName().equals(VanillaGuiLayers.CROSSHAIR)) {
             event.setCanceled(true);
@@ -191,67 +221,97 @@ public final class WeaponAim {
     }
 
     public static void onRenderHand(RenderHandEvent event) {
-        if (scoped) {
+        if (overlay != Overlay.NONE) {
             event.setCanceled(true);
         }
     }
 
     public static void renderOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null || minecraft.gui.hud.isHidden()) {
-            scopeScale = OPEN_SCALE;
+        if (minecraft.player == null || minecraft.gui.hud.isHidden() || overlay == Overlay.NONE) {
             return;
         }
-        if (scoped) {
-            renderScope(minecraft, graphics, deltaTracker);
-            return;
-        }
-        scopeScale = OPEN_SCALE;
-        ItemStack weapon = aimedWeapon();
-        if (weapon != null && progress(deltaTracker.getGameTimeDeltaPartialTick(false)) > 0.9F) {
-            int tier = sightTier(weapon);
-            if (tier > 0) {
-                renderSightReticle(graphics, tier, graphics.guiWidth() / 2, graphics.guiHeight() / 2);
-            }
-        }
-    }
-
-    // Red dot, holographic ring with a dot, or the optic's chevron, on the middle of the screen.
-    private static void renderSightReticle(GuiGraphicsExtractor graphics, int tier, int x, int y) {
-        switch (tier) {
-            case 1 -> {
-                graphics.fill(RenderPipelines.GUI, x - 1, y - 1, x + 2, y + 2, SIGHT_RED_GLOW);
-                graphics.fill(RenderPipelines.GUI, x, y, x + 1, y + 1, SIGHT_RED);
-            }
-            case 2 -> {
-                int radius = 7;
-                for (int step = 0; step < 48; step++) {
-                    double angle = step * Math.PI * 2.0 / 48.0;
-                    int px = x + (int) Math.round(Math.cos(angle) * radius);
-                    int py = y + (int) Math.round(Math.sin(angle) * radius);
-                    graphics.fill(RenderPipelines.GUI, px, py, px + 1, py + 1, SIGHT_RED);
-                }
-                graphics.fill(RenderPipelines.GUI, x, y, x + 1, y + 1, SIGHT_RED);
-            }
-            default -> {
-                for (int i = 0; i <= 4; i++) {
-                    graphics.fill(RenderPipelines.GUI, x - i, y + i, x - i + 1, y + i + 1, SIGHT_AMBER);
-                    graphics.fill(RenderPipelines.GUI, x + i, y + i, x + i + 1, y + i + 1, SIGHT_AMBER);
-                }
-                graphics.fill(RenderPipelines.GUI, x - 16, y, x - 7, y + 1, RETICLE_COLOR);
-                graphics.fill(RenderPipelines.GUI, x + 8, y, x + 17, y + 1, RETICLE_COLOR);
-                graphics.fill(RenderPipelines.GUI, x, y + 8, x + 1, y + 17, RETICLE_COLOR);
-            }
-        }
-    }
-
-    private static void renderScope(Minecraft minecraft, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         // Same easing as the vanilla spyglass, towards full size.
-        scopeScale = Mth.lerp(Math.min(1.0F, 0.5F * deltaTracker.getGameTimeDeltaTicks()), scopeScale, 1.0F);
+        overlayScale = Mth.lerp(Math.min(1.0F, 0.5F * deltaTracker.getGameTimeDeltaTicks()), overlayScale, 1.0F);
         int width = graphics.guiWidth();
         int height = graphics.guiHeight();
-        int size = Mth.floor(Math.min(width, height) * SCOPE_SIZE * scopeScale);
-        // The reticle's center pixel is the middle of the screen, where bullets go.
+        // The reticle's centre is the middle of the screen, where bullets go.
+        int x = width / 2;
+        int y = height / 2;
+        switch (overlay) {
+            case SCOPE -> renderScope(minecraft, graphics, SCOPE_SIZE);
+            case OPTIC -> {
+                renderScope(minecraft, graphics, OPTIC_SIZE);
+                renderOpticReticle(graphics, x, y, height);
+            }
+            case RED_DOT -> {
+                renderSightFrame(graphics, x, y, height, 0.66F, 0.48F, 1, false);
+                blitCentered(graphics, RED_DOT, x, y, Math.round(height * 0.22F));
+            }
+            case HOLOGRAPHIC -> {
+                renderSightFrame(graphics, x, y, height, 0.82F, 0.56F, 2, true);
+                blitCentered(graphics, HOLOGRAPHIC, x, y, Math.round(height * 0.33F));
+            }
+            default -> {
+            }
+        }
+    }
+
+    // A sight seen from behind: a thin frame around a large, faintly tinted window on a short base with an
+    // accent in the tier color. It scales with the screen and settles into place; it leaves most of the
+    // view free.
+    private static void renderSightFrame(GuiGraphicsExtractor graphics, int x, int y, int height, float widthShare, float heightShare,
+            int tier, boolean hood) {
+        int halfWidth = Math.round(height * widthShare * overlayScale / 2.0F);
+        int halfHeight = Math.round(height * heightShare * overlayScale / 2.0F);
+        int frame = Math.max(2, Math.round(height / 80.0F * overlayScale));
+        int top = hood ? frame * 3 : frame;
+        int left = x - halfWidth;
+        int right = x + halfWidth;
+        int upper = y - halfHeight;
+        int lower = y + halfHeight;
+        graphics.fill(RenderPipelines.GUI, left, upper, right, lower, SIGHT_GLASS);
+        graphics.fill(RenderPipelines.GUI, left - frame, upper - top, right + frame, upper, SIGHT_FRAME);
+        graphics.fill(RenderPipelines.GUI, left - frame, upper, left, lower, SIGHT_FRAME);
+        graphics.fill(RenderPipelines.GUI, right, upper, right + frame, lower, SIGHT_FRAME);
+        // A short base under the window.
+        int baseHalf = Math.round(halfWidth * 0.8F);
+        graphics.fill(RenderPipelines.GUI, left - frame, lower, right + frame, lower + frame, SIGHT_FRAME);
+        graphics.fill(RenderPipelines.GUI, x - baseHalf, lower + frame, x + baseHalf, lower + frame * 4, SIGHT_FRAME);
+        graphics.fill(RenderPipelines.GUI, x - baseHalf + frame, lower + frame * 2, x + baseHalf - frame, lower + frame * 2 + Math.max(1, frame / 2),
+                TIER_ACCENT[tier - 1]);
+    }
+
+    // The 2x optic: an amber chevron whose tip marks the aim point, a thin post below it with range
+    // marks, and thin lines in from the sides.
+    private static void renderOpticReticle(GuiGraphicsExtractor graphics, int x, int y, int height) {
+        int lens = Math.round(Math.min(graphics.guiWidth(), height) * OPTIC_SIZE * overlayScale * LENS_RADIUS / 2.0F);
+        int chevron = Math.round(height * 0.3F);
+        blitCentered(graphics, CHEVRON, x, y, chevron);
+        int postTop = y + Math.round(chevron * 0.2F);
+        graphics.fill(RenderPipelines.GUI, x, postTop, x + 1, y + lens, RETICLE_COLOR);
+        int step = Math.max(4, Math.round(height * 0.04F));
+        for (int mark = postTop + step; mark < y + lens * 0.7F; mark += step) {
+            graphics.fill(RenderPipelines.GUI, x - 2, mark, x + 3, mark + 1, RETICLE_COLOR);
+        }
+        int inner = Math.round(lens * 0.35F);
+        graphics.fill(RenderPipelines.GUI, x - lens, y, x - inner, y + 1, RETICLE_COLOR);
+        graphics.fill(RenderPipelines.GUI, x + inner + 1, y, x + lens + 1, y + 1, RETICLE_COLOR);
+    }
+
+    // Draws a square texture centred on a pixel. Reticle textures are blurred (see their .mcmeta) so they
+    // scale smoothly.
+    private static void blitCentered(GuiGraphicsExtractor graphics, Identifier texture, int x, int y, int size) {
+        int left = x - size / 2;
+        int top = y - size / 2;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, left, top, 0.0F, 0.0F, size, size, size, size);
+    }
+
+    // The scope view: black around a round lens. For the sniper, its mil-dot reticle and the zoom level.
+    private static void renderScope(Minecraft minecraft, GuiGraphicsExtractor graphics, float sizeShare) {
+        int width = graphics.guiWidth();
+        int height = graphics.guiHeight();
+        int size = Mth.floor(Math.min(width, height) * sizeShare * overlayScale);
         int centerX = width / 2;
         int centerY = height / 2;
         int left = centerX - size / 2;
@@ -263,6 +323,9 @@ public final class WeaponAim {
         graphics.fill(RenderPipelines.GUI, 0, bottom, width, height, 0xFF000000);
         graphics.fill(RenderPipelines.GUI, 0, top, left, bottom, 0xFF000000);
         graphics.fill(RenderPipelines.GUI, right, top, width, bottom, 0xFF000000);
+        if (overlay != Overlay.SCOPE) {
+            return;
+        }
 
         int radius = Mth.floor(size / 2.0F * LENS_RADIUS);
         renderScopeReticle(graphics, centerX, centerY, radius);

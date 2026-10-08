@@ -148,7 +148,10 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 - **Aiming down sights** *(D38–D41)*: holding the use button (right click) aims. It is vanilla's item use, so the server knows who aims.
   - First person: the weapon moves from the hip to the middle of the view in 4 ticks, so the iron sights (or the sight) line up with the middle of the screen. The crosshair is hidden; the view zooms 1.1×, or by the sight (§4.5). Each shot kicks the weapon back a little.
   - Aiming halves the spread and slows the player to 80% of walking speed, no sprinting. The sniper has ±4° hip-fire spread and none when scoped.
-  - Sights show their reticle on the HUD at the middle of the screen, inside the sight's frame: a red dot (I), a red ring with a dot (II), an amber chevron with stadia lines (III).
+  - Once the weapon is raised, a sight replaces it with a sight picture drawn on the HUD, so it frames the target instead of covering it:
+    - red dot (I) and holographic (II): a thin frame around a large, faintly tinted window on a short base with the tier color, and a glowing reticle in the middle (red dot; red ring with a dot and four ticks). The holographic window is bigger and has a hood.
+    - 2× optic (III): a scope view (black around a round lens) with an amber chevron whose tip is the aim point, a post with range marks below it and thin lines in from the sides.
+  - The reticles are textures from `tools/scope_overlay.py` with a soft glow, sized by the screen height.
   - The sniper shows a scope instead: black around a round lens, a duplex mil-dot reticle and the zoom level. Zoom key (default **Z**) or mouse wheel switch 3× / 6×. The weapon is hidden while scoped.
   - Zoom slows the mouse to match. Third person: players hold every weapon with both arms raised (the crossbow aiming pose).
   - Right clicking a block that has an action (door, chest, workbench) still uses the block instead of aiming, as in vanilla.
@@ -527,6 +530,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | M4 done | Two-player test passed. | Owner |
 | 2026-10-08 | D37–D41 | Left click fires; right click aims down sights for every weapon; aiming halves spread and slows; tiered sights as an upgrade field (not on the sniper); sniper scope zoom on the zoom key and mouse wheel | Owner |
 | 2026-10-08 | M5 details | Aiming takes 4 ticks; without a sight it zooms 1.1×; while aiming players move at 80% of walking speed. The sight field takes the top of the grid and accuracy moves to the top-left field, as a stabilizer under the barrel. Every gun but the sniper got iron sights. A shot kicks the weapon back a little. *Provisional.* | Agent |
+| 2026-10-08 | Sight pictures | Owner feedback: the sights looked blocky, covered more than they helped, had small reticles, and the magnified one needed a scope view. The owner kept the red dot / holographic / 2× lineup. When fully aimed, sights now show a HUD sight picture instead of the weapon model; the 2× optic gets a scope view. The owner pointed to Flan's Mod Ultimate 2's scopes as a reference. Its code and assets are CC BY-NC-SA 3.0, which is incompatible with our MIT license (D11), so nothing was copied: we only looked at how its sights (aim through the model) and scopes (full-screen overlay) work. *Provisional.* | Owner / Agent |
 
 ---
 
