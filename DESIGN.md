@@ -387,7 +387,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | **M2 Weapon framework** ✅ *done 2026-10-08* | Weapon base item, central stats record, ammo item, ammo/reload data components, reload keybind and packet, projectile entity, custom damage type, placeholder sounds, ammo HUD. One working test gun. |
 | **M3 Weapon roster** ✅ *done 2026-10-08* | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
 | **M4 Weapon modification** ✅ *done 2026-10-08* | Weapon workbench block, menu and screen; 21 upgrade parts; installed-parts data component and effective stats; visible parts on the weapon models; tooltips; game tests (§4.5, D30–D36). |
-| **M5 Aiming and controls** 🟡 *implemented 2026-10-08; two-player test pending* | Left click fires (trigger packet, server-side firing), right click aims down sights for every weapon, aimed spread and movement, sight upgrade with three tiers and reticles, sniper scope on right click with 3× / 6× (D37–D42). |
+| **M5 Aiming and controls** ✅ *done 2026-10-08* | Left click fires (trigger packet, server-side firing), right click aims down sights for every weapon, aimed spread and movement, sight upgrade with three tiers and reticles, sniper scope on right click with 3× / 6× (D37–D42). |
 | **M6 Integration & polish** | Weapons and upgrade parts in crate loot (OD-19), optional OPAC integration (OD-22), config documentation, two-player playtest on a dedicated server, release v0.1.0. |
 
 ---
@@ -531,6 +531,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | D37–D41 | Left click fires; right click aims down sights for every weapon; aiming halves spread and slows; tiered sights as an upgrade field (not on the sniper); sniper scope zoom on the zoom key and mouse wheel | Owner |
 | 2026-10-08 | M5 details | Aiming takes 4 ticks; without a sight it zooms 1.1×; while aiming players move at 80% of walking speed. The sight field takes the top of the grid and accuracy moves to the top-left field, as a stabilizer under the barrel. Every gun but the sniper got iron sights. A shot kicks the weapon back a little. *Provisional.* | Agent |
 | 2026-10-08 | Sight pictures | Owner feedback: the sights looked blocky, covered more than they helped, had small reticles, and the magnified one needed a scope view. The owner kept the red dot / holographic / 2× lineup. When fully aimed, sights now show a HUD sight picture instead of the weapon model; the 2× optic gets a scope view. The owner pointed to Flan's Mod Ultimate 2's scopes as a reference. Its code and assets are CC BY-NC-SA 3.0, which is incompatible with our MIT license (D11), so nothing was copied: we only looked at how its sights (aim through the model) and scopes (full-screen overlay) work. *Provisional.* | Owner / Agent |
+| 2026-10-08 | M5 done | Two-player test passed, including the new sight pictures. M4 and M5 merged into `main`. | Owner |
 
 ---
 

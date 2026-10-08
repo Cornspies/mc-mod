@@ -9,7 +9,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 
-// The seven upgrade types (D32). Each one is a field around the weapon in the workbench (DESIGN.md §4.5).
+// The upgrade types (D32, D40). Each one is a field around the weapon in the workbench (DESIGN.md §4.5).
 // The default per-tier values are percent (penetration: percentage points); servers can change them in
 // the synced config (UpgradeConfig), together with which weapons accept which types.
 public enum UpgradeType implements StringRepresentable {
