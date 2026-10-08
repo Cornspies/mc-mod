@@ -31,6 +31,7 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -46,6 +47,8 @@ public final class WeaponGameTests {
             TEST_FUNCTIONS.register("pistol_hits_target_underwater", () -> WeaponGameTests::pistolHitsTargetUnderwater);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> PISTOL_RANGE_UNDERWATER =
             TEST_FUNCTIONS.register("pistol_range_underwater", () -> WeaponGameTests::pistolRangeUnderwater);
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> SPENT_BULLET_SINKS =
+            TEST_FUNCTIONS.register("spent_bullet_sinks", () -> WeaponGameTests::spentBulletSinks);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> RELOAD_CONSUMES_AMMO =
             TEST_FUNCTIONS.register("reload_consumes_ammo", () -> WeaponGameTests::reloadConsumesAmmo);
 
@@ -56,7 +59,7 @@ public final class WeaponGameTests {
     public static void registerTests(RegisterGameTestsEvent event) {
         Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(FusionFactions.id("default"));
         for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function
-                : List.of(PISTOL_HITS_TARGET, PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, RELOAD_CONSUMES_AMMO)) {
+                : List.of(PISTOL_HITS_TARGET, PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, SPENT_BULLET_SINKS, RELOAD_CONSUMES_AMMO)) {
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
             event.registerTest(function.getId(), new FunctionGameTestInstance(function.key(), data));
@@ -82,12 +85,49 @@ public final class WeaponGameTests {
         });
     }
 
+    // Underwater, a bullet that drag has slowed down doesn't vanish: it curves down, sinks, and
+    // disappears when it reaches the floor.
+    private static void spentBulletSinks(GameTestHelper helper) {
+        int length = 14;
+        buildLane(helper, length, true);
+        Player player = helper.makeMockServerPlayer(GameType.SURVIVAL);
+        Vec3 feet = helper.absoluteVec(new Vec3(0.5, 1.0, 0.5));
+        player.snapTo(feet.x, feet.y, feet.z, 0.0F, 0.0F);
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.PISTOL.get()));
+        player.getMainHandItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+
+        double startY = player.getEyeY() - 0.1;
+        double floorY = helper.absoluteVec(new Vec3(0.0, 1.0, 0.0)).y;
+        AABB lane = new AABB(helper.absoluteVec(new Vec3(-2.0, 0.0, -1.0)), helper.absoluteVec(new Vec3(3.0, 5.0, length + 1.0)));
+        // Checked by condition, not at fixed ticks: freshly force-loaded chunks can take a few ticks to start
+        // ticking, which can hold the bullet up briefly.
+        Vec3[] lastPosition = new Vec3[1];
+        boolean[] seenSinking = new boolean[1];
+        for (int tick = 1; tick < MAX_TICKS; tick++) {
+            helper.runAfterDelay(tick, () -> helper.getLevel().getEntitiesOfClass(BulletEntity.class, lane).forEach(bullet -> {
+                lastPosition[0] = bullet.position();
+                Vec3 motion = bullet.getDeltaMovement();
+                if (motion.length() < 0.25 && motion.y < 0.0 && bullet.getY() < startY - 0.05) {
+                    seenSinking[0] = true;
+                }
+            }));
+        }
+        helper.succeedWhen(() -> {
+            helper.assertTrue(helper.getLevel().getEntitiesOfClass(BulletEntity.class, lane).isEmpty(), "the bullet should be gone");
+            helper.assertTrue(seenSinking[0], "the spent bullet should sink instead of vanishing");
+            Vec3 last = lastPosition[0];
+            helper.assertTrue(last != null && last.y - floorY < 0.5, "the bullet should reach the floor before it disappears");
+            double travelled = last.z - feet.z;
+            helper.assertTrue(travelled > 8.0 && travelled < 12.0, "the bullet should sink about 9 to 10 blocks out, not " + travelled);
+        });
+    }
+
     private record Shot(Player player, Pig pig) {
     }
 
-    // Builds a lane, puts a pig `distance` blocks away and fires one pistol shot at its middle.
-    private static Shot shootAtPig(GameTestHelper helper, int distance, boolean underwater) {
-        for (int z = 0; z <= distance; z++) {
+    // A stone floor `length` blocks long, flooded two blocks deep when underwater.
+    private static void buildLane(GameTestHelper helper, int length, boolean underwater) {
+        for (int z = 0; z <= length; z++) {
             helper.setBlock(0, 0, z, Blocks.STONE);
             if (underwater) {
                 helper.setBlock(0, 1, z, Blocks.WATER);
@@ -98,6 +138,11 @@ public final class WeaponGameTests {
             BlockPos lane = helper.absolutePos(new BlockPos(0, 0, z));
             helper.getLevel().setChunkForced(SectionPos.blockToSectionCoord(lane.getX()), SectionPos.blockToSectionCoord(lane.getZ()), true);
         }
+    }
+
+    // Builds a lane, puts a pig `distance` blocks away and fires one pistol shot at its middle.
+    private static Shot shootAtPig(GameTestHelper helper, int distance, boolean underwater) {
+        buildLane(helper, distance, underwater);
         Pig pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(0, 1, distance));
         Player player = helper.makeMockServerPlayer(GameType.SURVIVAL);
 

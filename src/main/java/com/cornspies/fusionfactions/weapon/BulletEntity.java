@@ -25,14 +25,19 @@ import net.neoforged.neoforge.event.EventHooks;
 // causing entity and the bullet as the direct entity (§3.2.4), so team friendly-fire rules apply.
 public class BulletEntity extends Projectile {
     private static final double GRAVITY = 0.01;
+    // Water pulls bullets down harder. Fast bullets barely notice, but once drag has slowed one, it
+    // curves down and sinks (at about 2 blocks per second) until it reaches the ground.
+    private static final double GRAVITY_IN_WATER = 0.04;
     private static final int TRAIL_PARTICLES_PER_TICK = 3;
-    // Underwater the trail is a dense line of bubbles, one per this many blocks, so the bullet's
-    // slow-down is easy to follow (there's no instant tracer underwater, see WeaponClientEffects).
+    // Underwater the trail is a dense line of bubbles, one per this many blocks (at least one per tick),
+    // so the bullet's path is easy to follow (there's no instant tracer underwater, see WeaponClientEffects).
     private static final double BUBBLE_SPACING = 0.3;
     // Same as vanilla arrows.
     private static final double WATER_INERTIA = 0.6;
-    // Blocks per tick. Slower bullets are spent and disappear.
+    // Blocks per tick. Slower bullets are spent: they don't hurt anything and just sink.
     private static final double MIN_SPEED = 0.25;
+    // A spent bullet sinking through deep water disappears after this many ticks at the latest.
+    private static final int MAX_AGE_TICKS = 600;
 
     private float damage;
     private int lifetimeTicks = 60;
@@ -55,7 +60,16 @@ public class BulletEntity extends Projectile {
 
     @Override
     protected double getDefaultGravity() {
-        return GRAVITY;
+        return this.isInWater() ? GRAVITY_IN_WATER : GRAVITY;
+    }
+
+    private boolean isSpent() {
+        return this.getDeltaMovement().lengthSqr() < MIN_SPEED * MIN_SPEED;
+    }
+
+    @Override
+    protected boolean canHitEntity(Entity entity) {
+        return !this.isSpent() && super.canHitEntity(entity);
     }
 
     @Override
@@ -71,7 +85,7 @@ public class BulletEntity extends Projectile {
         }
         boolean inWater = this.isInWater();
         if (this.level().isClientSide()) {
-            int particles = inWater ? Math.max(TRAIL_PARTICLES_PER_TICK, (int) Math.ceil(movement.length() / BUBBLE_SPACING)) : TRAIL_PARTICLES_PER_TICK;
+            int particles = inWater ? Math.max(1, (int) Math.ceil(movement.length() / BUBBLE_SPACING)) : TRAIL_PARTICLES_PER_TICK;
             for (int i = 0; i < particles; i++) {
                 double part = i / (double) particles;
                 this.level().addParticle(inWater ? ParticleTypes.BUBBLE : ParticleTypes.ELECTRIC_SPARK,
@@ -81,11 +95,12 @@ public class BulletEntity extends Projectile {
         this.setPos(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
         this.updateRotation();
         if (inWater) {
-            // Water slows bullets like arrows, which limits the underwater range to about 9 blocks.
+            // Water slows bullets like arrows, which limits their underwater range to about 9 blocks.
             this.setDeltaMovement(this.getDeltaMovement().scale(WATER_INERTIA));
         }
         this.applyGravity();
-        if (!this.level().isClientSide() && (this.tickCount > this.lifetimeTicks || this.getDeltaMovement().lengthSqr() < MIN_SPEED * MIN_SPEED)) {
+        // The normal lifetime only applies in flight. Spent bullets sink until they reach the ground (onHitBlock).
+        if (!this.level().isClientSide() && (this.tickCount > MAX_AGE_TICKS || (!this.isSpent() && this.tickCount > this.lifetimeTicks))) {
             this.discard();
         }
     }
@@ -106,7 +121,7 @@ public class BulletEntity extends Projectile {
         super.onHitBlock(result);
         if (this.level() instanceof ServerLevel level) {
             Vec3 at = result.getLocation();
-            level.sendParticles(ParticleTypes.SMOKE, at.x, at.y, at.z, 3, 0.05, 0.05, 0.05, 0.01);
+            level.sendParticles(this.isInWater() ? ParticleTypes.BUBBLE : ParticleTypes.SMOKE, at.x, at.y, at.z, 3, 0.05, 0.05, 0.05, 0.01);
             this.discard();
         }
     }
