@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.config.StartupConfig;
 import com.cornspies.fusionfactions.registry.ModDataComponents;
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
 import com.cornspies.fusionfactions.registry.ModItems;
@@ -21,6 +22,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
@@ -34,6 +36,7 @@ import net.minecraft.world.entity.monster.zombie.Husk;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -68,6 +71,8 @@ public final class WeaponGameTests {
             TEST_FUNCTIONS.register("armor_piercing", () -> WeaponGameTests::armorPiercing);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> SHOTGUN_FIRES_PELLETS =
             TEST_FUNCTIONS.register("shotgun_fires_pellets", () -> WeaponGameTests::shotgunFiresPellets);
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> WEAPON_RECIPES =
+            TEST_FUNCTIONS.register("weapon_recipes", () -> WeaponGameTests::weaponRecipes);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> RELOAD_CONSUMES_AMMO =
             TEST_FUNCTIONS.register("reload_consumes_ammo", () -> WeaponGameTests::reloadConsumesAmmo);
 
@@ -78,7 +83,7 @@ public final class WeaponGameTests {
     public static void registerTests(RegisterGameTestsEvent event) {
         Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(FusionFactions.id("default"));
         for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function
-                : List.of(PISTOL_HITS_TARGET, PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, SPENT_BULLET_SINKS, BULLET_LEAVING_WATER_DROPS, BULLET_IGNORES_LATE_UPDATES, BODY_SHOT_DAMAGE, HEADSHOT_DAMAGE, ARMOR_PIERCING, SHOTGUN_FIRES_PELLETS, RELOAD_CONSUMES_AMMO)) {
+                : List.of(PISTOL_HITS_TARGET, PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, SPENT_BULLET_SINKS, BULLET_LEAVING_WATER_DROPS, BULLET_IGNORES_LATE_UPDATES, BODY_SHOT_DAMAGE, HEADSHOT_DAMAGE, ARMOR_PIERCING, SHOTGUN_FIRES_PELLETS, WEAPON_RECIPES, RELOAD_CONSUMES_AMMO)) {
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
             event.registerTest(function.getId(), new FunctionGameTestInstance(function.key(), data));
@@ -338,6 +343,21 @@ public final class WeaponGameTests {
             helper.assertTrue(source.getEntity() == shot.player(), "the shooter should be the causing entity");
             helper.assertTrue(source.getDirectEntity() instanceof BulletEntity, "the bullet should be the direct entity");
         });
+    }
+
+    // The craftable weapons and parts have recipes. The crate-only weapons only have one if the startup
+    // config allows it (D26; off by default).
+    private static void weaponRecipes(GameTestHelper helper) {
+        RecipeManager recipes = helper.getLevel().getServer().getRecipeManager();
+        for (String name : List.of("barrel", "fusion_core", "grip", "ammo", "pistol", "auto_pistol", "smg", "shotgun")) {
+            helper.assertTrue(recipes.byKey(ResourceKey.create(Registries.RECIPE, FusionFactions.id(name))).isPresent(), "missing recipe " + name);
+        }
+        boolean heavyAllowed = StartupConfig.HEAVY_WEAPON_RECIPES.getAsBoolean();
+        for (String name : List.of("sniper_rifle", "gatling_gun")) {
+            boolean present = recipes.byKey(ResourceKey.create(Registries.RECIPE, FusionFactions.id(name))).isPresent();
+            helper.assertTrue(present == heavyAllowed, name + " recipe should " + (heavyAllowed ? "exist" : "not exist") + " with heavyWeaponRecipes = " + heavyAllowed);
+        }
+        helper.succeed();
     }
 
     // Reloading an empty pistol with 5 ammo items loads 5 rounds, uses all 5 items, then stops.

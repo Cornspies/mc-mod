@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "fusionfactions:auto_pistol",
+    "fusionfactions:barrel",
+    "fusionfactions:grip"
+  ],
+  "result": {
+    "id": "fusionfactions:smg"
+  }
+}

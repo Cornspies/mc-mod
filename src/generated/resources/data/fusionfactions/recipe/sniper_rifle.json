@@ -1,0 +1,20 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "fusionfactions:heavy_weapon_recipes"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "fusionfactions:barrel",
+    "fusionfactions:barrel",
+    "fusionfactions:fusion_core",
+    "fusionfactions:fusion_core",
+    "fusionfactions:grip",
+    "minecraft:spyglass"
+  ],
+  "result": {
+    "id": "fusionfactions:sniper_rifle"
+  }
+}

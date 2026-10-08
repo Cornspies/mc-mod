@@ -44,5 +44,8 @@ public class ModModelProvider extends ModelProvider {
             itemModels.generateFlatItem(weapon.get(), ModItems.PISTOL.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
         }
         itemModels.generateFlatItem(ModItems.AMMO.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.BARREL.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.FUSION_CORE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.GRIP.get(), ModelTemplates.FLAT_ITEM);
     }
 }

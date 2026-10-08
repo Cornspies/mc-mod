@@ -23,6 +23,9 @@ public final class ModCreativeTabs {
                 output.accept(ModItems.SNIPER_RIFLE.get());
                 output.accept(ModItems.GATLING_GUN.get());
                 output.accept(ModItems.AMMO.get());
+                output.accept(ModItems.BARREL.get());
+                output.accept(ModItems.FUSION_CORE.get());
+                output.accept(ModItems.GRIP.get());
             })
             .build());
 

@@ -22,6 +22,10 @@ public final class ModItems {
     public static final DeferredItem<WeaponItem> GATLING_GUN = weapon("gatling_gun", Weapons.GATLING_GUN);
     // The one shared ammo item (D20).
     public static final DeferredItem<Item> AMMO = ITEMS.registerSimpleItem("ammo");
+    // Crafting parts (D27).
+    public static final DeferredItem<Item> BARREL = ITEMS.registerSimpleItem("barrel");
+    public static final DeferredItem<Item> FUSION_CORE = ITEMS.registerSimpleItem("fusion_core");
+    public static final DeferredItem<Item> GRIP = ITEMS.registerSimpleItem("grip");
 
     private static DeferredItem<WeaponItem> weapon(String name, WeaponStats stats) {
         return ITEMS.registerItem(name, properties -> new WeaponItem(stats, properties), properties -> properties

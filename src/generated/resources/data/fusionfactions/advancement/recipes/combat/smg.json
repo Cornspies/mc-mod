@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_auto_pistol": {
+      "conditions": {
+        "items": [
+          {
+            "items": "fusionfactions:auto_pistol"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipes": "fusionfactions:smg"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_auto_pistol"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fusionfactions:smg"
+    ]
+  }
+}

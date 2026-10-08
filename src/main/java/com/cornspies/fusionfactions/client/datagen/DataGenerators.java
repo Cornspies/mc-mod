@@ -8,6 +8,7 @@ import com.cornspies.fusionfactions.FusionFactions;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
@@ -17,10 +18,13 @@ public final class DataGenerators {
     public static void gatherData(GatherDataEvent.Client event) {
         event.createProvider(ModModelProvider::new);
 
-        // Loot tables are a reloadable registry in 26.3, so they're generated as registry objects.
-        RegistrySetBuilder lootTables = new RegistrySetBuilder().add(Registries.LOOT_TABLE, new LootTableProvider(Set.of(),
-                List.of(new LootTableProvider.SubProviderEntry(SupplyCrateLoot::new, LootContextParamSets.CHEST))));
-        event.createReloadableRegistryObjects(lootTables, Set.of(FusionFactions.MODID));
+        // Loot tables and recipes (with their unlock advancements) are reloadable registries in 26.3, so
+        // they're generated as registry objects.
+        RegistrySetBuilder reloadable = new RegistrySetBuilder()
+                .add(Registries.LOOT_TABLE, new LootTableProvider(Set.of(),
+                        List.of(new LootTableProvider.SubProviderEntry(SupplyCrateLoot::new, LootContextParamSets.CHEST))))
+                .add(RecipeProvider.asBootstrap(ModRecipeProvider::new));
+        event.createReloadableRegistryObjects(reloadable, Set.of(FusionFactions.MODID));
     }
 
     private DataGenerators() {

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "fusionfactions:pistol",
+    "fusionfactions:fusion_core"
+  ],
+  "result": {
+    "id": "fusionfactions:auto_pistol"
+  }
+}

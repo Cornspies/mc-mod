@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "fusionfactions:barrel",
+    "fusionfactions:barrel",
+    "fusionfactions:fusion_core",
+    "fusionfactions:grip"
+  ],
+  "result": {
+    "id": "fusionfactions:shotgun"
+  }
+}

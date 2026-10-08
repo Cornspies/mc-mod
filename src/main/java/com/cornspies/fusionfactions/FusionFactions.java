@@ -3,9 +3,11 @@ package com.cornspies.fusionfactions;
 import org.slf4j.Logger;
 
 import com.cornspies.fusionfactions.config.ServerConfig;
+import com.cornspies.fusionfactions.config.StartupConfig;
 import com.cornspies.fusionfactions.gametest.WeaponGameTests;
 import com.cornspies.fusionfactions.registry.ModBlockEntityTypes;
 import com.cornspies.fusionfactions.registry.ModBlocks;
+import com.cornspies.fusionfactions.registry.ModConditions;
 import com.cornspies.fusionfactions.registry.ModCreativeTabs;
 import com.cornspies.fusionfactions.registry.ModDataComponents;
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
@@ -39,9 +41,11 @@ public class FusionFactions {
         ModItems.ITEMS.register(modEventBus);
         ModSounds.SOUND_EVENTS.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
+        ModConditions.CONDITION_CODECS.register(modEventBus);
         WeaponGameTests.TEST_FUNCTIONS.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.SYNCED, ServerConfig.SPEC);
+        modContainer.registerConfig(ModConfig.Type.STARTUP, StartupConfig.SPEC);
 
         modEventBus.addListener(SupplyDropManager::registerTicketController);
         modEventBus.addListener(ReloadPayload::register);

@@ -88,5 +88,8 @@
   "subtitles.fusionfactions.weapon.sniper_rifle.fire": "Sniper rifle fires",
   "subtitles.fusionfactions.weapon.gatling_gun.fire": "Gatling gun fires",
   "subtitles.fusionfactions.weapon.gatling_gun.spin": "Gatling gun spins up",
-  "key.fusionfactions.zoom": "Zoom (Scoped Weapons)"
+  "key.fusionfactions.zoom": "Zoom (Scoped Weapons)",
+  "item.fusionfactions.barrel": "Fusion Barrel",
+  "item.fusionfactions.fusion_core": "Fusion Core",
+  "item.fusionfactions.grip": "Weapon Grip"
 }
