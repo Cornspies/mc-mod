@@ -8,9 +8,12 @@ import com.cornspies.fusionfactions.gametest.CrateLootGameTests;
 import com.cornspies.fusionfactions.gametest.TriggerGameTests;
 import com.cornspies.fusionfactions.gametest.UpgradeGameTests;
 import com.cornspies.fusionfactions.gametest.WeaponGameTests;
+import com.cornspies.fusionfactions.missile.MissileCommands;
+import com.cornspies.fusionfactions.missile.MissileManager;
 import com.cornspies.fusionfactions.registry.ModAttachments;
 import com.cornspies.fusionfactions.registry.ModBlockEntityTypes;
 import com.cornspies.fusionfactions.registry.ModBlocks;
+import com.cornspies.fusionfactions.registry.ModCapabilities;
 import com.cornspies.fusionfactions.registry.ModConditions;
 import com.cornspies.fusionfactions.registry.ModCreativeTabs;
 import com.cornspies.fusionfactions.registry.ModDataComponents;
@@ -61,12 +64,16 @@ public class FusionFactions {
         modContainer.registerConfig(ModConfig.Type.STARTUP, StartupConfig.SPEC);
 
         modEventBus.addListener(SupplyDropManager::registerTicketController);
+        modEventBus.addListener(MissileManager::registerTicketController);
+        modEventBus.addListener(ModCapabilities::register);
         modEventBus.addListener(ReloadPayload::register);
         modEventBus.addListener(GunshotPayload::register);
         modEventBus.addListener(TriggerPayload::register);
         modEventBus.addListener(WeaponGameTests::registerTests);
         NeoForge.EVENT_BUS.addListener(SupplyDropManager::onServerTick);
         NeoForge.EVENT_BUS.addListener(SupplyDropCommands::register);
+        NeoForge.EVENT_BUS.addListener(MissileManager::onServerTick);
+        NeoForge.EVENT_BUS.addListener(MissileCommands::register);
         NeoForge.EVENT_BUS.addListener(BulletEntity::onIncomingDamage);
         NeoForge.EVENT_BUS.addListener(Trigger::onPlayerTick);
     }

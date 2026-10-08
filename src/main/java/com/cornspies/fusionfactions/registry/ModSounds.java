@@ -24,6 +24,10 @@ public final class ModSounds {
     // Hit markers, played only to the shooter.
     public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_HIT = register("weapon.hit");
     public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_HEADSHOT = register("weapon.headshot");
+    // Missiles (DESIGN.md §6.5).
+    public static final DeferredHolder<SoundEvent, SoundEvent> MISSILE_LAUNCH = register("missile.launch");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MISSILE_INCOMING = register("missile.incoming");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MISSILE_EXPLODE = register("missile.explode");
 
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
         return SOUND_EVENTS.register(name, id -> SoundEvent.createVariableRangeEvent(id));

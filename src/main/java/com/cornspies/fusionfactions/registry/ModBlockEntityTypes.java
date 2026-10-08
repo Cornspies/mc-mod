@@ -1,6 +1,7 @@
 package com.cornspies.fusionfactions.registry;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.missile.MissileLauncherBlockEntity;
 import com.cornspies.fusionfactions.supplydrop.SupplyCrateBlockEntity;
 
 import net.minecraft.core.registries.Registries;
@@ -13,6 +14,9 @@ public final class ModBlockEntityTypes {
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SupplyCrateBlockEntity>> SUPPLY_CRATE = BLOCK_ENTITY_TYPES.register("supply_crate",
             () -> new BlockEntityType<>(SupplyCrateBlockEntity::new, ModBlocks.SUPPLY_CRATE.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MissileLauncherBlockEntity>> MISSILE_LAUNCHER = BLOCK_ENTITY_TYPES.register(
+            "missile_launcher", () -> new BlockEntityType<>(MissileLauncherBlockEntity::new, ModBlocks.MISSILE_LAUNCHER.get()));
 
     private ModBlockEntityTypes() {
     }

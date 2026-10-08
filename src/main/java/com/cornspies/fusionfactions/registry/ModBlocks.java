@@ -1,6 +1,7 @@
 package com.cornspies.fusionfactions.registry;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.missile.MissileLauncherBlock;
 import com.cornspies.fusionfactions.supplydrop.SupplyCrateBlock;
 import com.cornspies.fusionfactions.workbench.WeaponWorkbenchBlock;
 
@@ -28,6 +29,14 @@ public final class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .sound(SoundType.METAL)
                     .strength(3.0F, 6.0F));
+
+    // Missile launcher (D55). As hard as an iron block; anyone can break it (D58).
+    public static final DeferredBlock<MissileLauncherBlock> MISSILE_LAUNCHER = BLOCKS.registerBlock("missile_launcher", MissileLauncherBlock::new,
+            properties -> properties
+                    .mapColor(MapColor.METAL)
+                    .sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F, 6.0F));
 
     private ModBlocks() {
     }

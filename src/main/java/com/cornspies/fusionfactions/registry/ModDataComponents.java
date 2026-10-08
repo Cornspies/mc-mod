@@ -4,6 +4,7 @@ import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.weapon.upgrade.WeaponUpgrades;
 import com.mojang.serialization.Codec;
 
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -30,6 +31,10 @@ public final class ModDataComponents {
     // Upgrade parts installed at the weapon workbench (DESIGN.md §4.5).
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<WeaponUpgrades>> UPGRADES = DATA_COMPONENTS.registerComponentType("upgrades",
             builder -> builder.persistent(WeaponUpgrades.CODEC).networkSynchronized(WeaponUpgrades.STREAM_CODEC));
+
+    // The block a target designator points missiles at (D49).
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<GlobalPos>> TARGET = DATA_COMPONENTS.registerComponentType("target",
+            builder -> builder.persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC));
 
     private ModDataComponents() {
     }

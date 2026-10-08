@@ -1,6 +1,7 @@
 package com.cornspies.fusionfactions.registry;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.missile.MissileType;
 import com.cornspies.fusionfactions.weapon.upgrade.UpgradeType;
 import com.cornspies.fusionfactions.weapon.upgrade.WeaponUpgrades;
 
@@ -32,6 +33,13 @@ public final class ModCreativeTabs {
                 for (UpgradeType type : UpgradeType.values()) {
                     for (int tier = 1; tier <= WeaponUpgrades.MAX_TIER; tier++) {
                         output.accept(ModItems.upgrade(type, tier).get());
+                    }
+                }
+                output.accept(ModItems.MISSILE_LAUNCHER.get());
+                output.accept(ModItems.TARGET_DESIGNATOR.get());
+                for (MissileType type : MissileType.values()) {
+                    for (int tier = 1; tier <= MissileType.MAX_TIER; tier++) {
+                        output.accept(ModItems.missile(type, tier).get());
                     }
                 }
             })

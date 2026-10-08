@@ -3,7 +3,8 @@ package com.cornspies.fusionfactions.config;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-// Gameplay settings for a server (DESIGN.md §3.3, §5.4): supply crates here, weapon upgrades in UpgradeConfig.
+// Gameplay settings for a server (DESIGN.md §3.3, §5.4): supply crates here, weapon upgrades in UpgradeConfig,
+// missiles in MissileConfig.
 // Registered as FML's SYNCED type, which replaced the old SERVER type: it is loaded per server
 // instance and can be overridden per world in <world>/syncedconfig.
 public final class ServerConfig {
@@ -90,6 +91,7 @@ public final class ServerConfig {
         builder.pop();
 
         UpgradeConfig.define(builder);
+        MissileConfig.define(builder);
         SPEC = builder.build();
     }
 

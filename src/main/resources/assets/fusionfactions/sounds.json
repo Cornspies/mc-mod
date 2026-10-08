@@ -1,4 +1,39 @@
 {
+  "missile.explode": {
+    "subtitle": "subtitles.fusionfactions.missile.explode",
+    "sounds": [
+      {
+        "name": "minecraft:random/explode1",
+        "pitch": 0.55
+      },
+      {
+        "name": "minecraft:random/explode3",
+        "pitch": 0.5
+      }
+    ]
+  },
+  "missile.incoming": {
+    "subtitle": "subtitles.fusionfactions.missile.incoming",
+    "sounds": [
+      {
+        "name": "minecraft:item/trident/riptide1",
+        "pitch": 1.8
+      }
+    ]
+  },
+  "missile.launch": {
+    "subtitle": "subtitles.fusionfactions.missile.launch",
+    "sounds": [
+      {
+        "name": "minecraft:fireworks/launch1",
+        "pitch": 0.5
+      },
+      {
+        "name": "minecraft:item/trident/riptide3",
+        "pitch": 0.6
+      }
+    ]
+  },
   "weapon.auto_pistol.fire": {
     "subtitle": "subtitles.fusionfactions.weapon.auto_pistol.fire",
     "sounds": [

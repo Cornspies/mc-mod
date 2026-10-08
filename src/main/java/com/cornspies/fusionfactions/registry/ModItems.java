@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.missile.MissileItem;
+import com.cornspies.fusionfactions.missile.MissileType;
+import com.cornspies.fusionfactions.missile.TargetDesignatorItem;
 import com.cornspies.fusionfactions.weapon.WeaponItem;
 import com.cornspies.fusionfactions.weapon.WeaponStats;
 import com.cornspies.fusionfactions.weapon.Weapons;
@@ -37,6 +40,11 @@ public final class ModItems {
     public static final DeferredItem<Item> GRIP = ITEMS.registerSimpleItem("grip");
     public static final DeferredItem<BlockItem> WEAPON_WORKBENCH = ITEMS.registerSimpleBlockItem(ModBlocks.WEAPON_WORKBENCH);
 
+    // Missiles (DESIGN.md §6.4).
+    public static final DeferredItem<TargetDesignatorItem> TARGET_DESIGNATOR = ITEMS.registerItem("target_designator", TargetDesignatorItem::new,
+            properties -> properties.stacksTo(1));
+    public static final DeferredItem<BlockItem> MISSILE_LAUNCHER = ITEMS.registerSimpleBlockItem(ModBlocks.MISSILE_LAUNCHER);
+
     // Movement speed while aiming down sights, as a share of walking speed.
     private static final float AIM_MOVE_SPEED = 0.8F;
 
@@ -55,6 +63,25 @@ public final class ModItems {
             }
             UPGRADES.put(type, List.copyOf(tiers));
         }
+    }
+
+    // One missile item per type and tier (D48), named like "explosive_missile_2".
+    private static final Map<MissileType, List<DeferredItem<MissileItem>>> MISSILES = new EnumMap<>(MissileType.class);
+
+    static {
+        for (MissileType type : MissileType.values()) {
+            List<DeferredItem<MissileItem>> tiers = new ArrayList<>();
+            for (int tier = 1; tier <= MissileType.MAX_TIER; tier++) {
+                int t = tier;
+                tiers.add(ITEMS.registerItem(type.getSerializedName() + "_missile_" + tier, properties -> new MissileItem(type, t, properties),
+                        properties -> properties.stacksTo(4)));
+            }
+            MISSILES.put(type, List.copyOf(tiers));
+        }
+    }
+
+    public static DeferredItem<MissileItem> missile(MissileType type, int tier) {
+        return MISSILES.get(type).get(tier - 1);
     }
 
     public static DeferredItem<UpgradeItem> upgrade(UpgradeType type, int tier) {

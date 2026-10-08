@@ -1,6 +1,7 @@
 package com.cornspies.fusionfactions.registry;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.missile.MissileEntity;
 import com.cornspies.fusionfactions.supplydrop.FallingCrateEntity;
 import com.cornspies.fusionfactions.weapon.BulletEntity;
 
@@ -28,6 +29,16 @@ public final class ModEntityTypes {
                     .sized(0.125F, 0.125F)
                     .clientTrackingRange(8)
                     .updateInterval(2)
+                    .noSummon());
+
+    // Only spawned by missile flights (DESIGN.md §6.5). Tracked from far away, since it's meant to be seen.
+    public static final DeferredHolder<EntityType<?>, EntityType<MissileEntity>> MISSILE = ENTITY_TYPES.registerEntityType("missile",
+            MissileEntity::new, MobCategory.MISC, builder -> builder
+                    .noLootTable()
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(16)
+                    .updateInterval(5)
+                    .fireImmune()
                     .noSummon());
 
     private ModEntityTypes() {
