@@ -277,7 +277,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 |---|---|
 | **M0 Setup** ✅ *done 2026-10-06* | OD-01 and OD-02 answered. Project created from the 26.3 MDK; NeoForge bumped and pinned; mod ID and package set; `.gitignore`; git repo. Builds, and runs on both `runClient` and `runServer`. |
 | **M1 Supply crate MVP** 🟡 *implemented 2026-10-08; two-player test pending* | Crate block and block entity, three rarity loot tables (placeholder vanilla loot), falling-crate entity, scheduler with SavedData, location picking, announcements and countdown, chunk ticket, despawn, admin commands, server config. |
-| **M2 Weapon framework** | Weapon base item, central stats record, ammo item, ammo/reload data components, reload keybind and packet, projectile entity, custom damage type, placeholder sounds, ammo HUD. One working test gun. |
+| **M2 Weapon framework** 🟡 *implemented 2026-10-08; two-player test pending* | Weapon base item, central stats record, ammo item, ammo/reload data components, reload keybind and packet, projectile entity, custom damage type, placeholder sounds, ammo HUD. One working test gun. |
 | **M3 Weapon roster** | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
 | **M4 Integration & polish** | Weapons in crate loot (OD-19), optional OPAC integration (OD-22), config documentation, two-player playtest on a dedicated server, release v0.1.0. |
 
@@ -322,6 +322,14 @@ The supply crate comes first because it is self-contained and proves out the sha
 - **Chunk tickets:** `TicketController.forceChunk` uses vanilla's `FORCED` ticket (persists, loads and simulates). Mod tickets don't show up in `/forceload query`.
 - **Dedicated server:** spawn chunks are no longer kept loaded, and the server stops ticking after `pause-when-empty-seconds` (default 60) with nobody online.
 - **Renamed or moved:** `PushReaction.IMMOVEABLE` (no `BLOCK`), `BlockEntityTypes` / `EntityTypes` hold the vanilla constants, the world spawn is `server.getRespawnData().globalPos()`, `Player.playNotifySound` is gone (send a `ClientboundSoundPacket`), and `Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)` is permission level 2.
+### Learned while building M2 (verified against 26.3 sources)
+
+- **Keys:** the keyboard input type is `InputConstants.Type.KEYBOARD` (no `KEYSYM`). Key categories are `KeyMapping.Category` records, registered with `RegisterKeyMappingsEvent.registerCategory`; the label key is `key.category.<namespace>.<path>`.
+- **HUD:** `GuiLayer` draws to a `GuiGraphicsExtractor` (`text(...)`, colors are ARGB and need the alpha byte). The F1 state is `Minecraft.gui.hud.isHidden()`, and mod layers are not hidden automatically.
+- **Items:** the `minecraft:use_effects` component (`UseEffects`) controls the slowdown while an item is in use (default 20% speed, no sprinting). Data component types can be built with `ignoreSwapAnimation()`. NeoForge registers data component types before items, so `Item.Properties.component(...)` can use our own types.
+- **Damage:** the `minecraft:bypasses_cooldown` damage-type tag exists and is checked in `LivingEntity`. `ServerPlayer.hurtServer` checks team friendly fire against `source.getEntity()`, so the shooter as causing entity is enough.
+- **GameTests** are registry entries: functions in `Registries.TEST_FUNCTION` (a `DeferredRegister`), tests via `RegisterGameTestsEvent.registerTest` with a `FunctionGameTestInstance` and `TestData`. `minecraft:empty` is a 1×1×1 structure. Only the structure's chunks tick, so force-load any extra chunks a test uses (the runner un-forces them after the batch). Use `makeMockServerPlayer(GameType)`; mock players aren't ticked by the server.
+- **Sounds:** our `sounds.json` can point at vanilla sound files, which is how the placeholder weapon sounds work.
 - If your knowledge stops around 1.21.1, also skim the 1.21.2 – 1.21.11 primers. Rendering, item models and GUIs changed a lot in that span.
 
 ### Reference code
@@ -359,6 +367,8 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | OD-05 → D20 | One shared ammo item | Owner |
 | 2026-10-08 | OD-07 → D21 | Bypass the hurt cooldown for our damage type only | Owner |
 | 2026-10-08 | OD-12 → D22 | Server authority plus a cosmetic client tracer | Owner |
+| 2026-10-08 | M2 weapon handling | Test pistol: 5 HP per hit, 12 rounds, 4 ticks between shots, 6 ticks per round to reload (placeholder until OD-06). New weapons come loaded. Firing an empty magazine starts a reload. Holding the trigger doesn't interrupt a reload, pulling it again does, and switching items cancels it (rounds already loaded stay). Creative players reload for free, like bows. *Provisional.* | Agent |
+| 2026-10-08 | M2 bullet damage | The bullet damage type is also tagged `minecraft:is_projectile`, so Projectile Protection reduces it. Vanilla knockback is kept for now; with the i-frame bypass, rapid fire knocks targets back a lot. Revisit both in the M3 balance pass (OD-06). Bullets are not saved with chunks. *Provisional.* | Agent |
 
 ---
 

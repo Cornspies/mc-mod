@@ -7,7 +7,9 @@ The full design, including what is decided and what is still open, is in **@DESI
 
 - Mod: **Fusion Factions**, mod ID `fusionfactions`, package `com.cornspies.fusionfactions`, MIT license.
 - **M0 (setup): done.**
-- **M1 (supply crate MVP): implemented** on branch `m1-supply-crate`. Still needs the two-player test on `runServer` (DESIGN.md §3.5) before it counts as done. Next after that: **M2 (weapon framework)**.
+- **M1 (supply crate MVP): implemented** on branch `m1-supply-crate`. Still needs the two-player test on `runServer` (DESIGN.md §3.5) before it counts as done.
+- **M2 (weapon framework): implemented** on branch `m2-weapon-framework` (based on `m1-supply-crate`). Game tests pass; the two-player test is still pending.
+- Next: **M3 (weapon roster)**. It needs the owner's answers to OD-03, OD-06, OD-08, OD-09, OD-10, OD-11 and OD-13 first.
 
 ## Version pins (do not change without asking)
 
