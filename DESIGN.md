@@ -129,7 +129,10 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 - **Spread** is calculated on the server. **Recoil** is a cosmetic camera kick on the client.
 - **Invulnerability frames:** vanilla's hurt cooldown would swallow rapid-fire hits, so our damage type bypasses it *(D21)*.
 - **HUD:** ammo counter while a weapon is held. The item durability bar shows the magazine level (Fusion Warfare did this).
-- **Knockback:** vanilla knockback on hits for now; a per-weapon value from M3 on. Armor that reduces or removes it is OD-30.
+- **Knockback:** a per-weapon value (§4.3); knockback resistance reduces it. Armor that reduces or removes it is OD-30.
+- **Headshots** *(D25)* do 1.5× damage. A hit counts as a headshot if it lands no more than 0.3 blocks below the target's eyes. The shooter hears a hit marker on every hit, and a different one for headshots.
+- **Armor piercing** *(D24)*: bullets ignore 30% of the armor's protection (the sniper 50%). Enchantments such as Protection and Projectile Protection still count in full.
+- **Aiming** *(D28)*: hip-fire for all weapons. In third person, players hold every weapon with both arms raised (the crossbow aiming pose). The sniper's zoom key (default **Z**) cycles off / 3× / 6× in first person. Zoom slows the mouse to match and shows the spyglass overlay.
 - **Melee:** bashing with a gun does small damage. Optional.
 
 ### 4.3 Roster (D23)
@@ -143,12 +146,47 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 | Sniper rifle | High damage, long range, zoom (D28) | **Crate-only** (recipe behind a config option) |
 | Gatling gun | Spins up before firing, very high rate of fire | **Crate-only** (recipe behind a config option) |
 
-**Later candidates:** rocket launcher (explosive), grenades (frag / flash / gas). Fusion Warfare's numbers are in Appendix A.1 as inspiration only; the M3 balance pass sets our own (D24).
+**Later candidates:** rocket launcher (explosive), grenades (frag / flash / gas). Fusion Warfare's numbers are in Appendix A.1 as inspiration only.
+
+**First balance pass (M3, provisional).** The single source of truth is `weapon/Weapons.java`. Damage is per pellet, in HP. Speed is in blocks per tick.
+
+| Weapon | Damage | Pellets | Magazine | Ticks between shots | Auto | Reload (ticks/round) | Ammo/round | Spread | Speed | Range (ticks) | Knockback | Piercing |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Pistol | 6 | 1 | 12 | 4 | no | 5 | 1 | ±1° | 4 | 50 | 0.4 | 30% |
+| Auto pistol | 4 | 1 | 20 | 3 | yes | 3 | 1 | ±2.5° | 4 | 40 | 0.25 | 30% |
+| SMG | 3.5 | 1 | 30 | 2 | yes | 3 | 1 | ±3° | 4 | 30 | 0.15 | 30% |
+| Shotgun | 2.5 | 8 | 6 | 16 | no | 10 | 2 | ±6° | 3.5 | 12 | 0.2 | 30% |
+| Sniper rifle | 18 | 1 | 5 | 30 | no | 20 | 2 | 0° | 8 | 40 | 0.8 | 50% |
+| Gatling gun | 2.5 | 1 | 120 | 1 (after 20 ticks spin-up) | yes | 1 | 1 | ±3.5° | 4 | 40 | 0.05 | 30% |
+
+Body-shot hits to kill a full-health player at the fastest fire rate. Time to kill is in brackets: from the first hit, without the gatling's spin-up. Armor sets are full sets without enchantments. Shotgun numbers assume all 8 pellets hit.
+
+| Weapon | No armor | Iron | Diamond | Netherite |
+|---|---|---|---|---|
+| Pistol | 4 (0.6 s) | 6 (1.0 s) | 7 (1.2 s) | 8 (1.4 s) |
+| Auto pistol | 5 (0.6 s) | 8 (1.05 s) | 11 (1.5 s) | 11 (1.5 s) |
+| SMG | 6 (0.5 s) | 10 (0.9 s) | 13 (1.2 s) | 13 (1.2 s) |
+| Shotgun | 1 | 2 (0.8 s) | 3 (1.6 s) | 3 (1.6 s) |
+| Sniper rifle | 2 (1.5 s) | 2 (1.5 s) | 2 (1.5 s) | 2 (1.5 s) |
+| Gatling gun | 8 (0.35 s) | 14 (0.65 s) | 18 (0.85 s) | 18 (0.85 s) |
+
+A sniper headshot kills an unarmored or iron-armored player in one hit.
+
+**Recipes** *(D27)*. Three parts are made from vanilla items, and the weapons from the parts:
+
+- Barrel: `iron, copper, iron` in a row.
+- Fusion core: amethyst shard in the middle, redstone on the sides, gold nuggets in the corners.
+- Grip: two leather in a column, iron next to the top one.
+- Ammo (8): copper ingot, gunpowder and redstone, shapeless.
+- Weapons are shapeless. Pistol = barrel + core + grip. Auto pistol = pistol + core. SMG = auto pistol + barrel + grip. Shotgun = 2 barrels + core + grip.
+- Sniper rifle = 2 barrels + 2 cores + grip + spyglass, and gatling gun = 4 barrels + 2 cores + grip + iron block. These two only load when `heavyWeaponRecipes = true` in `config/fusionfactions-startup.toml` *(D26)*. It's a startup config, so changing it needs a server restart.
 
 ### 4.4 Assets
 
-- Own Blockbench models and textures in a sci-fi "fusion" style, using Fusion Warfare's look as a reference. Not 1:1 copies (D5).
+- Own models and textures in a sci-fi "fusion" style, using Fusion Warfare's look as a reference. Not 1:1 copies (D5).
+  - v1: the weapon models are built from boxes by `tools/weapon_models.py`, which writes `models/item/<weapon>.json` and a shared palette texture. Edit the script, not the JSON. Blockbench models can replace them later.
 - Sounds: self-made or CC0/CC-BY. Keep an `ATTRIBUTION.md` listing sources.
+  - v1: `sounds.json` points at vanilla sound files as placeholders, so there is nothing to attribute yet.
 
 ---
 
@@ -238,8 +276,7 @@ What Fusion Warfare's missiles did, and what to avoid, is in Appendix A.3.
 
 ### Weapons
 
-| ID | Question | Options | Recommendation | Blocks |
-|---|---|---|---|---|
+None open. All v1 weapon decisions are in §2 (D19–D29); armor against weapons is OD-30 under "Later".
 
 ### Supply crate
 
@@ -282,7 +319,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | **M0 Setup** ✅ *done 2026-10-06* | OD-01 and OD-02 answered. Project created from the 26.3 MDK; NeoForge bumped and pinned; mod ID and package set; `.gitignore`; git repo. Builds, and runs on both `runClient` and `runServer`. |
 | **M1 Supply crate MVP** ✅ *done 2026-10-08* | Crate block and block entity, three rarity loot tables (placeholder vanilla loot), falling-crate entity, scheduler with SavedData, location picking, announcements and countdown, chunk ticket, despawn, admin commands, server config. |
 | **M2 Weapon framework** ✅ *done 2026-10-08* | Weapon base item, central stats record, ammo item, ammo/reload data components, reload keybind and packet, projectile entity, custom damage type, placeholder sounds, ammo HUD. One working test gun. |
-| **M3 Weapon roster** | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
+| **M3 Weapon roster** 🟡 *implemented 2026-10-08; two-player test pending* | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
 | **M4 Integration & polish** | Weapons in crate loot (OD-19), optional OPAC integration (OD-22), config documentation, two-player playtest on a dedicated server, release v0.1.0. |
 
 ---
@@ -334,6 +371,14 @@ The supply crate comes first because it is self-contained and proves out the sha
 - **Damage:** the `minecraft:bypasses_cooldown` damage-type tag exists and is checked in `LivingEntity`. `ServerPlayer.hurtServer` checks team friendly fire against `source.getEntity()`, so the shooter as causing entity is enough.
 - **GameTests** are registry entries: functions in `Registries.TEST_FUNCTION` (a `DeferredRegister`), tests via `RegisterGameTestsEvent.registerTest` with a `FunctionGameTestInstance` and `TestData`. `minecraft:empty` is a 1×1×1 structure. Only the structure's chunks tick, so force-load any extra chunks a test uses (the runner un-forces them after the batch). Use `makeMockServerPlayer(GameType)`; mock players aren't ticked by the server.
 - **Sounds:** our `sounds.json` can point at vanilla sound files, which is how the placeholder weapon sounds work.
+### Learned while building M3 (verified against 26.3 sources)
+
+- **Startup config:** the `STARTUP` config type loads as soon as it's registered, before datapacks. That makes it the right place for anything a recipe or loot condition reads. `SYNCED` only loads in `ServerLifecycleHooks.handleServerAboutToStart`, after the datapacks.
+- **Recipes** are a reloadable registry like loot tables: generate them with `RecipeProvider.asBootstrap(...)` in `createReloadableRegistryObjects`. NeoForge conditions still work: `output.withConditions(ICondition)` writes `neoforge:conditions`, and custom conditions are a `MapCodec` registered in `NeoForgeRegistries.Keys.CONDITION_CODECS`.
+- **Armor piercing:** `LivingIncomingDamageEvent` is the only event early enough to change the armor reduction, via `DamageContainer.addModifier(Reduction.ARMOR, ...)`. Vanilla armor: `realArmor = clamp(armor − damage / (2 + toughness / 4), 0.2 × armor, 20)`, reduction `realArmor / 25`. A newly equipped armor piece only counts after a tick.
+- **Item models:** cuboid `elements` allow free rotation on any axis and `light_emission` from 0 to 15. The model must fit in −16..32 on every axis. Display transforms apply translation (in pixels), then rotation, then scale. First person looks along −z. A custom arm pose comes from `IClientItemExtensions.getArmPose`, registered with `RegisterClientExtensionsEvent`. `CROSSBOW_HOLD` turns the holding arm 0.3 rad inward (`AnimationUtils.animateCrossbowHold`).
+- **Client input:** `ComputeFovModifierEvent` for zoom and `CalculatePlayerTurnEvent` for mouse sensitivity. Turn speed is `(sensitivity × 0.6 + 0.2)³ × 8` (`MouseHandler`). The spyglass overlay texture is `Hud.SPYGLASS_SCOPE_LOCATION`.
+- **GameTests run concurrently in one world.** Give each test a backstop wall and filter projectiles by owner, or stray bullets from one test hit another test's targets.
 - If your knowledge stops around 1.21.1, also skim the 1.21.2 – 1.21.11 primers. Rendering, item models and GUIs changed a lot in that span.
 
 ### Reference code
@@ -385,6 +430,11 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | OD-09 → D27 | Vanilla items plus own parts | Owner |
 | 2026-10-08 | OD-10 → D28 | Hip-fire, sniper zoom | Owner |
 | 2026-10-08 | OD-13 → D29 | Static 3D models | Owner |
+| 2026-10-08 | M3 balance | First balance pass as in §4.3. Targets: craftable weapons kill full diamond in about 1.2–1.5 s of sustained hits, and the sniper kills in two body shots through any armor. Bullets ignore 30% of the armor's protection, the sniper 50%; enchantments count in full. Shotgun shells and sniper rounds cost 2 ammo each. The gatling needs 20 ticks of held trigger before it fires. *Provisional.* | Agent |
+| 2026-10-08 | M3 headshots | Headshots do 1.5× damage. A hit counts as one if it lands no more than 0.3 blocks below the target's eyes. The shooter hears a hit marker on every hit, with a separate headshot sound. *Provisional.* | Agent |
+| 2026-10-08 | M3 knockback | Per weapon: sniper 0.8, pistol 0.4, auto pistol 0.25, shotgun 0.2 per pellet, SMG 0.15, gatling 0.05 (a vanilla melee hit is 0.4). *Provisional.* | Agent |
+| 2026-10-08 | M3 recipes | Parts and recipes as in §4.3. The auto pistol and SMG are upgrades of the previous weapon. The heavy-weapon recipe switch is a startup config (`heavyWeaponRecipes`, off), not a synced one, because recipes load before the synced config. So it is per server, not per world, and needs a restart. *Provisional.* | Agent |
+| 2026-10-08 | M3 aiming and models | Zoom is 3× and 6× on the Z key, first person only, with slower mouse movement and the spyglass overlay. Weapons are held in the crossbow aiming pose in third person. Models come from `tools/weapon_models.py`; sounds are vanilla placeholders. *Provisional.* | Agent |
 
 ---
 
