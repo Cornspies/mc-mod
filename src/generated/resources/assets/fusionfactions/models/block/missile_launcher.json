@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "fusionfactions:block/missile_launcher_bottom",
+    "side": "fusionfactions:block/missile_launcher_side",
+    "top": "fusionfactions:block/missile_launcher_top"
+  }
+}

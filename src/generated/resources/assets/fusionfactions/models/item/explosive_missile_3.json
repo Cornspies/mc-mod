@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "fusionfactions:item/explosive_missile_3"
+  }
+}

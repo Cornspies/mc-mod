@@ -18,6 +18,7 @@ public class ModBlockLoot extends BlockLootSubProvider {
     @Override
     protected void generate() {
         this.dropSelf(ModBlocks.WEAPON_WORKBENCH.get());
+        this.dropSelf(ModBlocks.MISSILE_LAUNCHER.get());
     }
 
     @Override

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "F": "fusionfactions:fusion_core",
+    "G": "#c:gunpowders",
+    "I": "#c:ingots/iron",
+    "T": "minecraft:tnt"
+  },
+  "pattern": [
+    "ITI",
+    "ITI",
+    "GFG"
+  ],
+  "result": {
+    "id": "fusionfactions:explosive_missile_1"
+  }
+}

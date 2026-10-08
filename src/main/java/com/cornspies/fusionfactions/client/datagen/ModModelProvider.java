@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.client.UpgradeTierProperty;
+import com.cornspies.fusionfactions.missile.MissileType;
 import com.cornspies.fusionfactions.registry.ModBlocks;
 import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.supplydrop.SupplyCrateBlock;
@@ -51,6 +52,19 @@ public class ModModelProvider extends ModelProvider {
                 })));
 
         blockModels.createTrivialBlock(ModBlocks.WEAPON_WORKBENCH.get(), TexturedModel.CUBE_BOTTOM_TOP);
+        blockModels.createTrivialBlock(ModBlocks.MISSILE_LAUNCHER.get(), TexturedModel.CUBE_BOTTOM_TOP);
+
+        // Missiles: a flat icon in inventories, on the ground and in frames; the 3D model from tools/missile_models.py
+        // in hand and in flight (client.MissileRenderer).
+        for (MissileType type : MissileType.values()) {
+            for (int tier = 1; tier <= MissileType.MAX_TIER; tier++) {
+                var missile = ModItems.missile(type, tier);
+                ItemModel.Unbaked flat = ItemModelUtils.plainModel(itemModels.createFlatItemModel(missile.get(), ModelTemplates.FLAT_ITEM));
+                ItemModel.Unbaked model = ItemModelUtils.plainModel(missile.getId().withPath(path -> "item/" + path + "_3d"));
+                itemModels.itemModelOutput.accept(missile.get(), ItemModelGenerators.createFlatModelDispatch(flat, model));
+            }
+        }
+        itemModels.generateFlatItem(ModItems.TARGET_DESIGNATOR.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
 
         // Weapons use the 3D models from tools/weapon_models.py (D29), kept in src/main/resources. On top of the
         // gun, each upgrade type shows the installed part's model for its tier, or nothing (D34).
