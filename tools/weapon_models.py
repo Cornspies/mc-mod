@@ -84,8 +84,18 @@ def trigger(z):
             box((7.8, 7.5, z), (8.2, 8.6, z + 0.4), BLACK)]
 
 
+def iron_sights(y, z_front, z_rear, front_base=None):
+    """A front post and a rear notch, both topping out at y. Aiming lines the notch up with the post."""
+    base = y - 0.6 if front_base is None else front_base
+    return [box((7.85, base, z_front), (8.15, y, z_front + 0.5), BLACK),
+            box((7.4, y - 0.6, z_rear), (7.8, y, z_rear + 0.6), BLACK),
+            box((8.2, y - 0.6, z_rear), (8.6, y, z_rear + 0.6), BLACK),
+            box((7.8, y - 0.6, z_rear), (8.2, y - 0.3, z_rear + 0.6), BLACK)]
+
+
 def pistol():
     return [box((7, 9.5, 2), (9, 12, 12), METAL),
+            *iron_sights(13.0, 3, 10.2),
             box((7.25, 12, 3), (8.75, 12.4, 11), DARK),
             box((7.5, 10, 1), (8.5, 11, 2), BLACK),
             *side_strips(10.4, 11, 4, 10, 7, 9),
@@ -97,6 +107,7 @@ def pistol():
 def auto_pistol():
     rot = tilt(12, (8, 8.5, 12))
     return [box((7, 9.5, 2), (9, 12, 12), BLUE),
+            *iron_sights(13.0, 3, 10.2),
             box((7.25, 12, 3), (8.75, 12.4, 11), DARK),
             box((7.25, 9.75, 0), (8.75, 11.75, 2), DARK),
             box((7.15, 10.25, 0.6), (8.85, 11.25, 1.2), CYAN, glow=True),
@@ -109,6 +120,7 @@ def auto_pistol():
 
 def smg():
     return [box((6.75, 8.5, 2), (9.25, 12, 14), METAL),
+            *iron_sights(13.2, -2.5, 11.5, front_base=11.5),
             box((7, 12, 3), (9, 12.6, 13), DARK),
             box((7.25, 9, -3), (8.75, 11.5, 2), DARK),
             box((7.5, 9.5, -4), (8.5, 11, -3), BLACK),
@@ -122,6 +134,7 @@ def smg():
 
 def shotgun():
     return [box((7.1, 10.5, -8), (8.9, 12.3, 8), DARK),
+            *iron_sights(12.9, -7.4, 12.6, front_base=12.3),
             box((6.9, 10.3, -8.6), (9.1, 12.5, -7.6), BLACK),
             box((7.4, 9.0, -6), (8.6, 10.5, 8), METAL),
             box((6.9, 8.6, -4), (9.1, 10.6, 3), LEATHER),
@@ -173,6 +186,7 @@ def gatling_gun():
               box((7.25, 13, 7), (8.75, 15.5, 8), BLACK),
               box((7.25, 13, 12), (8.75, 15.5, 13), BLACK),
               box((7.25, 15, 7), (8.75, 15.6, 13), BLACK),
+              *iron_sights(16.2, 7, 12),
               box((10.5, 5, 8), (13, 9, 13), DARK),
               box((10.5, 8.5, 8), (13, 9, 13), ORANGE),
               box((6, 8, 15), (10, 12, 18), DARK),
@@ -197,12 +211,46 @@ def coils(x0, x1, y0, y1, zs, c):
     return [box((x0 - 0.2, y0 - 0.2, z), (x1 + 0.2, y1 + 0.2, z + 0.5), c, glow=True) for z in zs]
 
 
-def sight(y, z, c):
-    """Accuracy: a small sight on top, lens to the front."""
-    return [box((7.4, y, z - 1.2), (8.6, y + 0.4, z + 1.2), BLACK),
-            box((7.3, y + 0.4, z - 1), (8.7, y + 1.6, z + 1), DARK),
-            box((7.45, y + 0.6, z - 1.05), (8.55, y + 1.4, z - 1), LENS),
-            box((7.25, y + 1.6, z - 0.4), (8.75, y + 1.75, z + 0.4), c, glow=True)]
+def stabilizer(y_bottom, z0, z1, c):
+    """Accuracy: a stabilizer under the barrel, with a laser lens at the front."""
+    return [box((7.4, y_bottom - 1.2, z0), (8.6, y_bottom, z1), DARK),
+            box((7.35, y_bottom - 0.9, z0 + 0.3), (8.65, y_bottom - 0.5, z1 - 0.3), c, glow=True),
+            box((7.7, y_bottom - 1.0, z0 - 0.05), (8.3, y_bottom - 0.4, z0), LENS)]
+
+
+# Sights (D40), mounted on the top rail at height y, centred at z. Each is a hollow frame you look
+# through when aiming; the reticle itself is drawn on the HUD. SIGHT_EYE gives, per tier, the height of
+# the sight's aiming line above the rail.
+SIGHT_EYE = {1: 1.15, 2: 1.45, 3: 1.4}
+
+
+def sight(tier, y, z, c):
+    if tier == 1:
+        # Red dot: a small open window on a low base.
+        return [box((7.4, y, z - 1.0), (8.6, y + 0.4, z + 1.0), BLACK),
+                box((7.25, y + 0.4, z - 0.3), (7.5, y + 2.0, z + 0.3), DARK),
+                box((8.5, y + 0.4, z - 0.3), (8.75, y + 2.0, z + 0.3), DARK),
+                box((7.25, y + 1.8, z - 0.3), (8.75, y + 2.05, z + 0.3), DARK),
+                box((7.2, y + 0.1, z - 0.8), (7.4, y + 0.35, z + 0.8), c, glow=True),
+                box((8.6, y + 0.1, z - 0.8), (8.8, y + 0.35, z + 0.8), c, glow=True)]
+    if tier == 2:
+        # Holographic: a wider box with a hood over a big window.
+        return [box((7.2, y, z - 1.6), (8.8, y + 0.5, z + 1.6), BLACK),
+                box((7.05, y + 0.5, z - 1.4), (7.3, y + 2.4, z + 0.6), DARK),
+                box((8.7, y + 0.5, z - 1.4), (8.95, y + 2.4, z + 0.6), DARK),
+                box((7.05, y + 2.2, z - 1.5), (8.95, y + 2.45, z + 0.6), DARK),
+                box((7.3, y + 0.5, z + 0.6), (8.7, y + 0.9, z + 1.6), DARK),
+                box((7.0, y + 0.15, z - 1.4), (7.2, y + 0.4, z + 1.4), c, glow=True),
+                box((8.8, y + 0.15, z - 1.4), (9.0, y + 0.4, z + 1.4), c, glow=True)]
+    # 2x optic: a short square tube on two mounts.
+    return [box((7.45, y, z - 1.4), (8.55, y + 0.5, z - 0.8), BLACK),
+            box((7.45, y, z + 0.8), (8.55, y + 0.5, z + 1.4), BLACK),
+            box((7.15, y + 0.5, z - 2.0), (8.85, y + 0.75, z + 2.0), DARK),
+            box((7.15, y + 2.05, z - 2.0), (8.85, y + 2.3, z + 2.0), DARK),
+            box((7.15, y + 0.75, z - 2.0), (7.4, y + 2.05, z + 2.0), DARK),
+            box((8.6, y + 0.75, z - 2.0), (8.85, y + 2.05, z + 2.0), DARK),
+            box((7.1, y + 1.2, z - 1.0), (7.15, y + 1.6, z + 1.0), c, glow=True),
+            box((8.85, y + 1.2, z - 1.0), (8.9, y + 1.6, z + 1.0), c, glow=True)]
 
 
 def pad(x0, x1, y0, y1, z, c, rotation=None):
@@ -252,7 +300,7 @@ PARTS = {
         'noise': lambda c: suppressor(10.5, 1, 0.7, 4.5, c),
         'recoil': brace,
         'reload': lambda c: coupler(7.2, 8.8, 3.6, 5.2, 9.8, 11.7, c, PISTOL_GRIP),
-        'accuracy': lambda c: sight(12.4, 7, c),
+        'accuracy': lambda c: stabilizer(9.5, 1.6, 3.4, c),
         'range': lambda c: coils(7, 9, 9.5, 12, (2.4, 3.4), c),
     },
     'auto_pistol': {
@@ -261,7 +309,7 @@ PARTS = {
         'noise': lambda c: suppressor(10.75, 0, 0.75, 4.5, c),
         'recoil': brace,
         'reload': lambda c: coupler(7.35, 8.65, 0.7, 2.3, 10.0, 11.6, c, PISTOL_GRIP),
-        'accuracy': lambda c: sight(12.4, 7, c),
+        'accuracy': lambda c: stabilizer(9.75, 0.2, 1.8, c),
         'range': lambda c: coils(7, 9, 9.5, 12, (2.4, 3.4), c),
     },
     'smg': {
@@ -270,7 +318,7 @@ PARTS = {
         'noise': lambda c: suppressor(10.25, -4, 0.8, 5, c),
         'recoil': lambda c: pad(7, 9, 7, 11, 20, c),
         'reload': lambda c: coupler(7.3, 8.7, 6.5, 8.3, 4.6, 6.4, c, SMG_MAG),
-        'accuracy': lambda c: sight(12.6, 8, c),
+        'accuracy': lambda c: stabilizer(9, -2.5, -0.5, c),
         'range': lambda c: coils(7.25, 8.75, 9, 11.5, (-2.5, -1.0, 0.5), c),
     },
     'shotgun': {
@@ -281,7 +329,7 @@ PARTS = {
         'noise': lambda c: suppressor(11.4, -8.6, 1.0, 4, c),
         'recoil': lambda c: pad(7.0, 9.0, 5.5, 11.2, 24.5, c, SHOTGUN_STOCK),
         'reload': lambda c: coupler(6.8, 9.2, 8.6, 11, 9.5, 13, c),
-        'accuracy': lambda c: sight(12.5, 11, c),
+        'accuracy': lambda c: stabilizer(9.0, -6, -4.2, c),
         'range': lambda c: coils(7.1, 8.9, 10.5, 12.3, (-7.4, -6.2, -5.0), c),
     },
     'sniper_rifle': {
@@ -290,7 +338,7 @@ PARTS = {
         'noise': lambda c: suppressor(10.7, -17.5, 0.85, 4.0, c),
         'recoil': lambda c: pad(7, 9, 6.5, 12, 25, c),
         'reload': lambda c: coupler(7.3, 8.7, 6.6, 8.8, 8.2, 10.8, c),
-        'accuracy': lambda c: sight(11.2, -14, c),
+        'accuracy': lambda c: stabilizer(10.2, -8, -6, c),
         'range': lambda c: coils(7.5, 8.5, 10.2, 11.2, (-14.6, -10.4, -6.4), c),
     },
     'gatling_gun': {
@@ -301,11 +349,32 @@ PARTS = {
                             box((7, 9, -14.55), (9, 11, -14.5), BLACK)],
         'recoil': lambda c: pad(6, 10, 8, 12, 18, c),
         'reload': lambda c: coupler(10.5, 13, 5.5, 8.5, 8.2, 12.8, c),
-        'accuracy': lambda c: sight(15.6, 10, c),
+        'accuracy': lambda c: stabilizer(8, -9, -5.5, c),
         'range': lambda c: coils(6, 10, 8, 12, (-8, -0.5), c),
     },
 }
-UPGRADE_TYPES = ('penetration', 'magazine', 'noise', 'recoil', 'reload', 'accuracy', 'range')
+UPGRADE_TYPES = ('penetration', 'magazine', 'noise', 'recoil', 'reload', 'accuracy', 'range', 'sight')
+
+# Where sights mount (rail height, centre z), and the aiming line without one: (height, z of the eye end).
+# For the sniper the line goes through its scope, which the scope overlay replaces when fully aimed.
+SIGHT_MOUNTS = {
+    'pistol': (12.4, 6.5),
+    'auto_pistol': (12.4, 6.5),
+    'smg': (12.6, 8),
+    'shotgun': (12.5, 10.5),
+    'sniper_rifle': (11.2, -12),
+    'gatling_gun': (15.6, 9.5),
+}
+IRON_SIGHTS = {
+    'pistol': (12.8, 10.8),
+    'auto_pistol': (12.8, 10.8),
+    'smg': (13.0, 12.1),
+    'shotgun': (12.75, 13.2),
+    'sniper_rifle': (13.4, 12),
+    'gatling_gun': (16.0, 12.6),
+}
+for name, (rail, z) in SIGHT_MOUNTS.items():
+    PARTS[name]['sight'] = {tier: (lambda c, t=tier, r=rail, zz=z: sight(t, r, zz, c)) for tier in (1, 2, 3)}
 
 
 WEAPONS = {
@@ -419,12 +488,47 @@ def write_model(path, elements, display_transforms):
     path.write_text(json.dumps(model, indent=2) + '\n')
 
 
+def part_builder(name, kind, tier):
+    builder = PARTS[name][kind]
+    return builder[tier] if isinstance(builder, dict) else builder
+
+
+# How far in front of the eye the aiming point sits when aiming down sights, in blocks: the iron sights'
+# rear notch, or the back of the sight. Closer makes the sight bigger on screen.
+EYE_DISTANCE = {0: 0.3, 1: 0.2, 2: 0.2, 3: 0.13}
+SIGHT_HALF_LENGTH = {1: 1.0, 2: 1.6, 3: 2.0}
+
+
+def aim_offsets(name, shift_z):
+    """First-person hand offsets (blocks) that put the aiming line on the centre of the screen.
+
+    The item is drawn at hand + translation + scale * (point / 16 - 0.5) (ItemTransform, then the
+    renderer's -0.5 centring), with the first-person display transform from display(). Key 0 is the
+    iron sights, 1 to 3 the sight tiers. client.AimData reads the result from weapon_aim.json.
+    """
+    grip = GRIPS[name]
+    gy, gz = grip[0] - 8, grip[1] + shift_z - 8
+    s1 = FIRST_PERSON_SCALE
+    ty, tz = (-s1 * gy - 1) / 16, (-s1 * gz - 2) / 16
+    points = {0: IRON_SIGHTS[name]}
+    rail, z = SIGHT_MOUNTS[name]
+    for tier in (1, 2, 3):
+        points[tier] = (rail + SIGHT_EYE[tier], z + SIGHT_HALF_LENGTH[tier])
+    offsets = {}
+    for key, (py, pz) in points.items():
+        y = -ty - s1 * (py / 16 - 0.5)
+        zz = -EYE_DISTANCE[key] - tz - s1 * ((pz + shift_z) / 16 - 0.5)
+        offsets[str(key)] = [round(y, 4), round(zz, 4)]
+    return offsets
+
+
 def main():
+    aim = {}
     (ASSETS / 'models/item').mkdir(parents=True, exist_ok=True)
     write_palette(ASSETS / 'textures/item/weapon_palette.png')
     for name, build in WEAPONS.items():
         elements = build()
-        parts = {(kind, tier): PARTS[name][kind](color) for kind in UPGRADE_TYPES for tier, color in TIER_COLORS.items()}
+        parts = {(kind, tier): part_builder(name, kind, tier)(color) for kind in UPGRADE_TYPES for tier, color in TIER_COLORS.items()}
         # The gun and every part share one centring and one set of display transforms, so the parts line
         # up with the gun and a fully upgraded gun still fits in the inventory slot.
         everything = elements + [e for part in parts.values() for e in part]
@@ -433,8 +537,10 @@ def main():
         write_model(ASSETS / f'models/item/{name}.json', elements, transforms)
         for (kind, tier), part in parts.items():
             write_model(ASSETS / f'models/item/{name}/{kind}_{tier}.json', part, transforms)
+        aim[name] = aim_offsets(name, shift_z)
         lo, hi = bounds(elements)
         print(f'{name}: {len(elements)} boxes, {hi[2] - lo[2]:.1f} long, {len(parts)} part models')
+    (ASSETS / 'weapon_aim.json').write_text(json.dumps(aim, indent=2) + '\n')
 
 
 if __name__ == '__main__':

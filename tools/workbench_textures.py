@@ -144,6 +144,24 @@ ICONS = {
         '................',
         '................',
     ],
+    'sight': [
+        '................',
+        '................',
+        '....########....',
+        '...#........#...',
+        '...#........#...',
+        '...#...++...#...',
+        '...#...++...#...',
+        '...#........#...',
+        '...#........#...',
+        '....########....',
+        '..############..',
+        '..#----------#..',
+        '..############..',
+        '....##....##....',
+        '................',
+        '................',
+    ],
 }
 
 WEAPON_ICON = [
@@ -267,7 +285,7 @@ def gui():
     # Connectors from the weapon to the fields, drawn first so the slot frames sit on top.
     cx, cy = GRID_X + GRID_STEP + 9, GRID_Y + GRID_STEP + 9
     for field in range(9):
-        if field in (0, 4):
+        if field == 4:
             continue
         fx, fy = GRID_X + field % 3 * GRID_STEP + 9, GRID_Y + field // 3 * GRID_STEP + 9
         steps = max(abs(fx - cx), abs(fy - cy))
@@ -276,8 +294,6 @@ def gui():
             y = round(cy + (fy - cy) * i / steps)
             fill(x - 1, y - 1, x + 1, y + 1, (160, 160, 160))
     for field in range(9):
-        if field == 0:
-            continue  # the top-left field is free for a later upgrade type
         slot(GRID_X + field % 3 * GRID_STEP, GRID_Y + field // 3 * GRID_STEP)
 
     for row in range(3):
