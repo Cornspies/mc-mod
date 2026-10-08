@@ -1,6 +1,228 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "fusionfactions:item/smg"
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "fusionfactions:item/smg"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/penetration_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/penetration_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/penetration_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "penetration"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/magazine_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/magazine_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/magazine_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "magazine"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/noise_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/noise_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/noise_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "noise"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/recoil_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/recoil_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/recoil_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "recoil"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/reload_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/reload_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/reload_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "reload"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/accuracy_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/accuracy_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/accuracy_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "accuracy"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/range_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/range_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/smg/range_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "range"
+      }
+    ]
   }
 }

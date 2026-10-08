@@ -1,6 +1,228 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "fusionfactions:item/shotgun"
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "fusionfactions:item/shotgun"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/penetration_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/penetration_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/penetration_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "penetration"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/magazine_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/magazine_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/magazine_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "magazine"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/noise_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/noise_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/noise_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "noise"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/recoil_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/recoil_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/recoil_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "recoil"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/reload_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/reload_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/reload_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "reload"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/accuracy_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/accuracy_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/accuracy_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "accuracy"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/range_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/range_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/shotgun/range_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "range"
+      }
+    ]
   }
 }

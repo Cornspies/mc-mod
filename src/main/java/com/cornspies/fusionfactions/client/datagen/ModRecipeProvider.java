@@ -50,6 +50,19 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(Items.GUNPOWDER), this.has(Items.GUNPOWDER))
                 .save(this.output);
 
+        // Weapon workbench (D30): a crafting table fitted with weapon parts.
+        this.shaped(RecipeCategory.MISC, ModItems.WEAPON_WORKBENCH.get())
+                .pattern("IFI")
+                .pattern("BCG")
+                .pattern("III")
+                .define('I', Items.IRON_INGOT)
+                .define('F', ModItems.FUSION_CORE.get())
+                .define('B', ModItems.BARREL.get())
+                .define('C', Items.CRAFTING_TABLE)
+                .define('G', ModItems.GRIP.get())
+                .unlockedBy(getHasName(ModItems.FUSION_CORE.get()), this.has(ModItems.FUSION_CORE.get()))
+                .save(this.output);
+
         this.shapeless(RecipeCategory.COMBAT, ModItems.PISTOL.get())
                 .requires(ModItems.BARREL.get())
                 .requires(ModItems.FUSION_CORE.get())

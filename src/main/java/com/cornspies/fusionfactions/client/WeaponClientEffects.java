@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -37,7 +36,7 @@ public final class WeaponClientEffects {
             return;
         }
         ItemStack stack = player.getUseItem();
-        WeaponStats stats = weapon.stats();
+        WeaponStats stats = weapon.stats(stack);
         boolean newPress = !wasUsing;
         wasUsing = true;
         // Same rules as WeaponItem.tryFire: holding only repeats on automatic weapons and never interrupts a reload.
@@ -86,7 +85,7 @@ public final class WeaponClientEffects {
         player.setXRot(Mth.clamp(player.getXRot() - kick, -90.0F, 90.0F));
         player.setYRot(player.getYRot() + (player.getRandom().nextFloat() - 0.5F) * kick * 0.5F);
 
-        level.playLocalSound(player.getX(), player.getY(), player.getZ(), stats.fireSound().value(), SoundSource.PLAYERS, 1.0F, 1.0F, false);
+        GunshotSounds.play(stats.fireSound().value(), player.position(), stats.soundRange());
     }
 
     private WeaponClientEffects() {

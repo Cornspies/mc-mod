@@ -62,7 +62,7 @@ public final class SniperScope {
 
     private static boolean canZoom(Minecraft minecraft, Player player) {
         return minecraft.options.getCameraType().isFirstPerson()
-                && player.getMainHandItem().getItem() instanceof WeaponItem weapon && weapon.stats().scoped();
+                && player.getMainHandItem().getItem() instanceof WeaponItem weapon && weapon.baseStats().scoped();
     }
 
     public static void onClientTick(ClientTickEvent.Post event) {

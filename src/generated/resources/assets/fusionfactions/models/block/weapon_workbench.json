@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "fusionfactions:block/weapon_workbench_bottom",
+    "side": "fusionfactions:block/weapon_workbench_side",
+    "top": "fusionfactions:block/weapon_workbench_top"
+  }
+}

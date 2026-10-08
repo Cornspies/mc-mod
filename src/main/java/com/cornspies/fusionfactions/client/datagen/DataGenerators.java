@@ -22,7 +22,8 @@ public final class DataGenerators {
         // they're generated as registry objects.
         RegistrySetBuilder reloadable = new RegistrySetBuilder()
                 .add(Registries.LOOT_TABLE, new LootTableProvider(Set.of(),
-                        List.of(new LootTableProvider.SubProviderEntry(SupplyCrateLoot::new, LootContextParamSets.CHEST))))
+                        List.of(new LootTableProvider.SubProviderEntry(SupplyCrateLoot::new, LootContextParamSets.CHEST),
+                                new LootTableProvider.SubProviderEntry(ModBlockLoot::new, LootContextParamSets.BLOCK))))
                 .add(RecipeProvider.asBootstrap(ModRecipeProvider::new));
         event.createReloadableRegistryObjects(reloadable, Set.of(FusionFactions.MODID));
     }

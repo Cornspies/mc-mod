@@ -1,11 +1,18 @@
 package com.cornspies.fusionfactions.weapon;
 
+import java.util.function.Consumer;
+
 import org.jspecify.annotations.Nullable;
 
 import com.cornspies.fusionfactions.registry.ModDataComponents;
 import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.registry.ModSounds;
+import com.cornspies.fusionfactions.weapon.upgrade.UpgradeItem;
+import com.cornspies.fusionfactions.weapon.upgrade.UpgradeRules;
+import com.cornspies.fusionfactions.weapon.upgrade.UpgradeType;
+import com.cornspies.fusionfactions.weapon.upgrade.WeaponUpgrades;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,6 +28,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
 // A gun (DESIGN.md §4.2). Firing uses the vanilla item-use flow: the first shot when the use starts,
@@ -30,15 +39,21 @@ public class WeaponItem extends Item {
     private static final int BAR_COLOR = 0x55FFFF;
     private static final int BAR_COLOR_RELOADING = 0xFFAA00;
 
-    private final WeaponStats stats;
+    private final WeaponStats baseStats;
 
-    public WeaponItem(WeaponStats stats, Item.Properties properties) {
+    public WeaponItem(WeaponStats baseStats, Item.Properties properties) {
         super(properties);
-        this.stats = stats;
+        this.baseStats = baseStats;
     }
 
-    public WeaponStats stats() {
-        return this.stats;
+    // The weapon's own stats, without upgrades (see Weapons).
+    public WeaponStats baseStats() {
+        return this.baseStats;
+    }
+
+    // The stats of this weapon stack, with its installed upgrade parts (DESIGN.md §4.5).
+    public WeaponStats stats(ItemStack stack) {
+        return UpgradeRules.apply(this, this.baseStats, WeaponUpgrades.of(stack));
     }
 
     public static int getAmmo(ItemStack stack) {
@@ -56,7 +71,7 @@ public class WeaponItem extends Item {
         }
         player.startUsingItem(hand);
         if (level instanceof ServerLevel serverLevel) {
-            if (this.stats.spinUpTicks() > 0) {
+            if (this.baseStats.spinUpTicks() > 0) {
                 level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.GATLING_GUN_SPIN.get(), SoundSource.PLAYERS, 0.8F, 1.0F);
             }
             this.tryFire(serverLevel, player, player.getItemInHand(hand), true);
@@ -66,7 +81,7 @@ public class WeaponItem extends Item {
 
     @Override
     public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int ticksRemaining) {
-        if (this.stats.automatic() && level instanceof ServerLevel serverLevel && entity instanceof Player player) {
+        if (this.baseStats.automatic() && level instanceof ServerLevel serverLevel && entity instanceof Player player) {
             this.tryFire(serverLevel, player, stack, false);
         }
     }
@@ -83,22 +98,23 @@ public class WeaponItem extends Item {
 
     // newPress: the trigger was just pulled, as opposed to being held down on an automatic weapon.
     private void tryFire(ServerLevel level, Player player, ItemStack stack, boolean newPress) {
+        WeaponStats stats = this.stats(stack);
         long now = level.getGameTime();
         Long nextShot = stack.get(ModDataComponents.NEXT_SHOT.get());
         // A value further away than one interval is stale (e.g. from another world) and is ignored.
-        if (nextShot != null && nextShot > now && nextShot - now <= this.stats.fireIntervalTicks()) {
+        if (nextShot != null && nextShot > now && nextShot - now <= stats.fireIntervalTicks()) {
             return;
         }
         // Holding the trigger doesn't interrupt a reload; pulling it again does.
         if (isReloading(stack) && !newPress) {
             return;
         }
-        if (this.stats.spinUpTicks() > 0 && player.getTicksUsingItem() < this.stats.spinUpTicks()) {
+        if (stats.spinUpTicks() > 0 && player.getTicksUsingItem() < stats.spinUpTicks()) {
             // Still spinning up. Pulling the trigger already stops a reload, so holding it doesn't resume one.
             stack.remove(ModDataComponents.RELOAD.get());
             return;
         }
-        stack.set(ModDataComponents.NEXT_SHOT.get(), now + this.stats.fireIntervalTicks());
+        stack.set(ModDataComponents.NEXT_SHOT.get(), now + stats.fireIntervalTicks());
 
         int ammo = getAmmo(stack);
         if (ammo <= 0) {
@@ -112,19 +128,19 @@ public class WeaponItem extends Item {
         // Firing interrupts a reload. The rounds loaded so far stay in the magazine.
         stack.remove(ModDataComponents.RELOAD.get());
         stack.set(ModDataComponents.AMMO.get(), ammo - 1);
-        for (int i = 0; i < this.stats.pellets(); i++) {
-            this.spawnBullet(level, player);
+        for (int i = 0; i < stats.pellets(); i++) {
+            spawnBullet(level, player, stats);
         }
-        // Everyone but the shooter hears this. The shooter's client plays it right away (D22).
-        level.playSound(player, player.getX(), player.getY(), player.getZ(), this.stats.fireSound(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        // Everyone in hearing range but the shooter hears this. The shooter's client plays it right away (D22).
+        GunshotPayload.broadcast(level, player instanceof ServerPlayer serverPlayer ? serverPlayer : null, player.position(), stats);
     }
 
-    private void spawnBullet(ServerLevel level, Player player) {
+    private static void spawnBullet(ServerLevel level, Player player, WeaponStats stats) {
         RandomSource random = player.getRandom();
-        float pitch = player.getXRot() + (random.nextFloat() * 2.0F - 1.0F) * this.stats.spreadDegrees();
-        float yaw = player.getYRot() + (random.nextFloat() * 2.0F - 1.0F) * this.stats.spreadDegrees();
-        BulletEntity bullet = new BulletEntity(level, player, this.stats);
-        bullet.shootFromRotation(player, pitch, yaw, 0.0F, this.stats.bulletSpeed(), 0.0F);
+        float pitch = player.getXRot() + (random.nextFloat() * 2.0F - 1.0F) * stats.spreadDegrees();
+        float yaw = player.getYRot() + (random.nextFloat() * 2.0F - 1.0F) * stats.spreadDegrees();
+        BulletEntity bullet = new BulletEntity(level, player, stats);
+        bullet.shootFromRotation(player, pitch, yaw, 0.0F, stats.bulletSpeed(), 0.0F);
         level.addFreshEntity(bullet);
     }
 
@@ -134,7 +150,7 @@ public class WeaponItem extends Item {
         if (!(stack.getItem() instanceof WeaponItem weapon) || isReloading(stack)) {
             return;
         }
-        WeaponStats stats = weapon.stats;
+        WeaponStats stats = weapon.stats(stack);
         if (getAmmo(stack) >= stats.magazineSize()) {
             return;
         }
@@ -157,21 +173,22 @@ public class WeaponItem extends Item {
             stack.remove(ModDataComponents.RELOAD.get());
             return;
         }
+        WeaponStats stats = this.stats(stack);
         long now = level.getGameTime();
-        if (now < nextRound && nextRound - now <= this.stats.reloadTicksPerRound()) {
+        if (now < nextRound && nextRound - now <= stats.reloadTicksPerRound()) {
             return;
         }
         int ammo = getAmmo(stack);
-        if (ammo >= this.stats.magazineSize() || (!player.hasInfiniteMaterials() && !consumeAmmo(player, this.stats.ammoPerRound()))) {
+        if (ammo >= stats.magazineSize() || (!player.hasInfiniteMaterials() && !consumeAmmo(player, stats.ammoPerRound()))) {
             stack.remove(ModDataComponents.RELOAD.get());
             return;
         }
         stack.set(ModDataComponents.AMMO.get(), ammo + 1);
-        if (ammo + 1 >= this.stats.magazineSize()) {
+        if (ammo + 1 >= stats.magazineSize()) {
             stack.remove(ModDataComponents.RELOAD.get());
             level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.WEAPON_RELOAD_DONE.get(), SoundSource.PLAYERS, 0.8F, 1.0F);
         } else {
-            stack.set(ModDataComponents.RELOAD.get(), now + this.stats.reloadTicksPerRound());
+            stack.set(ModDataComponents.RELOAD.get(), now + stats.reloadTicksPerRound());
             level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.WEAPON_RELOAD.get(), SoundSource.PLAYERS, 0.6F, 1.0F);
         }
     }
@@ -204,6 +221,26 @@ public class WeaponItem extends Item {
         return true;
     }
 
+    // Lists the installed upgrade parts (DESIGN.md §4.5).
+    @Override
+    @SuppressWarnings("deprecation")
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        WeaponUpgrades upgrades = WeaponUpgrades.of(stack);
+        for (UpgradeType type : UpgradeType.values()) {
+            int tier = upgrades.tier(type);
+            if (tier == 0) {
+                continue;
+            }
+            Component name = Component.translatable(type.translationKey()).append(" ").append(UpgradeItem.tierName(tier));
+            if (UpgradeRules.accepts(this, type)) {
+                builder.accept(name.copy().withStyle(UpgradeItem.tierColor(tier))
+                        .append(Component.literal(": ").append(UpgradeRules.describe(type, tier)).withStyle(ChatFormatting.GRAY)));
+            } else {
+                builder.accept(Component.translatable("tooltip.fusionfactions.weapon.upgrade_inactive", name).withStyle(ChatFormatting.DARK_GRAY));
+            }
+        }
+    }
+
     // The durability bar shows how full the magazine is.
     @Override
     public boolean isBarVisible(ItemStack stack) {
@@ -212,7 +249,8 @@ public class WeaponItem extends Item {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0F * Math.min(getAmmo(stack), this.stats.magazineSize()) / this.stats.magazineSize());
+        int magazine = this.stats(stack).magazineSize();
+        return Math.round(13.0F * Math.min(getAmmo(stack), magazine) / magazine);
     }
 
     @Override

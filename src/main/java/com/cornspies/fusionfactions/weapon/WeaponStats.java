@@ -35,13 +35,38 @@ public record WeaponStats(
         float armorPiercing,
         // Has a zoom scope (D28).
         boolean scoped,
-        Holder<SoundEvent> fireSound) {
+        Holder<SoundEvent> fireSound,
+        // Blocks within which other players hear a shot. The noise upgrade shortens it.
+        float soundRange) {
 
     public static Builder builder() {
         return new Builder();
     }
 
-    // Defaults for everything that most weapons share. damage, magazineSize, fireIntervalTicks,
+    // A builder holding these stats, for changing some of them (see UpgradeRules).
+    public Builder toBuilder() {
+        Builder builder = new Builder();
+        builder.damage = this.damage;
+        builder.pellets = this.pellets;
+        builder.magazineSize = this.magazineSize;
+        builder.fireIntervalTicks = this.fireIntervalTicks;
+        builder.automatic = this.automatic;
+        builder.spinUpTicks = this.spinUpTicks;
+        builder.reloadTicksPerRound = this.reloadTicksPerRound;
+        builder.ammoPerRound = this.ammoPerRound;
+        builder.spreadDegrees = this.spreadDegrees;
+        builder.recoilDegrees = this.recoilDegrees;
+        builder.bulletSpeed = this.bulletSpeed;
+        builder.bulletLifetimeTicks = this.bulletLifetimeTicks;
+        builder.knockback = this.knockback;
+        builder.armorPiercing = this.armorPiercing;
+        builder.scoped = this.scoped;
+        builder.fireSound = this.fireSound;
+        builder.soundRange = this.soundRange;
+        return builder;
+    }
+
+    // Defaults for everything that most weapons share (sounds carry 48 blocks). damage, magazineSize, fireIntervalTicks,
     // reloadTicksPerRound and fireSound must always be set.
     public static final class Builder {
         private float damage;
@@ -60,6 +85,7 @@ public record WeaponStats(
         private float armorPiercing = 0.3F;
         private boolean scoped;
         private Holder<SoundEvent> fireSound;
+        private float soundRange = 48.0F;
 
         public Builder damage(float damage) {
             this.damage = damage;
@@ -141,10 +167,15 @@ public record WeaponStats(
             return this;
         }
 
+        public Builder soundRange(float blocks) {
+            this.soundRange = blocks;
+            return this;
+        }
+
         public WeaponStats build() {
             return new WeaponStats(this.damage, this.pellets, this.magazineSize, this.fireIntervalTicks, this.automatic, this.spinUpTicks,
                     this.reloadTicksPerRound, this.ammoPerRound, this.spreadDegrees, this.recoilDegrees, this.bulletSpeed,
-                    this.bulletLifetimeTicks, this.knockback, this.armorPiercing, this.scoped, this.fireSound);
+                    this.bulletLifetimeTicks, this.knockback, this.armorPiercing, this.scoped, this.fireSound, this.soundRange);
         }
     }
 }

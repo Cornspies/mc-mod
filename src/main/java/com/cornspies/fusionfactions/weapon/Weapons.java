@@ -4,7 +4,8 @@ import com.cornspies.fusionfactions.registry.ModSounds;
 
 // Central weapon stats table (DESIGN.md §3.3). The roster is D23, the balance D24; the numbers are a first
 // balance pass (DESIGN.md §4.3) and can be tuned here. Defaults not listed are in WeaponStats.Builder:
-// 1 pellet, 1 ammo per round, 4 blocks/tick, 50 ticks lifetime, 0.4 knockback, 30% armor piercing.
+// 1 pellet, 1 ammo per round, 4 blocks/tick, 50 ticks lifetime, 0.4 knockback, 30% armor piercing, heard
+// within 48 blocks. Upgrades (UpgradeRules) change these per weapon stack.
 public final class Weapons {
     // Semi-auto sidearm: 7 hits against full diamond.
     public static final WeaponStats PISTOL = WeaponStats.builder()
@@ -62,7 +63,7 @@ public final class Weapons {
             .build();
 
     // Crate-only (D26). Two body shots kill through diamond, a headshot kills unarmored or iron.
-    // Fast, accurate, pierces half of the armor; rounds cost 2 ammo.
+    // Fast, accurate, pierces half of the armor; rounds cost 2 ammo. Heard twice as far as other guns.
     public static final WeaponStats SNIPER_RIFLE = WeaponStats.builder()
             .damage(18.0F)
             .magazine(5)
@@ -76,6 +77,7 @@ public final class Weapons {
             .armorPiercing(0.5F)
             .scoped()
             .fireSound(ModSounds.SNIPER_RIFLE_FIRE)
+            .soundRange(96.0F)
             .build();
 
     // Crate-only (D26). Needs a second to spin up, then fires every tick.

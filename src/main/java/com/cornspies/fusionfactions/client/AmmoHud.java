@@ -28,7 +28,7 @@ public final class AmmoHud {
             return;
         }
         int ammo = WeaponItem.getAmmo(stack);
-        int magazine = weapon.stats().magazineSize();
+        int magazine = weapon.stats(stack).magazineSize();
         Component text;
         if (WeaponItem.isReloading(stack)) {
             text = Component.translatable("hud.fusionfactions.reloading", ammo, magazine);

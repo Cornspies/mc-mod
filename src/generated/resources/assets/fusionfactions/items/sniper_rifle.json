@@ -1,6 +1,228 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "fusionfactions:item/sniper_rifle"
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "fusionfactions:item/sniper_rifle"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/penetration_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/penetration_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/penetration_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "penetration"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/magazine_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/magazine_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/magazine_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "magazine"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/noise_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/noise_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/noise_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "noise"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/recoil_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/recoil_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/recoil_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "recoil"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/reload_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/reload_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/reload_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "reload"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/accuracy_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/accuracy_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/accuracy_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "accuracy"
+      },
+      {
+        "type": "minecraft:range_dispatch",
+        "entries": [
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/range_1"
+            },
+            "threshold": 1.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/range_2"
+            },
+            "threshold": 2.0
+          },
+          {
+            "model": {
+              "type": "minecraft:model",
+              "model": "fusionfactions:item/sniper_rifle/range_3"
+            },
+            "threshold": 3.0
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:empty"
+        },
+        "property": "fusionfactions:upgrade_tier",
+        "upgrade": "range"
+      }
+    ]
   }
 }

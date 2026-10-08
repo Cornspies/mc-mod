@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": "fusionfactions:barrel",
+    "C": "minecraft:crafting_table",
+    "F": "fusionfactions:fusion_core",
+    "G": "fusionfactions:grip",
+    "I": "minecraft:iron_ingot"
+  },
+  "pattern": [
+    "IFI",
+    "BCG",
+    "III"
+  ],
+  "result": {
+    "id": "fusionfactions:weapon_workbench"
+  }
+}

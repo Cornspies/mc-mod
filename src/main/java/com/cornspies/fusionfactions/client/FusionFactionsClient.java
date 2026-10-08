@@ -3,6 +3,7 @@ package com.cornspies.fusionfactions.client;
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.client.datagen.DataGenerators;
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
+import com.cornspies.fusionfactions.registry.ModMenuTypes;
 
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.neoforged.api.distmarker.Dist;
@@ -10,6 +11,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -28,6 +30,9 @@ public class FusionFactionsClient {
         modEventBus.addListener(WeaponKeys::register);
         modEventBus.addListener(FusionFactionsClient::registerGuiLayers);
         modEventBus.addListener(WeaponItemExtensions::register);
+        modEventBus.addListener(GunshotSounds::register);
+        modEventBus.addListener(UpgradeTierProperty::register);
+        modEventBus.addListener(FusionFactionsClient::registerScreens);
         NeoForge.EVENT_BUS.addListener(WeaponKeys::onClientTick);
         NeoForge.EVENT_BUS.addListener(WeaponClientEffects::onClientTick);
         NeoForge.EVENT_BUS.addListener(SniperScope::onClientTick);
@@ -41,6 +46,10 @@ public class FusionFactionsClient {
         event.registerEntityRenderer(ModEntityTypes.FALLING_CRATE.get(), FallingCrateRenderer::new);
         // Bullets are drawn as a particle trail by the entity itself.
         event.registerEntityRenderer(ModEntityTypes.BULLET.get(), NoopRenderer::new);
+    }
+
+    private static void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(ModMenuTypes.WEAPON_WORKBENCH.get(), WeaponWorkbenchScreen::new);
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {

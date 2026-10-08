@@ -3,7 +3,7 @@ package com.cornspies.fusionfactions.config;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-// Gameplay settings for a server (DESIGN.md §3.3, §5.4).
+// Gameplay settings for a server (DESIGN.md §3.3, §5.4): supply crates here, weapon upgrades in UpgradeConfig.
 // Registered as FML's SYNCED type, which replaced the old SERVER type: it is loaded per server
 // instance and can be overridden per world in <world>/syncedconfig.
 public final class ServerConfig {
@@ -88,6 +88,8 @@ public final class ServerConfig {
                 .define("dimension", "minecraft:overworld", value -> value instanceof String s && Identifier.tryParse(s) != null);
 
         builder.pop();
+
+        UpgradeConfig.define(builder);
         SPEC = builder.build();
     }
 

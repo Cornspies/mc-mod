@@ -1,11 +1,15 @@
 package com.cornspies.fusionfactions.client.datagen;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.client.UpgradeTierProperty;
 import com.cornspies.fusionfactions.registry.ModBlocks;
 import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.supplydrop.SupplyCrateBlock;
+import com.cornspies.fusionfactions.weapon.upgrade.UpgradeType;
+import com.cornspies.fusionfactions.weapon.upgrade.WeaponUpgrades;
 
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
@@ -16,8 +20,13 @@ import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.data.models.model.TexturedModel;
+import net.minecraft.client.renderer.item.EmptyModel;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.RangeSelectItemModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 
 public class ModModelProvider extends ModelProvider {
@@ -41,9 +50,28 @@ public class ModModelProvider extends ModelProvider {
                             ModelTemplates.CUBE_BOTTOM_TOP.createWithSuffix(crate, suffix, textures, blockModels.modelOutput));
                 })));
 
-        // Weapons use the 3D models from tools/weapon_models.py (D29), kept in src/main/resources.
-        for (var weapon : List.of(ModItems.PISTOL, ModItems.AUTO_PISTOL, ModItems.SMG, ModItems.SHOTGUN, ModItems.SNIPER_RIFLE, ModItems.GATLING_GUN)) {
-            itemModels.itemModelOutput.accept(weapon.get(), ItemModelUtils.plainModel(weapon.getId().withPrefix("item/")));
+        blockModels.createTrivialBlock(ModBlocks.WEAPON_WORKBENCH.get(), TexturedModel.CUBE_BOTTOM_TOP);
+
+        // Weapons use the 3D models from tools/weapon_models.py (D29), kept in src/main/resources. On top of the
+        // gun, each upgrade type shows the installed part's model for its tier, or nothing (D34).
+        for (var weapon : ModItems.WEAPONS) {
+            Identifier base = weapon.getId().withPrefix("item/");
+            List<ItemModel.Unbaked> layers = new ArrayList<>();
+            layers.add(ItemModelUtils.plainModel(base));
+            for (UpgradeType type : UpgradeType.values()) {
+                List<RangeSelectItemModel.Entry> tiers = new ArrayList<>();
+                for (int tier = 1; tier <= WeaponUpgrades.MAX_TIER; tier++) {
+                    Identifier part = base.withSuffix("/" + type.getSerializedName() + "_" + tier);
+                    tiers.add(ItemModelUtils.override(ItemModelUtils.plainModel(part), tier));
+                }
+                layers.add(ItemModelUtils.rangeSelect(new UpgradeTierProperty(type), new EmptyModel.Unbaked(), tiers));
+            }
+            itemModels.itemModelOutput.accept(weapon.get(), ItemModelUtils.composite(layers.toArray(ItemModel.Unbaked[]::new)));
+        }
+        for (UpgradeType type : UpgradeType.values()) {
+            for (int tier = 1; tier <= WeaponUpgrades.MAX_TIER; tier++) {
+                itemModels.generateFlatItem(ModItems.upgrade(type, tier).get(), ModelTemplates.FLAT_ITEM);
+            }
         }
         itemModels.generateFlatItem(ModItems.AMMO.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.BARREL.get(), ModelTemplates.FLAT_ITEM);

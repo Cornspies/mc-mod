@@ -1,5 +1,6 @@
 package com.cornspies.fusionfactions.gametest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -82,8 +83,11 @@ public final class WeaponGameTests {
 
     public static void registerTests(RegisterGameTestsEvent event) {
         Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(FusionFactions.id("default"));
-        for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function
-                : List.of(PISTOL_HITS_TARGET, PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, SPENT_BULLET_SINKS, BULLET_LEAVING_WATER_DROPS, BULLET_IGNORES_LATE_UPDATES, BODY_SHOT_DAMAGE, HEADSHOT_DAMAGE, ARMOR_PIERCING, SHOTGUN_FIRES_PELLETS, WEAPON_RECIPES, RELOAD_CONSUMES_AMMO)) {
+        List<DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>>> functions = new ArrayList<>(List.of(PISTOL_HITS_TARGET,
+                PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, SPENT_BULLET_SINKS, BULLET_LEAVING_WATER_DROPS, BULLET_IGNORES_LATE_UPDATES,
+                BODY_SHOT_DAMAGE, HEADSHOT_DAMAGE, ARMOR_PIERCING, SHOTGUN_FIRES_PELLETS, WEAPON_RECIPES, RELOAD_CONSUMES_AMMO));
+        functions.addAll(UpgradeGameTests.TESTS);
+        for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function : functions) {
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
             event.registerTest(function.getId(), new FunctionGameTestInstance(function.key(), data));

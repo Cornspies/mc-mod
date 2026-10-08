@@ -1,6 +1,7 @@
 package com.cornspies.fusionfactions.registry;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.weapon.upgrade.WeaponUpgrades;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.core.component.DataComponentType;
@@ -25,6 +26,10 @@ public final class ModDataComponents {
     // Game time at which the weapon may fire again.
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> NEXT_SHOT = DATA_COMPONENTS.registerComponentType("next_shot",
             builder -> builder.persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG).ignoreSwapAnimation());
+
+    // Upgrade parts installed at the weapon workbench (DESIGN.md §4.5).
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<WeaponUpgrades>> UPGRADES = DATA_COMPONENTS.registerComponentType("upgrades",
+            builder -> builder.persistent(WeaponUpgrades.CODEC).networkSynchronized(WeaponUpgrades.STREAM_CODEC));
 
     private ModDataComponents() {
     }

@@ -1,6 +1,8 @@
 package com.cornspies.fusionfactions.registry;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.weapon.upgrade.UpgradeType;
+import com.cornspies.fusionfactions.weapon.upgrade.WeaponUpgrades;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -26,6 +28,12 @@ public final class ModCreativeTabs {
                 output.accept(ModItems.BARREL.get());
                 output.accept(ModItems.FUSION_CORE.get());
                 output.accept(ModItems.GRIP.get());
+                output.accept(ModItems.WEAPON_WORKBENCH.get());
+                for (UpgradeType type : UpgradeType.values()) {
+                    for (int tier = 1; tier <= WeaponUpgrades.MAX_TIER; tier++) {
+                        output.accept(ModItems.upgrade(type, tier).get());
+                    }
+                }
             })
             .build());
 
