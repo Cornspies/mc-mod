@@ -95,6 +95,7 @@ public final class WeaponGameTests {
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
             event.registerTest(function.getId(), new FunctionGameTestInstance(function.key(), data));
         }
+        MissileGameTests.register(event, environment);
     }
 
     // One shot from the pistol hurts a pig 5.5 blocks away, with the right damage attribution.
