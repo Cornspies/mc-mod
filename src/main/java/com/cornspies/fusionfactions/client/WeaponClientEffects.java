@@ -1,6 +1,5 @@
 package com.cornspies.fusionfactions.client;
 
-import com.cornspies.fusionfactions.registry.ModSounds;
 import com.cornspies.fusionfactions.weapon.WeaponItem;
 import com.cornspies.fusionfactions.weapon.WeaponStats;
 
@@ -86,7 +85,7 @@ public final class WeaponClientEffects {
         player.setXRot(Mth.clamp(player.getXRot() - kick, -90.0F, 90.0F));
         player.setYRot(player.getYRot() + (player.getRandom().nextFloat() - 0.5F) * kick * 0.5F);
 
-        level.playLocalSound(player.getX(), player.getY(), player.getZ(), ModSounds.WEAPON_FIRE.get(), SoundSource.PLAYERS, 1.0F, 1.0F, false);
+        level.playLocalSound(player.getX(), player.getY(), player.getZ(), stats.fireSound().value(), SoundSource.PLAYERS, 1.0F, 1.0F, false);
     }
 
     private WeaponClientEffects() {

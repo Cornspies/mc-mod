@@ -26,9 +26,14 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.PositionPath;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.pig.Pig;
+import net.minecraft.world.entity.monster.zombie.Husk;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -55,6 +60,12 @@ public final class WeaponGameTests {
             TEST_FUNCTIONS.register("bullet_leaving_water_drops", () -> WeaponGameTests::bulletLeavingWaterDrops);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> BULLET_IGNORES_LATE_UPDATES =
             TEST_FUNCTIONS.register("bullet_ignores_late_updates", () -> WeaponGameTests::bulletIgnoresLateUpdates);
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> BODY_SHOT_DAMAGE =
+            TEST_FUNCTIONS.register("body_shot_damage", () -> WeaponGameTests::bodyShotDamage);
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> HEADSHOT_DAMAGE =
+            TEST_FUNCTIONS.register("headshot_damage", () -> WeaponGameTests::headshotDamage);
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> ARMOR_PIERCING =
+            TEST_FUNCTIONS.register("armor_piercing", () -> WeaponGameTests::armorPiercing);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> RELOAD_CONSUMES_AMMO =
             TEST_FUNCTIONS.register("reload_consumes_ammo", () -> WeaponGameTests::reloadConsumesAmmo);
 
@@ -65,7 +76,7 @@ public final class WeaponGameTests {
     public static void registerTests(RegisterGameTestsEvent event) {
         Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(FusionFactions.id("default"));
         for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function
-                : List.of(PISTOL_HITS_TARGET, PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, SPENT_BULLET_SINKS, BULLET_LEAVING_WATER_DROPS, BULLET_IGNORES_LATE_UPDATES, RELOAD_CONSUMES_AMMO)) {
+                : List.of(PISTOL_HITS_TARGET, PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, SPENT_BULLET_SINKS, BULLET_LEAVING_WATER_DROPS, BULLET_IGNORES_LATE_UPDATES, BODY_SHOT_DAMAGE, HEADSHOT_DAMAGE, ARMOR_PIERCING, RELOAD_CONSUMES_AMMO)) {
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
             event.registerTest(function.getId(), new FunctionGameTestInstance(function.key(), data));
@@ -209,19 +220,79 @@ public final class WeaponGameTests {
     private static Shot shootAtPig(GameTestHelper helper, int distance, boolean underwater) {
         buildLane(helper, distance, underwater ? distance + 1 : 0);
         Pig pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(0, 1, distance));
-        Player player = helper.makeMockServerPlayer(GameType.SURVIVAL);
+        return new Shot(fireAt(helper, pig.getBoundingBox().getCenter()), pig);
+    }
 
-        // Aim from where the bullet starts (just below the eyes) at the middle of the pig.
+    // A mock player at the start of the lane fires one pistol shot at `target`, aiming from where the
+    // bullet starts (just below the eyes).
+    private static Player fireAt(GameTestHelper helper, Vec3 target) {
+        Player player = helper.makeMockServerPlayer(GameType.SURVIVAL);
         Vec3 feet = helper.absoluteVec(new Vec3(0.5, 1.0, 0.5));
         Vec3 muzzle = feet.add(0.0, player.getEyeHeight() - 0.1, 0.0);
-        Vec3 aim = pig.getBoundingBox().getCenter().subtract(muzzle);
+        Vec3 aim = target.subtract(muzzle);
         float yaw = (float) Math.toDegrees(Math.atan2(-aim.x, aim.z));
         float pitch = (float) -Math.toDegrees(Math.atan2(aim.y, aim.horizontalDistance()));
         player.snapTo(feet.x, feet.y, feet.z, yaw, pitch);
-
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.PISTOL.get()));
         player.getMainHandItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
-        return new Shot(player, pig);
+        return player;
+    }
+
+    // A pistol shot at a husk's chest does normal damage (after its natural armor and armor piercing).
+    private static void bodyShotDamage(GameTestHelper helper) {
+        Husk husk = spawnHuskTarget(helper, false);
+        fireAt(helper, new Vec3(husk.getX(), husk.getY() + 0.9, husk.getZ()));
+        assertDamageTaken(helper, husk, Weapons.PISTOL.damage(), Weapons.PISTOL.armorPiercing());
+    }
+
+    // A pistol shot at a husk's eyes is a headshot (D25).
+    private static void headshotDamage(GameTestHelper helper) {
+        Husk husk = spawnHuskTarget(helper, false);
+        fireAt(helper, husk.getEyePosition());
+        assertDamageTaken(helper, husk, Weapons.PISTOL.damage() * BulletEntity.HEADSHOT_MULTIPLIER, Weapons.PISTOL.armorPiercing());
+    }
+
+    // Against full diamond armor, the pistol's armor piercing (D24) lets about twice the vanilla damage through.
+    private static void armorPiercing(GameTestHelper helper) {
+        Husk husk = spawnHuskTarget(helper, true);
+        // Armor from newly equipped items only counts after the husk has ticked, so fire a little later.
+        helper.runAfterDelay(5, () -> {
+            float pierced = expectedDamage(husk, Weapons.PISTOL.damage(), Weapons.PISTOL.armorPiercing());
+            helper.assertTrue(pierced > expectedDamage(husk, Weapons.PISTOL.damage(), 0.0F) + 0.5F, "the test needs armor where piercing matters");
+            fireAt(helper, new Vec3(husk.getX(), husk.getY() + 0.9, husk.getZ()));
+        });
+        assertDamageTaken(helper, husk, Weapons.PISTOL.damage(), Weapons.PISTOL.armorPiercing());
+    }
+
+    private static Husk spawnHuskTarget(GameTestHelper helper, boolean diamondArmor) {
+        int distance = 6;
+        buildLane(helper, distance, 0);
+        Husk husk = helper.spawnWithNoFreeWill(EntityTypes.HUSK, new BlockPos(0, 1, distance));
+        husk.setBaby(false);
+        if (diamondArmor) {
+            husk.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
+            husk.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.DIAMOND_CHESTPLATE));
+            husk.setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.DIAMOND_LEGGINGS));
+            husk.setItemSlot(EquipmentSlot.FEET, new ItemStack(Items.DIAMOND_BOOTS));
+        }
+        return husk;
+    }
+
+    // Vanilla's armor formula (CombatRules), with `piercing` of the armor's protection ignored.
+    private static float expectedDamage(LivingEntity target, float damage, float piercing) {
+        float armor = target.getArmorValue();
+        float toughness = (float) target.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
+        float realArmor = Math.clamp(armor - damage / (2.0F + toughness / 4.0F), armor * 0.2F, 20.0F);
+        return damage * (1.0F - realArmor / 25.0F * (1.0F - piercing));
+    }
+
+    // Passes once the target has taken exactly one bullet's damage, as expectedDamage computes it.
+    private static void assertDamageTaken(GameTestHelper helper, LivingEntity target, float damage, float piercing) {
+        helper.succeedWhen(() -> {
+            float taken = target.getMaxHealth() - target.getHealth();
+            float expected = expectedDamage(target, damage, piercing);
+            helper.assertTrue(Math.abs(taken - expected) < 0.05F, "expected " + expected + " damage, got " + taken);
+        });
     }
 
     private static void assertShotHits(GameTestHelper helper, Shot shot) {

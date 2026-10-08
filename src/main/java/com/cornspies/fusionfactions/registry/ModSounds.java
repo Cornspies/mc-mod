@@ -15,6 +15,9 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_EMPTY = register("weapon.empty");
     public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_RELOAD = register("weapon.reload");
     public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_RELOAD_DONE = register("weapon.reload_done");
+    // Hit markers, played only to the shooter.
+    public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_HIT = register("weapon.hit");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_HEADSHOT = register("weapon.headshot");
 
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
         return SOUND_EVENTS.register(name, id -> SoundEvent.createVariableRangeEvent(id));

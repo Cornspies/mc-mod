@@ -74,5 +74,7 @@
   "subtitles.fusionfactions.weapon.reload_done": "Gun reloaded",
   "death.attack.fusionfactions.bullet": "%1$s was shot by %2$s",
   "death.attack.fusionfactions.bullet.item": "%1$s was shot by %2$s using %3$s",
-  "death.attack.fusionfactions.bullet.player": "%1$s was shot whilst trying to escape %2$s"
+  "death.attack.fusionfactions.bullet.player": "%1$s was shot whilst trying to escape %2$s",
+  "subtitles.fusionfactions.weapon.hit": "Bullet hits",
+  "subtitles.fusionfactions.weapon.headshot": "Headshot"
 }

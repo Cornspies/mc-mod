@@ -2,26 +2,59 @@
   "weapon.fire": {
     "subtitle": "subtitles.fusionfactions.weapon.fire",
     "sounds": [
-      { "name": "minecraft:item/crossbow/shoot1", "pitch": 1.5 }
+      {
+        "name": "minecraft:item/crossbow/shoot1",
+        "pitch": 1.5
+      }
     ]
   },
   "weapon.empty": {
     "subtitle": "subtitles.fusionfactions.weapon.empty",
     "sounds": [
-      { "name": "minecraft:random/click", "pitch": 1.8 }
+      {
+        "name": "minecraft:random/click",
+        "pitch": 1.8
+      }
     ]
   },
   "weapon.reload": {
     "subtitle": "subtitles.fusionfactions.weapon.reload",
     "sounds": [
-      { "name": "minecraft:item/crossbow/loading_middle1", "pitch": 1.4 },
-      { "name": "minecraft:item/crossbow/loading_middle2", "pitch": 1.4 }
+      {
+        "name": "minecraft:item/crossbow/loading_middle1",
+        "pitch": 1.4
+      },
+      {
+        "name": "minecraft:item/crossbow/loading_middle2",
+        "pitch": 1.4
+      }
     ]
   },
   "weapon.reload_done": {
     "subtitle": "subtitles.fusionfactions.weapon.reload_done",
     "sounds": [
-      { "name": "minecraft:item/crossbow/loading_end", "pitch": 1.2 }
+      {
+        "name": "minecraft:item/crossbow/loading_end",
+        "pitch": 1.2
+      }
+    ]
+  },
+  "weapon.hit": {
+    "subtitle": "subtitles.fusionfactions.weapon.hit",
+    "sounds": [
+      {
+        "name": "minecraft:random/successful_hit",
+        "pitch": 1.2
+      }
+    ]
+  },
+  "weapon.headshot": {
+    "subtitle": "subtitles.fusionfactions.weapon.headshot",
+    "sounds": [
+      {
+        "name": "minecraft:random/orb",
+        "pitch": 1.6
+      }
     ]
   }
 }

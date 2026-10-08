@@ -13,6 +13,7 @@ import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.registry.ModSounds;
 import com.cornspies.fusionfactions.supplydrop.SupplyDropCommands;
 import com.cornspies.fusionfactions.supplydrop.SupplyDropManager;
+import com.cornspies.fusionfactions.weapon.BulletEntity;
 import com.cornspies.fusionfactions.weapon.ReloadPayload;
 import com.mojang.logging.LogUtils;
 
@@ -47,6 +48,7 @@ public class FusionFactions {
         modEventBus.addListener(WeaponGameTests::registerTests);
         NeoForge.EVENT_BUS.addListener(SupplyDropManager::onServerTick);
         NeoForge.EVENT_BUS.addListener(SupplyDropCommands::register);
+        NeoForge.EVENT_BUS.addListener(BulletEntity::onIncomingDamage);
     }
 
     public static Identifier id(String path) {

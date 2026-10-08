@@ -108,14 +108,14 @@ public class WeaponItem extends Item {
             this.spawnBullet(level, player);
         }
         // Everyone but the shooter hears this. The shooter's client plays it right away (D22).
-        level.playSound(player, player.getX(), player.getY(), player.getZ(), ModSounds.WEAPON_FIRE.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        level.playSound(player, player.getX(), player.getY(), player.getZ(), this.stats.fireSound(), SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 
     private void spawnBullet(ServerLevel level, Player player) {
         RandomSource random = player.getRandom();
         float pitch = player.getXRot() + (random.nextFloat() * 2.0F - 1.0F) * this.stats.spreadDegrees();
         float yaw = player.getYRot() + (random.nextFloat() * 2.0F - 1.0F) * this.stats.spreadDegrees();
-        BulletEntity bullet = new BulletEntity(level, player, this.stats.damage(), this.stats.bulletLifetimeTicks());
+        BulletEntity bullet = new BulletEntity(level, player, this.stats);
         bullet.shootFromRotation(player, pitch, yaw, 0.0F, this.stats.bulletSpeed(), 0.0F);
         level.addFreshEntity(bullet);
     }

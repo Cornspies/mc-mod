@@ -3,11 +3,17 @@ package com.cornspies.fusionfactions.weapon;
 import org.jspecify.annotations.Nullable;
 
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
+import com.cornspies.fusionfactions.registry.ModSounds;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -23,7 +29,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 // A fast projectile with slight drop (D19). Damage uses our own damage type with the shooter as the
 // causing entity and the bullet as the direct entity (§3.2.4), so team friendly-fire rules apply.
@@ -49,8 +57,16 @@ public class BulletEntity extends Projectile {
     // A server velocity update has to turn the bullet by more than this (30 degrees) to be applied.
     private static final double MIN_TURN_COS = 0.866;
 
+    // Headshots do this much more damage (D25).
+    public static final float HEADSHOT_MULTIPLIER = 1.5F;
+    // A hit counts as a headshot if it enters the target at most this far below its eyes, which matches
+    // the head of a player (0.5 blocks, eyes about 0.2 below the top).
+    private static final double HEAD_BELOW_EYES = 0.3;
+
     private float damage;
     private int lifetimeTicks = 60;
+    private float knockback;
+    private float armorPiercing;
     // Distance moved in the last tick, used to recognise position updates that are one tick behind.
     private double lastStep;
     // Set once the bullet has been in water. Stays set after it leaves the water.
@@ -62,12 +78,14 @@ public class BulletEntity extends Projectile {
         super(type, level);
     }
 
-    BulletEntity(Level level, LivingEntity shooter, float damage, int lifetimeTicks) {
+    BulletEntity(Level level, LivingEntity shooter, WeaponStats stats) {
         this(ModEntityTypes.BULLET.get(), level);
         this.setOwner(shooter);
         this.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
-        this.damage = damage;
-        this.lifetimeTicks = lifetimeTicks;
+        this.damage = stats.damage();
+        this.lifetimeTicks = stats.bulletLifetimeTicks();
+        this.knockback = stats.knockback();
+        this.armorPiercing = stats.armorPiercing();
     }
 
     @Override
@@ -162,9 +180,40 @@ public class BulletEntity extends Projectile {
         super.onHitEntity(result);
         if (this.level() instanceof ServerLevel level) {
             Entity target = result.getEntity();
+            boolean headshot = isHeadshot(target, result.getLocation());
             DamageSource source = this.damageSources().source(ModDamageTypes.BULLET, this, this.getOwner());
-            target.hurtServer(level, source, this.damage);
+            if (target.hurtServer(level, source, headshot ? this.damage * HEADSHOT_MULTIPLIER : this.damage)) {
+                // The damage type has no vanilla knockback, so each weapon can set its own.
+                if (target instanceof LivingEntity living && this.knockback > 0.0F) {
+                    Vec3 push = this.getDeltaMovement();
+                    living.knockback(this.knockback, -push.x, -push.z, source, this.damage);
+                }
+                this.playHitMarker(target, headshot);
+            }
             this.discard();
+        }
+    }
+
+    // Where the bullet entered the target. Bullets coming in from above hit the head first.
+    private static boolean isHeadshot(Entity target, Vec3 hitLocation) {
+        return target instanceof LivingEntity && hitLocation.y >= target.getEyeY() - HEAD_BELOW_EYES;
+    }
+
+    // Only the shooter hears it. Fake players (other mods' machines, test players) may have no connection.
+    private void playHitMarker(Entity target, boolean headshot) {
+        if (this.getOwner() instanceof ServerPlayer shooter && shooter.connection != null && target != shooter) {
+            Holder<SoundEvent> sound = headshot ? ModSounds.WEAPON_HEADSHOT : ModSounds.WEAPON_HIT;
+            shooter.connection.send(new ClientboundSoundPacket(sound, SoundSource.PLAYERS, shooter.getX(), shooter.getY(), shooter.getZ(),
+                    0.6F, 1.0F, shooter.getRandom().nextLong()));
+        }
+    }
+
+    // Armor piercing (D24): bullets ignore part of the target's armor. Only LivingIncomingDamageEvent is
+    // early enough to change the armor reduction.
+    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        if (event.getSource().getDirectEntity() instanceof BulletEntity bullet && bullet.armorPiercing > 0.0F) {
+            float kept = 1.0F - bullet.armorPiercing;
+            event.getContainer().addModifier(DamageContainer.Reduction.ARMOR, (container, reduction) -> reduction * kept);
         }
     }
 
@@ -196,6 +245,8 @@ public class BulletEntity extends Projectile {
         super.addAdditionalSaveData(output);
         output.putFloat("Damage", this.damage);
         output.putInt("Lifetime", this.lifetimeTicks);
+        output.putFloat("Knockback", this.knockback);
+        output.putFloat("ArmorPiercing", this.armorPiercing);
     }
 
     @Override
@@ -203,5 +254,7 @@ public class BulletEntity extends Projectile {
         super.readAdditionalSaveData(input);
         this.damage = input.getFloatOr("Damage", 0.0F);
         this.lifetimeTicks = input.getIntOr("Lifetime", 60);
+        this.knockback = input.getFloatOr("Knockback", 0.0F);
+        this.armorPiercing = input.getFloatOr("ArmorPiercing", 0.0F);
     }
 }
