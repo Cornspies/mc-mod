@@ -132,7 +132,7 @@ These rules exist because the original mod broke all of them (see Appendix A.4).
 - **Knockback:** a per-weapon value (§4.3); knockback resistance reduces it. Armor that reduces or removes it is OD-30.
 - **Headshots** *(D25)* do 1.5× damage. A hit counts as a headshot if it lands no more than 0.3 blocks below the target's eyes. The shooter hears a hit marker on every hit, and a different one for headshots.
 - **Armor piercing** *(D24)*: bullets ignore 30% of the armor's protection (the sniper 50%). Enchantments such as Protection and Projectile Protection still count in full.
-- **Aiming** *(D28)*: hip-fire for all weapons. In third person, players hold every weapon with both arms raised (the crossbow aiming pose). The sniper's zoom key (default **Z**) cycles off / 3× / 6× in first person. Zoom slows the mouse to match and shows the spyglass overlay.
+- **Aiming** *(D28)*: hip-fire for all weapons. In third person, players hold every weapon with both arms raised (the crossbow aiming pose). The sniper's zoom key (default **Z**) cycles off / 3× / 6× in first person. Zoom slows the mouse to match and shows a sniper scope: black around a round lens, with a duplex mil-dot reticle (thin crosshair, thick posts left, right and below, a red center dot) and the zoom level next to it. The vanilla crosshair and the held weapon are hidden while zoomed.
 - **Melee:** bashing with a gun does small damage. Optional.
 
 ### 4.3 Roster (D23)
@@ -377,7 +377,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 - **Recipes** are a reloadable registry like loot tables: generate them with `RecipeProvider.asBootstrap(...)` in `createReloadableRegistryObjects`. NeoForge conditions still work: `output.withConditions(ICondition)` writes `neoforge:conditions`, and custom conditions are a `MapCodec` registered in `NeoForgeRegistries.Keys.CONDITION_CODECS`.
 - **Armor piercing:** `LivingIncomingDamageEvent` is the only event early enough to change the armor reduction, via `DamageContainer.addModifier(Reduction.ARMOR, ...)`. Vanilla armor: `realArmor = clamp(armor − damage / (2 + toughness / 4), 0.2 × armor, 20)`, reduction `realArmor / 25`. A newly equipped armor piece only counts after a tick.
 - **Item models:** cuboid `elements` allow free rotation on any axis and `light_emission` from 0 to 15. The model must fit in −16..32 on every axis. Display transforms apply translation (in pixels), then rotation, then scale. First person looks along −z. A custom arm pose comes from `IClientItemExtensions.getArmPose`, registered with `RegisterClientExtensionsEvent`. `CROSSBOW_HOLD` turns the holding arm 0.3 rad inward (`AnimationUtils.animateCrossbowHold`).
-- **Client input:** `ComputeFovModifierEvent` for zoom and `CalculatePlayerTurnEvent` for mouse sensitivity. Turn speed is `(sensitivity × 0.6 + 0.2)³ × 8` (`MouseHandler`). The spyglass overlay texture is `Hud.SPYGLASS_SCOPE_LOCATION`.
+- **Client input:** `ComputeFovModifierEvent` for zoom and `CalculatePlayerTurnEvent` for mouse sensitivity. Turn speed is `(sensitivity × 0.6 + 0.2)³ × 8` (`MouseHandler`). `RenderGuiLayerEvent.Pre` (cancel by layer name, e.g. `VanillaGuiLayers.CROSSHAIR`) hides vanilla HUD parts, and cancelling `RenderHandEvent` hides the first-person hand and item.
 - **GameTests run concurrently in one world.** Give each test a backstop wall and filter projectiles by owner, or stray bullets from one test hit another test's targets.
 - If your knowledge stops around 1.21.1, also skim the 1.21.2 – 1.21.11 primers. Rendering, item models and GUIs changed a lot in that span.
 
@@ -434,7 +434,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | M3 headshots | Headshots do 1.5× damage. A hit counts as one if it lands no more than 0.3 blocks below the target's eyes. The shooter hears a hit marker on every hit, with a separate headshot sound. *Provisional.* | Agent |
 | 2026-10-08 | M3 knockback | Per weapon: sniper 0.8, pistol 0.4, auto pistol 0.25, shotgun 0.2 per pellet, SMG 0.15, gatling 0.05 (a vanilla melee hit is 0.4). *Provisional.* | Agent |
 | 2026-10-08 | M3 recipes | Parts and recipes as in §4.3. The auto pistol and SMG are upgrades of the previous weapon. The heavy-weapon recipe switch is a startup config (`heavyWeaponRecipes`, off), not a synced one, because recipes load before the synced config. So it is per server, not per world, and needs a restart. *Provisional.* | Agent |
-| 2026-10-08 | M3 aiming and models | Zoom is 3× and 6× on the Z key, first person only, with slower mouse movement and the spyglass overlay. Weapons are held in the crossbow aiming pose in third person. Models come from `tools/weapon_models.py`; sounds are vanilla placeholders. *Provisional.* | Agent |
+| 2026-10-08 | M3 aiming and models | Zoom is 3× and 6× on the Z key, first person only, with slower mouse movement. The scope overlay was first the vanilla spyglass; after owner feedback it is a typical shooter sniper scope (§4.2), with its texture from `tools/scope_overlay.py`. Weapons are held in the crossbow aiming pose in third person. Models come from `tools/weapon_models.py`; sounds are vanilla placeholders. *Provisional.* | Agent |
 
 ---
 

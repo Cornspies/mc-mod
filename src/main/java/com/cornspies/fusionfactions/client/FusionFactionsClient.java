@@ -33,6 +33,8 @@ public class FusionFactionsClient {
         NeoForge.EVENT_BUS.addListener(SniperScope::onClientTick);
         NeoForge.EVENT_BUS.addListener(SniperScope::onComputeFov);
         NeoForge.EVENT_BUS.addListener(SniperScope::onPlayerTurn);
+        NeoForge.EVENT_BUS.addListener(SniperScope::onRenderGuiLayer);
+        NeoForge.EVENT_BUS.addListener(SniperScope::onRenderHand);
     }
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
