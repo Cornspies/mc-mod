@@ -75,8 +75,11 @@ public class WeaponItem extends Item {
         return InteractionResult.CONSUME;
     }
 
+    // Whether the player aims with this weapon in the main hand. Compares the item, not the stack object:
+    // every shot or loaded round replaces the client's copy of the stack, and vanilla keeps the item in
+    // use when the item type stays the same.
     public static boolean isAiming(Player player, ItemStack stack) {
-        return player.isUsingItem() && player.getUseItem() == stack;
+        return player.isUsingItem() && player.getUsedItemHand() == InteractionHand.MAIN_HAND && player.getMainHandItem().is(stack.getItem());
     }
 
     // Maximum deviation of a pellet in degrees: less when aiming down sights (D39).

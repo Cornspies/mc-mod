@@ -461,6 +461,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 - **Renamed in 26.x:** `PlayerRenderState` is in `net.minecraft.client.renderer.state.level`; the open screen is `Minecraft.gui.screen()`.
 - **Client resources:** reload listeners register through `AddClientReloadListenersEvent.addListener(id, listener)`.
 - **Non-saved player state:** a NeoForge `AttachmentType` without a serializer lives on the entity and is gone after death or logout.
+- **Never compare item stacks by identity on the client.** When the server changes a stack's components (every shot, every loaded round), the client gets a new `ItemStack` object, applied between render frames. `player.getUseItem()` only catches up on the next tick (`LivingEntity.updatingUsingItem`, which keeps the use going while the item type matches). Check the hand and the item type instead.
 - If your knowledge stops around 1.21.1, also skim the 1.21.2 – 1.21.11 primers. Rendering, item models and GUIs changed a lot in that span.
 
 ### Reference code

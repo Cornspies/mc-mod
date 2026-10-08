@@ -75,11 +75,11 @@ public final class WeaponAim {
     private static @Nullable ItemStack aimedWeapon() {
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
-        if (player == null || !minecraft.options.getCameraType().isFirstPerson() || !player.isUsingItem()) {
+        if (player == null || !minecraft.options.getCameraType().isFirstPerson()) {
             return null;
         }
-        ItemStack stack = player.getUseItem();
-        return stack.getItem() instanceof WeaponItem && stack == player.getMainHandItem() ? stack : null;
+        ItemStack stack = player.getMainHandItem();
+        return stack.getItem() instanceof WeaponItem && WeaponItem.isAiming(player, stack) ? stack : null;
     }
 
     private static boolean isScopedWeapon(@Nullable ItemStack stack) {

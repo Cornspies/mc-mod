@@ -40,8 +40,10 @@ public final class WeaponItemExtensions implements IClientItemExtensions {
     @Override
     public boolean applyForgeHandTransform(PoseStack poseStack, PlayerRenderState playerRenderState, HumanoidArm arm, ItemStack stack, float partialTick,
             float equipProcess, float swingProcess) {
+        // Only the weapon in the main hand aims. Checked by arm, not by stack object: the stack is replaced
+        // with a new copy whenever the server updates it (every shot and every loaded round).
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null || stack != minecraft.player.getMainHandItem()) {
+        if (minecraft.player == null || arm != minecraft.player.getMainArm()) {
             return false;
         }
         float aim = WeaponAim.progress(partialTick);
