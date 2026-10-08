@@ -21,18 +21,19 @@ public final class UpgradeConfig {
     private static final Map<String, Set<UpgradeType>> DEFAULT_FIELDS = new LinkedHashMap<>();
 
     static {
+        // Every weapon but the sniper (which has its scope) takes a sight (D40).
         DEFAULT_FIELDS.put("pistol", Set.of(UpgradeType.PENETRATION, UpgradeType.MAGAZINE, UpgradeType.NOISE, UpgradeType.RELOAD,
-                UpgradeType.ACCURACY, UpgradeType.RANGE));
+                UpgradeType.ACCURACY, UpgradeType.RANGE, UpgradeType.SIGHT));
         DEFAULT_FIELDS.put("auto_pistol", Set.of(UpgradeType.MAGAZINE, UpgradeType.NOISE, UpgradeType.RECOIL, UpgradeType.RELOAD,
-                UpgradeType.ACCURACY));
+                UpgradeType.ACCURACY, UpgradeType.SIGHT));
         DEFAULT_FIELDS.put("smg", Set.of(UpgradeType.MAGAZINE, UpgradeType.NOISE, UpgradeType.RECOIL, UpgradeType.RELOAD,
-                UpgradeType.ACCURACY));
+                UpgradeType.ACCURACY, UpgradeType.SIGHT));
         DEFAULT_FIELDS.put("shotgun", Set.of(UpgradeType.MAGAZINE, UpgradeType.RECOIL, UpgradeType.RELOAD, UpgradeType.ACCURACY,
-                UpgradeType.RANGE));
+                UpgradeType.RANGE, UpgradeType.SIGHT));
         DEFAULT_FIELDS.put("sniper_rifle", Set.of(UpgradeType.PENETRATION, UpgradeType.MAGAZINE, UpgradeType.NOISE, UpgradeType.RECOIL,
                 UpgradeType.RELOAD, UpgradeType.RANGE));
         DEFAULT_FIELDS.put("gatling_gun", Set.of(UpgradeType.PENETRATION, UpgradeType.MAGAZINE, UpgradeType.RECOIL, UpgradeType.RELOAD,
-                UpgradeType.ACCURACY));
+                UpgradeType.ACCURACY, UpgradeType.SIGHT));
     }
 
     private static final Map<UpgradeType, String> VALUE_COMMENTS = Map.of(
@@ -42,7 +43,8 @@ public final class UpgradeConfig {
             UpgradeType.RECOIL, "Less camera kick per tier, in percent.",
             UpgradeType.RELOAD, "Less time to load each round per tier, in percent.",
             UpgradeType.ACCURACY, "Less spread per tier, in percent.",
-            UpgradeType.RANGE, "Faster bullets per tier, in percent. They fly that much further and drop less.");
+            UpgradeType.RANGE, "Faster bullets per tier, in percent. They fly that much further and drop less.",
+            UpgradeType.SIGHT, "Extra zoom while aiming per sight tier, in percent (25 = 1.25x). Without a sight, aiming zooms 1.1x.");
 
     private static final Map<UpgradeType, ModConfigSpec.ConfigValue<List<? extends Number>>> VALUES = new EnumMap<>(UpgradeType.class);
     private static final Map<String, ModConfigSpec.ConfigValue<List<? extends String>>> FIELDS = new LinkedHashMap<>();

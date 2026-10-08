@@ -21,8 +21,12 @@ public record WeaponStats(
         int reloadTicksPerRound,
         // Ammo items used per round loaded.
         int ammoPerRound,
-        // Maximum random deviation of each pellet, in degrees.
+        // Maximum random deviation of each pellet when firing from the hip, in degrees.
         float spreadDegrees,
+        // Spread while aiming down sights, as a share of the hip-fire spread (D39).
+        float aimSpreadFactor,
+        // Zoom while aiming down sights (1 = none). Sights raise it; scoped weapons use their scope levels instead.
+        float aimZoom,
         // Cosmetic camera kick on the shooter's client, in degrees.
         float recoilDegrees,
         // Blocks per tick.
@@ -55,6 +59,8 @@ public record WeaponStats(
         builder.reloadTicksPerRound = this.reloadTicksPerRound;
         builder.ammoPerRound = this.ammoPerRound;
         builder.spreadDegrees = this.spreadDegrees;
+        builder.aimSpreadFactor = this.aimSpreadFactor;
+        builder.aimZoom = this.aimZoom;
         builder.recoilDegrees = this.recoilDegrees;
         builder.bulletSpeed = this.bulletSpeed;
         builder.bulletLifetimeTicks = this.bulletLifetimeTicks;
@@ -66,7 +72,8 @@ public record WeaponStats(
         return builder;
     }
 
-    // Defaults for everything that most weapons share (sounds carry 48 blocks). damage, magazineSize, fireIntervalTicks,
+    // Defaults for everything that most weapons share (sounds carry 48 blocks; aiming halves the spread
+    // and zooms 1.1x). damage, magazineSize, fireIntervalTicks,
     // reloadTicksPerRound and fireSound must always be set.
     public static final class Builder {
         private float damage;
@@ -78,6 +85,8 @@ public record WeaponStats(
         private int reloadTicksPerRound;
         private int ammoPerRound = 1;
         private float spreadDegrees;
+        private float aimSpreadFactor = 0.5F;
+        private float aimZoom = 1.1F;
         private float recoilDegrees;
         private float bulletSpeed = 4.0F;
         private int bulletLifetimeTicks = 50;
@@ -132,6 +141,16 @@ public record WeaponStats(
             return this;
         }
 
+        public Builder aimSpread(float shareOfHipSpread) {
+            this.aimSpreadFactor = shareOfHipSpread;
+            return this;
+        }
+
+        public Builder aimZoom(float zoom) {
+            this.aimZoom = zoom;
+            return this;
+        }
+
         public Builder recoil(float degrees) {
             this.recoilDegrees = degrees;
             return this;
@@ -174,7 +193,7 @@ public record WeaponStats(
 
         public WeaponStats build() {
             return new WeaponStats(this.damage, this.pellets, this.magazineSize, this.fireIntervalTicks, this.automatic, this.spinUpTicks,
-                    this.reloadTicksPerRound, this.ammoPerRound, this.spreadDegrees, this.recoilDegrees, this.bulletSpeed,
+                    this.reloadTicksPerRound, this.ammoPerRound, this.spreadDegrees, this.aimSpreadFactor, this.aimZoom, this.recoilDegrees, this.bulletSpeed,
                     this.bulletLifetimeTicks, this.knockback, this.armorPiercing, this.scoped, this.fireSound, this.soundRange);
         }
     }

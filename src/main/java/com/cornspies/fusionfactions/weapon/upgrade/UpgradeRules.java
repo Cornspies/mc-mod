@@ -40,6 +40,7 @@ public final class UpgradeRules {
                 case RELOAD -> stats.reloadPerRound(Math.max(1, (int) Math.round(base.reloadTicksPerRound() * kept)));
                 case ACCURACY -> stats.spread((float) (base.spreadDegrees() * kept));
                 case RANGE -> stats.bulletSpeed((float) (base.bulletSpeed() * (1.0 + value)));
+                case SIGHT -> stats.aimZoom((float) (1.0 + value));
             }
         }
         return stats.build();

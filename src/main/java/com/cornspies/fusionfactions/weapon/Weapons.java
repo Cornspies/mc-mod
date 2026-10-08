@@ -63,13 +63,16 @@ public final class Weapons {
             .build();
 
     // Crate-only (D26). Two body shots kill through diamond, a headshot kills unarmored or iron.
-    // Fast, accurate, pierces half of the armor; rounds cost 2 ammo. Heard twice as far as other guns.
+    // Fast, pierces half of the armor; rounds cost 2 ammo. Heard twice as far as other guns.
+    // Inaccurate from the hip, dead on when scoped (D39).
     public static final WeaponStats SNIPER_RIFLE = WeaponStats.builder()
             .damage(18.0F)
             .magazine(5)
             .fireInterval(30)
             .reloadPerRound(20)
             .ammoPerRound(2)
+            .spread(4.0F)
+            .aimSpread(0.0F)
             .recoil(12.0F)
             .bulletSpeed(8.0F)
             .bulletLifetime(40)

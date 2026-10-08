@@ -32,8 +32,9 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
-// A gun (DESIGN.md §4.2). Firing uses the vanilla item-use flow: the first shot when the use starts,
-// then, for automatic weapons, one per fire interval while the button is held. Everything that
+// A gun (DESIGN.md §4.2). The attack button is the trigger (D37, see Trigger): the first shot when it's
+// pulled, then, for automatic weapons, one per fire interval while it's held. The use button aims down
+// sights (D38), through vanilla's item-use flow, so the server knows who is aiming. Everything that
 // matters runs on the server; the client only adds cosmetic effects (see client.WeaponClientEffects).
 public class WeaponItem extends Item {
     private static final int BAR_COLOR = 0x55FFFF;
@@ -64,25 +65,29 @@ public class WeaponItem extends Item {
         return stack.has(ModDataComponents.RELOAD.get());
     }
 
+    // Aiming down sights: held as long as the use button is (D38).
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (hand != InteractionHand.MAIN_HAND) {
             return InteractionResult.PASS;
         }
         player.startUsingItem(hand);
-        if (level instanceof ServerLevel serverLevel) {
-            if (this.baseStats.spinUpTicks() > 0) {
-                level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.GATLING_GUN_SPIN.get(), SoundSource.PLAYERS, 0.8F, 1.0F);
-            }
-            this.tryFire(serverLevel, player, player.getItemInHand(hand), true);
-        }
         return InteractionResult.CONSUME;
     }
 
-    @Override
-    public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int ticksRemaining) {
-        if (this.baseStats.automatic() && level instanceof ServerLevel serverLevel && entity instanceof Player player) {
-            this.tryFire(serverLevel, player, stack, false);
+    public static boolean isAiming(Player player, ItemStack stack) {
+        return player.isUsingItem() && player.getUseItem() == stack;
+    }
+
+    // Maximum deviation of a pellet in degrees: less when aiming down sights (D39).
+    public static float spread(Player player, ItemStack stack, WeaponStats stats) {
+        return stats.spreadDegrees() * (isAiming(player, stack) ? stats.aimSpreadFactor() : 1.0F);
+    }
+
+    // Called by Trigger every tick while the trigger is held. newPress: it was just pulled.
+    public void triggerTick(ServerLevel level, Player player, ItemStack stack, boolean newPress, int heldTicks) {
+        if (newPress || this.baseStats.automatic()) {
+            this.tryFire(level, player, stack, newPress, heldTicks);
         }
     }
 
@@ -97,7 +102,7 @@ public class WeaponItem extends Item {
     }
 
     // newPress: the trigger was just pulled, as opposed to being held down on an automatic weapon.
-    private void tryFire(ServerLevel level, Player player, ItemStack stack, boolean newPress) {
+    private void tryFire(ServerLevel level, Player player, ItemStack stack, boolean newPress, int heldTicks) {
         WeaponStats stats = this.stats(stack);
         long now = level.getGameTime();
         Long nextShot = stack.get(ModDataComponents.NEXT_SHOT.get());
@@ -109,7 +114,7 @@ public class WeaponItem extends Item {
         if (isReloading(stack) && !newPress) {
             return;
         }
-        if (stats.spinUpTicks() > 0 && player.getTicksUsingItem() < stats.spinUpTicks()) {
+        if (stats.spinUpTicks() > 0 && heldTicks < stats.spinUpTicks()) {
             // Still spinning up. Pulling the trigger already stops a reload, so holding it doesn't resume one.
             stack.remove(ModDataComponents.RELOAD.get());
             return;
@@ -128,17 +133,18 @@ public class WeaponItem extends Item {
         // Firing interrupts a reload. The rounds loaded so far stay in the magazine.
         stack.remove(ModDataComponents.RELOAD.get());
         stack.set(ModDataComponents.AMMO.get(), ammo - 1);
+        float spread = spread(player, stack, stats);
         for (int i = 0; i < stats.pellets(); i++) {
-            spawnBullet(level, player, stats);
+            spawnBullet(level, player, stats, spread);
         }
         // Everyone in hearing range but the shooter hears this. The shooter's client plays it right away (D22).
         GunshotPayload.broadcast(level, player instanceof ServerPlayer serverPlayer ? serverPlayer : null, player.position(), stats);
     }
 
-    private static void spawnBullet(ServerLevel level, Player player, WeaponStats stats) {
+    private static void spawnBullet(ServerLevel level, Player player, WeaponStats stats, float spread) {
         RandomSource random = player.getRandom();
-        float pitch = player.getXRot() + (random.nextFloat() * 2.0F - 1.0F) * stats.spreadDegrees();
-        float yaw = player.getYRot() + (random.nextFloat() * 2.0F - 1.0F) * stats.spreadDegrees();
+        float pitch = player.getXRot() + (random.nextFloat() * 2.0F - 1.0F) * spread;
+        float yaw = player.getYRot() + (random.nextFloat() * 2.0F - 1.0F) * spread;
         BulletEntity bullet = new BulletEntity(level, player, stats);
         bullet.shootFromRotation(player, pitch, yaw, 0.0F, stats.bulletSpeed(), 0.0F);
         level.addFreshEntity(bullet);

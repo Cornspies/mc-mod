@@ -24,9 +24,12 @@ public enum UpgradeType implements StringRepresentable {
     // Less time to load each round.
     RELOAD("reload", 8, 15, 30, 45),
     // Less spread.
-    ACCURACY("accuracy", 1, 20, 35, 50),
+    ACCURACY("accuracy", 0, 20, 35, 50),
     // Faster bullets: they fly further and drop less.
-    RANGE("range", 6, 15, 30, 50);
+    RANGE("range", 6, 15, 30, 50),
+    // A sight for aiming down sights (D40): red dot, holographic, 2x optic. Extra zoom while aiming.
+    // Last in the list so the network ids of the other types stay the same.
+    SIGHT("sight", 1, 25, 50, 100);
 
     public static final Codec<UpgradeType> CODEC = StringRepresentable.fromEnum(UpgradeType::values);
     public static final StreamCodec<ByteBuf, UpgradeType> STREAM_CODEC = ByteBufCodecs.idMapper(i -> values()[i], UpgradeType::ordinal);

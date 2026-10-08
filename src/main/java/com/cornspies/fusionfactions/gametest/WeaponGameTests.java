@@ -11,6 +11,7 @@ import com.cornspies.fusionfactions.registry.ModEntityTypes;
 import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.weapon.BulletEntity;
 import com.cornspies.fusionfactions.weapon.ModDamageTypes;
+import com.cornspies.fusionfactions.weapon.Trigger;
 import com.cornspies.fusionfactions.weapon.WeaponItem;
 import com.cornspies.fusionfactions.weapon.Weapons;
 
@@ -87,6 +88,7 @@ public final class WeaponGameTests {
                 PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, SPENT_BULLET_SINKS, BULLET_LEAVING_WATER_DROPS, BULLET_IGNORES_LATE_UPDATES,
                 BODY_SHOT_DAMAGE, HEADSHOT_DAMAGE, ARMOR_PIERCING, SHOTGUN_FIRES_PELLETS, WEAPON_RECIPES, RELOAD_CONSUMES_AMMO));
         functions.addAll(UpgradeGameTests.TESTS);
+        functions.addAll(TriggerGameTests.TESTS);
         for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function : functions) {
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
@@ -168,7 +170,8 @@ public final class WeaponGameTests {
         Vec3 feet = helper.absoluteVec(new Vec3(0.5, 1.0, 0.5));
         player.snapTo(feet.x, feet.y, feet.z, 0.0F, 0.0F);
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.PISTOL.get()));
-        player.getMainHandItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+        Trigger.press(player);
+        Trigger.tick(player);
 
         Vec3 muzzle = new Vec3(feet.x, player.getEyeY() - 0.1, feet.z);
         double floorY = helper.absoluteVec(new Vec3(0.0, 1.0, 0.0)).y;
@@ -260,7 +263,8 @@ public final class WeaponGameTests {
         float pitch = (float) -Math.toDegrees(Math.atan2(aim.y, aim.horizontalDistance()));
         player.snapTo(feet.x, feet.y, feet.z, yaw, pitch);
         player.setItemInHand(InteractionHand.MAIN_HAND, weapon);
-        player.getMainHandItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+        Trigger.press(player);
+        Trigger.tick(player);
         return player;
     }
 

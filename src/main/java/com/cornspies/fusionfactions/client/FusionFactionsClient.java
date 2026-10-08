@@ -32,14 +32,17 @@ public class FusionFactionsClient {
         modEventBus.addListener(WeaponItemExtensions::register);
         modEventBus.addListener(GunshotSounds::register);
         modEventBus.addListener(UpgradeTierProperty::register);
+        modEventBus.addListener(AimData::register);
         modEventBus.addListener(FusionFactionsClient::registerScreens);
         NeoForge.EVENT_BUS.addListener(WeaponKeys::onClientTick);
         NeoForge.EVENT_BUS.addListener(WeaponClientEffects::onClientTick);
-        NeoForge.EVENT_BUS.addListener(SniperScope::onClientTick);
-        NeoForge.EVENT_BUS.addListener(SniperScope::onComputeFov);
-        NeoForge.EVENT_BUS.addListener(SniperScope::onPlayerTurn);
-        NeoForge.EVENT_BUS.addListener(SniperScope::onRenderGuiLayer);
-        NeoForge.EVENT_BUS.addListener(SniperScope::onRenderHand);
+        NeoForge.EVENT_BUS.addListener(WeaponKeys::onInteraction);
+        NeoForge.EVENT_BUS.addListener(WeaponAim::onClientTick);
+        NeoForge.EVENT_BUS.addListener(WeaponAim::onMouseScroll);
+        NeoForge.EVENT_BUS.addListener(WeaponAim::onComputeFov);
+        NeoForge.EVENT_BUS.addListener(WeaponAim::onPlayerTurn);
+        NeoForge.EVENT_BUS.addListener(WeaponAim::onRenderGuiLayer);
+        NeoForge.EVENT_BUS.addListener(WeaponAim::onRenderHand);
     }
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -53,7 +56,7 @@ public class FusionFactionsClient {
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.CAMERA_OVERLAYS, FusionFactions.id("scope"), SniperScope::renderOverlay);
+        event.registerAbove(VanillaGuiLayers.CAMERA_OVERLAYS, FusionFactions.id("scope"), WeaponAim::renderOverlay);
         event.registerAbove(VanillaGuiLayers.HOTBAR, FusionFactions.id("ammo"), AmmoHud::render);
     }
 }

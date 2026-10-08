@@ -8,7 +8,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -22,7 +21,6 @@ public final class WeaponClientEffects {
     private static final double TRACER_STEP = 0.8;
 
     private static int cooldown;
-    private static boolean wasUsing;
 
     public static void onClientTick(ClientTickEvent.Post event) {
         if (cooldown > 0) {
@@ -30,20 +28,17 @@ public final class WeaponClientEffects {
         }
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
-        if (player == null || minecraft.level == null || !player.isUsingItem() || player.getUsedItemHand() != InteractionHand.MAIN_HAND
-                || !(player.getUseItem().getItem() instanceof WeaponItem weapon)) {
-            wasUsing = false;
+        if (player == null || minecraft.level == null || !WeaponKeys.triggerHeld()
+                || !(player.getMainHandItem().getItem() instanceof WeaponItem weapon)) {
             return;
         }
-        ItemStack stack = player.getUseItem();
+        ItemStack stack = player.getMainHandItem();
         WeaponStats stats = weapon.stats(stack);
-        boolean newPress = !wasUsing;
-        wasUsing = true;
         // Same rules as WeaponItem.tryFire: holding only repeats on automatic weapons and never interrupts a reload.
-        if (!newPress && (!stats.automatic() || WeaponItem.isReloading(stack))) {
+        if (!WeaponKeys.triggerPulled() && (!stats.automatic() || WeaponItem.isReloading(stack))) {
             return;
         }
-        if (cooldown > 0 || WeaponItem.getAmmo(stack) <= 0 || player.getTicksUsingItem() < stats.spinUpTicks()) {
+        if (cooldown > 0 || WeaponItem.getAmmo(stack) <= 0 || WeaponKeys.triggerHeldTicks() < stats.spinUpTicks()) {
             return;
         }
         cooldown = stats.fireIntervalTicks();
@@ -81,10 +76,11 @@ public final class WeaponClientEffects {
 
         // Recoil: a camera kick up and a little sideways (DESIGN.md §4.2). Zoomed in, it's scaled down so
         // it moves the scope picture as much as an unzoomed kick moves the normal view.
-        float kick = stats.recoilDegrees() / SniperScope.zoom();
+        float kick = stats.recoilDegrees() / WeaponAim.zoom();
         player.setXRot(Mth.clamp(player.getXRot() - kick, -90.0F, 90.0F));
         player.setYRot(player.getYRot() + (player.getRandom().nextFloat() - 0.5F) * kick * 0.5F);
 
+        WeaponAim.onShot();
         GunshotSounds.play(stats.fireSound().value(), player.position(), stats.soundRange());
     }
 

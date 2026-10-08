@@ -37,6 +37,9 @@ public final class ModItems {
     public static final DeferredItem<Item> GRIP = ITEMS.registerSimpleItem("grip");
     public static final DeferredItem<BlockItem> WEAPON_WORKBENCH = ITEMS.registerSimpleBlockItem(ModBlocks.WEAPON_WORKBENCH);
 
+    // Movement speed while aiming down sights, as a share of walking speed.
+    private static final float AIM_MOVE_SPEED = 0.8F;
+
     public static final List<DeferredItem<WeaponItem>> WEAPONS = List.of(PISTOL, AUTO_PISTOL, SMG, SHOTGUN, SNIPER_RIFLE, GATLING_GUN);
 
     // Upgrade parts (D31–D33), one per type and tier, named like "magazine_upgrade_2". Crate-only: no recipes.
@@ -63,8 +66,9 @@ public final class ModItems {
                 .stacksTo(1)
                 // New weapons come loaded.
                 .component(ModDataComponents.AMMO.get(), stats.magazineSize())
-                // Vanilla slows players to 20% and stops sprinting while an item is in use. Not for guns.
-                .component(DataComponents.USE_EFFECTS, new UseEffects(true, true, 1.0F)));
+                // Using a gun means aiming down sights (D39): no sprinting, and a bit slower than walking
+                // (vanilla would slow to 20%, as for bows).
+                .component(DataComponents.USE_EFFECTS, new UseEffects(false, true, AIM_MOVE_SPEED)));
     }
 
     private ModItems() {
