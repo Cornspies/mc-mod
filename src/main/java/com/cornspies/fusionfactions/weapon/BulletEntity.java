@@ -1,5 +1,7 @@
 package com.cornspies.fusionfactions.weapon;
 
+import org.jspecify.annotations.Nullable;
+
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
 
 import net.minecraft.core.particles.ParticleTypes;
@@ -9,7 +11,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.InterpolationHandler;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PositionPath;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.Level;
@@ -38,9 +42,13 @@ public class BulletEntity extends Projectile {
     private static final double MIN_SPEED = 0.25;
     // A spent bullet sinking through deep water disappears after this many ticks at the latest.
     private static final int MAX_AGE_TICKS = 600;
+    // A server velocity update has to turn the bullet by more than this (30 degrees) to be applied.
+    private static final double MIN_TURN_COS = 0.866;
 
     private float damage;
     private int lifetimeTicks = 60;
+    // Distance moved in the last tick, used to recognise position updates that are one tick behind.
+    private double lastStep;
 
     public BulletEntity(EntityType<? extends BulletEntity> type, Level level) {
         super(type, level);
@@ -56,6 +64,39 @@ public class BulletEntity extends Projectile {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    }
+
+    // Clients simulate bullets with the same physics from the same starting point, so they are already
+    // where the server is. A server position that is slightly behind (about one tick of travel along
+    // the flight direction) is just a late update, for example the sync the server sends in the spawn
+    // tick. Snapping to it would pull the bullet back and leave a gap in its trail, so it's ignored.
+    // Anything else, such as a deflection, still moves the client's bullet to the server's position.
+    @Override
+    protected InterpolationHandler createInterpolationHandler() {
+        return new InterpolationHandler.NoOpInterpolationHandler() {
+            @Override
+            public boolean interpolateTo(@Nullable PositionPath position, float yRot, float xRot, boolean hasRotation) {
+                return position != null && BulletEntity.this.isOneTickBehind(position.endPosition());
+            }
+        };
+    }
+
+    // Velocity updates from the server are a tick late too. Only drag changes a bullet's speed, and the
+    // client simulates that itself, so applying a late one would make the bullet too fast for a tick
+    // and overshoot. Only updates that turn the bullet (a deflection) are applied.
+    @Override
+    public void lerpMotion(Vec3 movement) {
+        Vec3 current = this.getDeltaMovement();
+        boolean turns = current.lengthSqr() < 1.0E-6 || movement.lengthSqr() < 1.0E-6
+                || movement.normalize().dot(current.normalize()) < MIN_TURN_COS;
+        if (turns) {
+            super.lerpMotion(movement);
+        }
+    }
+
+    private boolean isOneTickBehind(Vec3 serverPosition) {
+        Vec3 offset = serverPosition.subtract(this.position());
+        return offset.dot(this.getDeltaMovement()) < 0.0 && offset.length() <= this.lastStep * 1.5 + 0.1;
     }
 
     @Override
@@ -93,6 +134,7 @@ public class BulletEntity extends Projectile {
             }
         }
         this.setPos(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
+        this.lastStep = movement.length();
         this.updateRotation();
         if (inWater) {
             // Water slows bullets like arrows, which limits their underwater range to about 9 blocks.

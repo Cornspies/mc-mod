@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.registry.ModDataComponents;
+import com.cornspies.fusionfactions.registry.ModEntityTypes;
 import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.weapon.BulletEntity;
 import com.cornspies.fusionfactions.weapon.ModDamageTypes;
@@ -24,6 +25,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.PositionPath;
 import net.minecraft.world.entity.animal.pig.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -49,6 +51,8 @@ public final class WeaponGameTests {
             TEST_FUNCTIONS.register("pistol_range_underwater", () -> WeaponGameTests::pistolRangeUnderwater);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> SPENT_BULLET_SINKS =
             TEST_FUNCTIONS.register("spent_bullet_sinks", () -> WeaponGameTests::spentBulletSinks);
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> BULLET_IGNORES_LATE_UPDATES =
+            TEST_FUNCTIONS.register("bullet_ignores_late_updates", () -> WeaponGameTests::bulletIgnoresLateUpdates);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> RELOAD_CONSUMES_AMMO =
             TEST_FUNCTIONS.register("reload_consumes_ammo", () -> WeaponGameTests::reloadConsumesAmmo);
 
@@ -59,7 +63,7 @@ public final class WeaponGameTests {
     public static void registerTests(RegisterGameTestsEvent event) {
         Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(FusionFactions.id("default"));
         for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function
-                : List.of(PISTOL_HITS_TARGET, PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, SPENT_BULLET_SINKS, RELOAD_CONSUMES_AMMO)) {
+                : List.of(PISTOL_HITS_TARGET, PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, SPENT_BULLET_SINKS, BULLET_IGNORES_LATE_UPDATES, RELOAD_CONSUMES_AMMO)) {
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
             event.registerTest(function.getId(), new FunctionGameTestInstance(function.key(), data));
@@ -120,6 +124,34 @@ public final class WeaponGameTests {
             double travelled = last.z - feet.z;
             helper.assertTrue(travelled > 8.0 && travelled < 12.0, "the bullet should sink about 9 to 10 blocks out, not " + travelled);
         });
+    }
+
+    // Clients run bullets one tick ahead of the server's updates at times. Late updates must not pull the
+    // bullet back or speed it up again; real changes (a deflection, a big difference) must still apply.
+    // Drives the same entry points the client's packet handlers call.
+    private static void bulletIgnoresLateUpdates(GameTestHelper helper) {
+        BulletEntity bullet = new BulletEntity(ModEntityTypes.BULLET.get(), helper.getLevel());
+        Vec3 start = helper.absoluteVec(new Vec3(0.5, 2.0, 0.5));
+        bullet.setPos(start);
+        bullet.setDeltaMovement(new Vec3(0.0, 0.0, 4.0));
+        bullet.tick();
+        Vec3 afterOneTick = bullet.position();
+        helper.assertTrue(afterOneTick.distanceTo(start) > 3.9, "the bullet should move one tick forward");
+
+        bullet.moveOrInterpolateTo(PositionPath.of(start));
+        helper.assertTrue(bullet.position().equals(afterOneTick), "a position one tick behind should be ignored");
+
+        Vec3 motion = bullet.getDeltaMovement();
+        bullet.lerpMotion(motion.scale(1.5));
+        helper.assertTrue(bullet.getDeltaMovement().equals(motion), "a late velocity in the same direction should be ignored");
+
+        bullet.lerpMotion(motion.scale(-1.0));
+        helper.assertTrue(bullet.getDeltaMovement().equals(motion.scale(-1.0)), "a velocity that turns the bullet should be applied");
+
+        Vec3 farAway = afterOneTick.add(10.0, 0.0, 0.0);
+        bullet.moveOrInterpolateTo(PositionPath.of(farAway));
+        helper.assertTrue(bullet.position().equals(farAway), "a position far from the bullet should be applied");
+        helper.succeed();
     }
 
     private record Shot(Player player, Pig pig) {
