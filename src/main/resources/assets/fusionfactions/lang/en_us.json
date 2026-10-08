@@ -57,5 +57,22 @@
   "commands.fusionfactions.drop.clear": "Removed %s supply crates.",
   "fusionfactions.duration.hours": "%sh %sm %ss",
   "fusionfactions.duration.minutes": "%sm %ss",
-  "fusionfactions.duration.seconds": "%ss"
+  "fusionfactions.duration.seconds": "%ss",
+  "itemGroup.fusionfactions": "Fusion Factions",
+  "item.fusionfactions.pistol": "Fusion Pistol",
+  "item.fusionfactions.ammo": "Fusion Ammo",
+  "entity.fusionfactions.bullet": "Bullet",
+  "key.category.fusionfactions.weapons": "Fusion Factions",
+  "key.fusionfactions.reload": "Reload Weapon",
+  "hud.fusionfactions.ammo": "%1$s / %2$s  (+%3$s)",
+  "hud.fusionfactions.ammo.infinite": "%1$s / %2$s",
+  "hud.fusionfactions.reloading": "Reloading %1$s / %2$s",
+  "fusionfactions.weapon.no_ammo": "No Fusion Ammo",
+  "subtitles.fusionfactions.weapon.fire": "Gun fires",
+  "subtitles.fusionfactions.weapon.empty": "Gun clicks empty",
+  "subtitles.fusionfactions.weapon.reload": "Gun reloads",
+  "subtitles.fusionfactions.weapon.reload_done": "Gun reloaded",
+  "death.attack.fusionfactions.bullet": "%1$s was shot by %2$s",
+  "death.attack.fusionfactions.bullet.item": "%1$s was shot by %2$s using %3$s",
+  "death.attack.fusionfactions.bullet.player": "%1$s was shot whilst trying to escape %2$s"
 }

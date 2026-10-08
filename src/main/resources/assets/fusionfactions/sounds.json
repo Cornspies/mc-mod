@@ -1,0 +1,27 @@
+{
+  "weapon.fire": {
+    "subtitle": "subtitles.fusionfactions.weapon.fire",
+    "sounds": [
+      { "name": "minecraft:item/crossbow/shoot1", "pitch": 1.5 }
+    ]
+  },
+  "weapon.empty": {
+    "subtitle": "subtitles.fusionfactions.weapon.empty",
+    "sounds": [
+      { "name": "minecraft:random/click", "pitch": 1.8 }
+    ]
+  },
+  "weapon.reload": {
+    "subtitle": "subtitles.fusionfactions.weapon.reload",
+    "sounds": [
+      { "name": "minecraft:item/crossbow/loading_middle1", "pitch": 1.4 },
+      { "name": "minecraft:item/crossbow/loading_middle2", "pitch": 1.4 }
+    ]
+  },
+  "weapon.reload_done": {
+    "subtitle": "subtitles.fusionfactions.weapon.reload_done",
+    "sounds": [
+      { "name": "minecraft:item/crossbow/loading_end", "pitch": 1.2 }
+    ]
+  }
+}

@@ -2,6 +2,7 @@ package com.cornspies.fusionfactions.client.datagen;
 
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.registry.ModBlocks;
+import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.supplydrop.SupplyCrateBlock;
 
 import net.minecraft.client.data.models.BlockModelGenerators;
@@ -36,5 +37,9 @@ public class ModModelProvider extends ModelProvider {
                     return BlockModelGenerators.plainVariant(
                             ModelTemplates.CUBE_BOTTOM_TOP.createWithSuffix(crate, suffix, textures, blockModels.modelOutput));
                 })));
+
+        // Placeholder sprites. Weapon models are OD-13 (M3).
+        itemModels.generateFlatItem(ModItems.PISTOL.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModels.generateFlatItem(ModItems.AMMO.get(), ModelTemplates.FLAT_ITEM);
     }
 }

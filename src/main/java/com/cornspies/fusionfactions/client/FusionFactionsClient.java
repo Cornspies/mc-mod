@@ -4,6 +4,7 @@ import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.client.datagen.DataGenerators;
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
 
+import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -25,5 +26,7 @@ public class FusionFactionsClient {
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntityTypes.FALLING_CRATE.get(), FallingCrateRenderer::new);
+        // Bullets are drawn as a particle trail by the entity itself.
+        event.registerEntityRenderer(ModEntityTypes.BULLET.get(), NoopRenderer::new);
     }
 }

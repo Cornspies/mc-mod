@@ -2,6 +2,7 @@ package com.cornspies.fusionfactions.registry;
 
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.supplydrop.FallingCrateEntity;
+import com.cornspies.fusionfactions.weapon.BulletEntity;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -19,6 +20,14 @@ public final class ModEntityTypes {
                     .clientTrackingRange(16)
                     .updateInterval(10)
                     .fireImmune()
+                    .noSummon());
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BulletEntity>> BULLET = ENTITY_TYPES.registerEntityType("bullet",
+            BulletEntity::new, MobCategory.MISC, builder -> builder
+                    .noLootTable()
+                    .sized(0.125F, 0.125F)
+                    .clientTrackingRange(8)
+                    .updateInterval(2)
                     .noSummon());
 
     private ModEntityTypes() {

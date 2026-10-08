@@ -5,9 +5,14 @@ import org.slf4j.Logger;
 import com.cornspies.fusionfactions.config.ServerConfig;
 import com.cornspies.fusionfactions.registry.ModBlockEntityTypes;
 import com.cornspies.fusionfactions.registry.ModBlocks;
+import com.cornspies.fusionfactions.registry.ModCreativeTabs;
+import com.cornspies.fusionfactions.registry.ModDataComponents;
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
+import com.cornspies.fusionfactions.registry.ModItems;
+import com.cornspies.fusionfactions.registry.ModSounds;
 import com.cornspies.fusionfactions.supplydrop.SupplyDropCommands;
 import com.cornspies.fusionfactions.supplydrop.SupplyDropManager;
+import com.cornspies.fusionfactions.weapon.ReloadPayload;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.resources.Identifier;
@@ -28,10 +33,15 @@ public class FusionFactions {
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlockEntityTypes.BLOCK_ENTITY_TYPES.register(modEventBus);
         ModEntityTypes.ENTITY_TYPES.register(modEventBus);
+        ModDataComponents.DATA_COMPONENTS.register(modEventBus);
+        ModItems.ITEMS.register(modEventBus);
+        ModSounds.SOUND_EVENTS.register(modEventBus);
+        ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.SYNCED, ServerConfig.SPEC);
 
         modEventBus.addListener(SupplyDropManager::registerTicketController);
+        modEventBus.addListener(ReloadPayload::register);
         NeoForge.EVENT_BUS.addListener(SupplyDropManager::onServerTick);
         NeoForge.EVENT_BUS.addListener(SupplyDropCommands::register);
     }

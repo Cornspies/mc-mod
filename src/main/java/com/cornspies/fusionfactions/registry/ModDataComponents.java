@@ -1,0 +1,31 @@
+package com.cornspies.fusionfactions.registry;
+
+import com.cornspies.fusionfactions.FusionFactions;
+import com.mojang.serialization.Codec;
+
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.util.ExtraCodecs;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+// Weapon state lives on the item stack (DESIGN.md §3.3). Changes to these don't replay the equip animation.
+public final class ModDataComponents {
+    public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, FusionFactions.MODID);
+
+    // Rounds in the magazine.
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> AMMO = DATA_COMPONENTS.registerComponentType("ammo",
+            builder -> builder.persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).ignoreSwapAnimation());
+
+    // Present while reloading: the game time at which the next round goes in.
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> RELOAD = DATA_COMPONENTS.registerComponentType("reload",
+            builder -> builder.persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG).ignoreSwapAnimation());
+
+    // Game time at which the weapon may fire again.
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> NEXT_SHOT = DATA_COMPONENTS.registerComponentType("next_shot",
+            builder -> builder.persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG).ignoreSwapAnimation());
+
+    private ModDataComponents() {
+    }
+}

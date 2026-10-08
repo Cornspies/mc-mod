@@ -1,0 +1,26 @@
+package com.cornspies.fusionfactions.registry;
+
+import com.cornspies.fusionfactions.FusionFactions;
+
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+public final class ModCreativeTabs {
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, FusionFactions.MODID);
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN = CREATIVE_MODE_TABS.register("main", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.fusionfactions"))
+            .icon(() -> new ItemStack(ModItems.PISTOL.get()))
+            .displayItems((parameters, output) -> {
+                output.accept(ModItems.PISTOL.get());
+                output.accept(ModItems.AMMO.get());
+            })
+            .build());
+
+    private ModCreativeTabs() {
+    }
+}
