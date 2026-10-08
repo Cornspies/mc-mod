@@ -68,7 +68,6 @@
   "hud.fusionfactions.ammo.infinite": "%1$s / %2$s",
   "hud.fusionfactions.reloading": "Reloading %1$s / %2$s",
   "fusionfactions.weapon.no_ammo": "No Fusion Ammo",
-  "subtitles.fusionfactions.weapon.fire": "Gun fires",
   "subtitles.fusionfactions.weapon.empty": "Gun clicks empty",
   "subtitles.fusionfactions.weapon.reload": "Gun reloads",
   "subtitles.fusionfactions.weapon.reload_done": "Gun reloaded",
@@ -76,5 +75,17 @@
   "death.attack.fusionfactions.bullet.item": "%1$s was shot by %2$s using %3$s",
   "death.attack.fusionfactions.bullet.player": "%1$s was shot whilst trying to escape %2$s",
   "subtitles.fusionfactions.weapon.hit": "Bullet hits",
-  "subtitles.fusionfactions.weapon.headshot": "Headshot"
+  "subtitles.fusionfactions.weapon.headshot": "Headshot",
+  "item.fusionfactions.auto_pistol": "Fusion Auto Pistol",
+  "item.fusionfactions.smg": "Fusion SMG",
+  "item.fusionfactions.shotgun": "Fusion Shotgun",
+  "item.fusionfactions.sniper_rifle": "Fusion Sniper Rifle",
+  "item.fusionfactions.gatling_gun": "Fusion Gatling Gun",
+  "subtitles.fusionfactions.weapon.pistol.fire": "Pistol fires",
+  "subtitles.fusionfactions.weapon.auto_pistol.fire": "Auto pistol fires",
+  "subtitles.fusionfactions.weapon.smg.fire": "SMG fires",
+  "subtitles.fusionfactions.weapon.shotgun.fire": "Shotgun fires",
+  "subtitles.fusionfactions.weapon.sniper_rifle.fire": "Sniper rifle fires",
+  "subtitles.fusionfactions.weapon.gatling_gun.fire": "Gatling gun fires",
+  "subtitles.fusionfactions.weapon.gatling_gun.spin": "Gatling gun spins up"
 }

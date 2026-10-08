@@ -1,10 +1,12 @@
 {
-  "weapon.fire": {
-    "subtitle": "subtitles.fusionfactions.weapon.fire",
+  "weapon.auto_pistol.fire": {
+    "subtitle": "subtitles.fusionfactions.weapon.auto_pistol.fire",
     "sounds": [
       {
-        "name": "minecraft:item/crossbow/shoot1",
-        "pitch": 1.5
+        "name": "minecraft:item/crossbow/shoot2",
+        "pitch": 1.7,
+        "attenuation_distance": 48,
+        "volume": 0.9
       }
     ]
   },
@@ -14,6 +16,56 @@
       {
         "name": "minecraft:random/click",
         "pitch": 1.8
+      }
+    ]
+  },
+  "weapon.gatling_gun.fire": {
+    "subtitle": "subtitles.fusionfactions.weapon.gatling_gun.fire",
+    "sounds": [
+      {
+        "name": "minecraft:item/crossbow/shoot1",
+        "pitch": 2.0,
+        "attenuation_distance": 48,
+        "volume": 0.6
+      }
+    ]
+  },
+  "weapon.gatling_gun.spin": {
+    "subtitle": "subtitles.fusionfactions.weapon.gatling_gun.spin",
+    "sounds": [
+      {
+        "name": "minecraft:item/trident/riptide1",
+        "pitch": 1.6,
+        "attenuation_distance": 32,
+        "volume": 0.8
+      }
+    ]
+  },
+  "weapon.headshot": {
+    "subtitle": "subtitles.fusionfactions.weapon.headshot",
+    "sounds": [
+      {
+        "name": "minecraft:random/orb",
+        "pitch": 1.6
+      }
+    ]
+  },
+  "weapon.hit": {
+    "subtitle": "subtitles.fusionfactions.weapon.hit",
+    "sounds": [
+      {
+        "name": "minecraft:random/successful_hit",
+        "pitch": 1.2
+      }
+    ]
+  },
+  "weapon.pistol.fire": {
+    "subtitle": "subtitles.fusionfactions.weapon.pistol.fire",
+    "sounds": [
+      {
+        "name": "minecraft:item/crossbow/shoot1",
+        "pitch": 1.5,
+        "attenuation_distance": 48
       }
     ]
   },
@@ -39,21 +91,35 @@
       }
     ]
   },
-  "weapon.hit": {
-    "subtitle": "subtitles.fusionfactions.weapon.hit",
+  "weapon.shotgun.fire": {
+    "subtitle": "subtitles.fusionfactions.weapon.shotgun.fire",
     "sounds": [
       {
-        "name": "minecraft:random/successful_hit",
-        "pitch": 1.2
+        "name": "minecraft:fireworks/blast1",
+        "pitch": 1.1,
+        "attenuation_distance": 48
       }
     ]
   },
-  "weapon.headshot": {
-    "subtitle": "subtitles.fusionfactions.weapon.headshot",
+  "weapon.smg.fire": {
+    "subtitle": "subtitles.fusionfactions.weapon.smg.fire",
     "sounds": [
       {
-        "name": "minecraft:random/orb",
-        "pitch": 1.6
+        "name": "minecraft:item/crossbow/shoot3",
+        "pitch": 1.9,
+        "attenuation_distance": 48,
+        "volume": 0.8
+      }
+    ]
+  },
+  "weapon.sniper_rifle.fire": {
+    "subtitle": "subtitles.fusionfactions.weapon.sniper_rifle.fire",
+    "sounds": [
+      {
+        "name": "minecraft:random/explode2",
+        "pitch": 1.6,
+        "attenuation_distance": 96,
+        "volume": 0.7
       }
     ]
   }

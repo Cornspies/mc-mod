@@ -15,6 +15,11 @@ public final class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(FusionFactions.MODID);
 
     public static final DeferredItem<WeaponItem> PISTOL = weapon("pistol", Weapons.PISTOL);
+    public static final DeferredItem<WeaponItem> AUTO_PISTOL = weapon("auto_pistol", Weapons.AUTO_PISTOL);
+    public static final DeferredItem<WeaponItem> SMG = weapon("smg", Weapons.SMG);
+    public static final DeferredItem<WeaponItem> SHOTGUN = weapon("shotgun", Weapons.SHOTGUN);
+    public static final DeferredItem<WeaponItem> SNIPER_RIFLE = weapon("sniper_rifle", Weapons.SNIPER_RIFLE);
+    public static final DeferredItem<WeaponItem> GATLING_GUN = weapon("gatling_gun", Weapons.GATLING_GUN);
     // The one shared ammo item (D20).
     public static final DeferredItem<Item> AMMO = ITEMS.registerSimpleItem("ammo");
 

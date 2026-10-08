@@ -11,7 +11,13 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, FusionFactions.MODID);
 
-    public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_FIRE = register("weapon.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PISTOL_FIRE = register("weapon.pistol.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> AUTO_PISTOL_FIRE = register("weapon.auto_pistol.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SMG_FIRE = register("weapon.smg.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHOTGUN_FIRE = register("weapon.shotgun.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SNIPER_RIFLE_FIRE = register("weapon.sniper_rifle.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GATLING_GUN_FIRE = register("weapon.gatling_gun.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GATLING_GUN_SPIN = register("weapon.gatling_gun.spin");
     public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_EMPTY = register("weapon.empty");
     public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_RELOAD = register("weapon.reload");
     public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_RELOAD_DONE = register("weapon.reload_done");

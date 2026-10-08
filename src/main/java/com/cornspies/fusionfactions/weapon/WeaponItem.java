@@ -56,6 +56,9 @@ public class WeaponItem extends Item {
         }
         player.startUsingItem(hand);
         if (level instanceof ServerLevel serverLevel) {
+            if (this.stats.spinUpTicks() > 0) {
+                level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.GATLING_GUN_SPIN.get(), SoundSource.PLAYERS, 0.8F, 1.0F);
+            }
             this.tryFire(serverLevel, player, player.getItemInHand(hand), true);
         }
         return InteractionResult.CONSUME;
@@ -88,6 +91,11 @@ public class WeaponItem extends Item {
         }
         // Holding the trigger doesn't interrupt a reload; pulling it again does.
         if (isReloading(stack) && !newPress) {
+            return;
+        }
+        if (this.stats.spinUpTicks() > 0 && player.getTicksUsingItem() < this.stats.spinUpTicks()) {
+            // Still spinning up. Pulling the trigger already stops a reload, so holding it doesn't resume one.
+            stack.remove(ModDataComponents.RELOAD.get());
             return;
         }
         stack.set(ModDataComponents.NEXT_SHOT.get(), now + this.stats.fireIntervalTicks());

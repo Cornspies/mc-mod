@@ -44,7 +44,7 @@ public final class WeaponClientEffects {
         if (!newPress && (!stats.automatic() || WeaponItem.isReloading(stack))) {
             return;
         }
-        if (cooldown > 0 || WeaponItem.getAmmo(stack) <= 0) {
+        if (cooldown > 0 || WeaponItem.getAmmo(stack) <= 0 || player.getTicksUsingItem() < stats.spinUpTicks()) {
             return;
         }
         cooldown = stats.fireIntervalTicks();

@@ -38,8 +38,11 @@ public class ModModelProvider extends ModelProvider {
                             ModelTemplates.CUBE_BOTTOM_TOP.createWithSuffix(crate, suffix, textures, blockModels.modelOutput));
                 })));
 
-        // Placeholder sprites. Weapon models are OD-13 (M3).
+        // Placeholder sprites until the 3D weapon models exist (D29): every weapon uses the pistol's.
         itemModels.generateFlatItem(ModItems.PISTOL.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        for (var weapon : java.util.List.of(ModItems.AUTO_PISTOL, ModItems.SMG, ModItems.SHOTGUN, ModItems.SNIPER_RIFLE, ModItems.GATLING_GUN)) {
+            itemModels.generateFlatItem(weapon.get(), ModItems.PISTOL.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        }
         itemModels.generateFlatItem(ModItems.AMMO.get(), ModelTemplates.FLAT_ITEM);
     }
 }

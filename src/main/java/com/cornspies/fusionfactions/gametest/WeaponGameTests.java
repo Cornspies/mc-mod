@@ -66,6 +66,8 @@ public final class WeaponGameTests {
             TEST_FUNCTIONS.register("headshot_damage", () -> WeaponGameTests::headshotDamage);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> ARMOR_PIERCING =
             TEST_FUNCTIONS.register("armor_piercing", () -> WeaponGameTests::armorPiercing);
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> SHOTGUN_FIRES_PELLETS =
+            TEST_FUNCTIONS.register("shotgun_fires_pellets", () -> WeaponGameTests::shotgunFiresPellets);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> RELOAD_CONSUMES_AMMO =
             TEST_FUNCTIONS.register("reload_consumes_ammo", () -> WeaponGameTests::reloadConsumesAmmo);
 
@@ -76,7 +78,7 @@ public final class WeaponGameTests {
     public static void registerTests(RegisterGameTestsEvent event) {
         Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(FusionFactions.id("default"));
         for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function
-                : List.of(PISTOL_HITS_TARGET, PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, SPENT_BULLET_SINKS, BULLET_LEAVING_WATER_DROPS, BULLET_IGNORES_LATE_UPDATES, BODY_SHOT_DAMAGE, HEADSHOT_DAMAGE, ARMOR_PIERCING, RELOAD_CONSUMES_AMMO)) {
+                : List.of(PISTOL_HITS_TARGET, PISTOL_HITS_TARGET_UNDERWATER, PISTOL_RANGE_UNDERWATER, SPENT_BULLET_SINKS, BULLET_LEAVING_WATER_DROPS, BULLET_IGNORES_LATE_UPDATES, BODY_SHOT_DAMAGE, HEADSHOT_DAMAGE, ARMOR_PIERCING, SHOTGUN_FIRES_PELLETS, RELOAD_CONSUMES_AMMO)) {
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
             event.registerTest(function.getId(), new FunctionGameTestInstance(function.key(), data));
@@ -133,9 +135,14 @@ public final class WeaponGameTests {
 
     // One pistol shot along the lane, with its path tracked every tick. Checked by condition, not at fixed
     // ticks: freshly force-loaded chunks can take a few ticks to start ticking, which can hold a bullet up.
-    private record TrackedShot(GameTestHelper helper, AABB lane, Vec3 muzzle, double floorY, Vec3[] lastPosition, boolean[] seenSinking) {
+    // Only bullets fired by this test's player count: all tests run at once in the same world.
+    private record TrackedShot(GameTestHelper helper, Player shooter, AABB lane, Vec3 muzzle, double floorY, Vec3[] lastPosition, boolean[] seenSinking) {
+        List<BulletEntity> bullets() {
+            return this.helper.getLevel().getEntitiesOfClass(BulletEntity.class, this.lane, bullet -> bullet.getOwner() == this.shooter);
+        }
+
         boolean isGone() {
-            return this.helper.getLevel().getEntitiesOfClass(BulletEntity.class, this.lane).isEmpty();
+            return this.bullets().isEmpty();
         }
 
         boolean endedOnFloor() {
@@ -157,9 +164,9 @@ public final class WeaponGameTests {
         Vec3 muzzle = new Vec3(feet.x, player.getEyeY() - 0.1, feet.z);
         double floorY = helper.absoluteVec(new Vec3(0.0, 1.0, 0.0)).y;
         AABB lane = new AABB(helper.absoluteVec(new Vec3(-2.0, 0.0, -1.0)), helper.absoluteVec(new Vec3(3.0, 5.0, length + 1.0)));
-        TrackedShot shot = new TrackedShot(helper, lane, muzzle, floorY, new Vec3[1], new boolean[1]);
+        TrackedShot shot = new TrackedShot(helper, player, lane, muzzle, floorY, new Vec3[1], new boolean[1]);
         for (int tick = 1; tick < MAX_TICKS; tick++) {
-            helper.runAfterDelay(tick, () -> helper.getLevel().getEntitiesOfClass(BulletEntity.class, lane).forEach(bullet -> {
+            helper.runAfterDelay(tick, () -> shot.bullets().forEach(bullet -> {
                 shot.lastPosition()[0] = bullet.position();
                 Vec3 motion = bullet.getDeltaMovement();
                 if (motion.length() < 0.25 && motion.y < 0.0 && bullet.getY() < muzzle.y - 0.05) {
@@ -201,8 +208,14 @@ public final class WeaponGameTests {
     private record Shot(Player player, Pig pig) {
     }
 
-    // A stone floor `length` blocks long. The first `waterBlocks` of it are flooded two blocks deep.
+    // A stone floor `length` blocks long, with a wall at the end so no bullet flies on into another test
+    // (they all run at once in the same world). The first `waterBlocks` of it are flooded two blocks deep.
     private static void buildLane(GameTestHelper helper, int length, int waterBlocks) {
+        for (int x = -2; x <= 2; x++) {
+            for (int y = 0; y <= 5; y++) {
+                helper.setBlock(x, y, length + 2, Blocks.STONE);
+            }
+        }
         for (int z = 0; z <= length; z++) {
             helper.setBlock(0, 0, z, Blocks.STONE);
             if (z < waterBlocks) {
@@ -226,6 +239,10 @@ public final class WeaponGameTests {
     // A mock player at the start of the lane fires one pistol shot at `target`, aiming from where the
     // bullet starts (just below the eyes).
     private static Player fireAt(GameTestHelper helper, Vec3 target) {
+        return fireAt(helper, target, new ItemStack(ModItems.PISTOL.get()));
+    }
+
+    private static Player fireAt(GameTestHelper helper, Vec3 target, ItemStack weapon) {
         Player player = helper.makeMockServerPlayer(GameType.SURVIVAL);
         Vec3 feet = helper.absoluteVec(new Vec3(0.5, 1.0, 0.5));
         Vec3 muzzle = feet.add(0.0, player.getEyeHeight() - 0.1, 0.0);
@@ -233,9 +250,21 @@ public final class WeaponGameTests {
         float yaw = (float) Math.toDegrees(Math.atan2(-aim.x, aim.z));
         float pitch = (float) -Math.toDegrees(Math.atan2(aim.y, aim.horizontalDistance()));
         player.snapTo(feet.x, feet.y, feet.z, yaw, pitch);
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.PISTOL.get()));
+        player.setItemInHand(InteractionHand.MAIN_HAND, weapon);
         player.getMainHandItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
         return player;
+    }
+
+    // One shotgun shot at a husk 5.5 blocks away lands several of its 8 pellets.
+    private static void shotgunFiresPellets(GameTestHelper helper) {
+        Husk husk = spawnHuskTarget(helper, false);
+        Player player = fireAt(helper, new Vec3(husk.getX(), husk.getY() + 0.9, husk.getZ()), new ItemStack(ModItems.SHOTGUN.get()));
+        helper.assertTrue(WeaponItem.getAmmo(player.getMainHandItem()) == Weapons.SHOTGUN.magazineSize() - 1, "one shell should be used");
+        float onePellet = expectedDamage(husk, Weapons.SHOTGUN.damage(), Weapons.SHOTGUN.armorPiercing());
+        helper.succeedWhen(() -> {
+            float taken = husk.getMaxHealth() - husk.getHealth();
+            helper.assertTrue(taken > onePellet * 3.0F, "at least 4 pellets should hit, got " + taken / onePellet);
+        });
     }
 
     // A pistol shot at a husk's chest does normal damage (after its natural armor and armor piercing).
