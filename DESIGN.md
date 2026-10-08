@@ -209,19 +209,19 @@ A sniper headshot kills an unarmored or iron-armored player in one hit.
 - The workbench stores nothing. Closing the menu returns anything still in it to the player, like a crafting table, so nothing can be stolen from it.
 - Every change happens through the server-side menu, which validates the weapon, the field and the part (§3.2).
 
-**Upgrade types and fields.** Proposed field position in the 3×3 grid, where the part shows on the model, and per-tier effect (I / II / III). The weapon is drawn with its muzzle to the left, like its inventory icon, so muzzle parts sit on the left and the stock on the right. The top-left field stays free for a later type. The numbers are a first proposal for the balance pass.
+**Upgrade types and fields.** Field position in the 3×3 grid, where the part shows on the model, and the default effect per tier (I / II / III). The weapon is drawn with its muzzle to the left, like its inventory icon, so muzzle parts sit on the left and the stock on the right. The top-left field stays free for a later type. On the model, every part has a glowing accent in its tier color (blue / orange / red).
 
 | Type | Field | On the model | Effect per tier |
 |---|---|---|---|
 | Penetration | top right | glowing core in a different color | +10 / +20 / +30 percentage points of armor piercing |
 | Magazine | bottom | bigger magazine | +20 / +40 / +60% rounds |
 | Noise (suppressor) | left | suppressor on the muzzle | fire sound carries 25 / 50 / 75% less far |
-| Recoil | right | stock or grip pad | −20 / −35 / −50% camera kick |
+| Recoil | right | recoil pad (a brace on the pistols) | −20 / −35 / −50% camera kick |
 | Reload speed | bottom right | magazine coupler | −15 / −30 / −45% reload time per round |
 | Accuracy | top | sight on top | −20 / −35 / −50% spread |
-| Range | bottom left | longer barrel | +15 / +30 / +50% bullet speed and lifetime |
+| Range | bottom left | accelerator rings on the barrel | +15 / +30 / +50% bullet speed, so the same lifetime carries that much further, with less drop |
 
-**Fields per weapon (proposal).** Upgrades that would do nothing are left out, e.g. accuracy on the sniper, which has no spread.
+**Fields per weapon (default).** Upgrades that would do nothing are left out, e.g. accuracy on the sniper, which has no spread.
 
 | Weapon | Penetration | Magazine | Noise | Recoil | Reload | Accuracy | Range |
 |---|---|---|---|---|---|---|---|
@@ -234,13 +234,11 @@ A sniper headshot kills an unarmored or iron-armored player in one hit.
 
 **Parts** are items, one per type and tier (7 × 3 = 21), named like "Magazine Upgrade II". They come only from supply crates (D33). Proposal for OD-19: tier I mostly in common crates, tier II in rare, tier III in legendary.
 
-**Stats.** The installed parts are a data component on the weapon. The server computes the effective stats from the base stats in `Weapons` plus the parts; the client uses the same calculation only for cosmetic effects and the tooltip. A weapon's tooltip lists its parts.
+**Stats.** The installed parts are a data component on the weapon (`fusionfactions:upgrades`, type → tier). The server computes the effective stats from the base stats in `Weapons` plus the parts (`UpgradeRules`); the client uses the same calculation for cosmetic effects, the ammo HUD and tooltips. A weapon's tooltip lists its parts. Taking out a magazine upgrade drops the rounds that no longer fit.
 
-**Technical points to check during M4:**
+**Tuning (owner request).** The tier values and the fields per weapon are in the synced server config, section `[weaponUpgrades]` of `config/fusionfactions-synced.toml` (per world: `<world>/syncedconfig/`). Clients get the values when they join. Restart the server after editing. A part whose type is removed from a weapon's list stays on the weapon, shown as "no effect on this server", and can still be taken out at the workbench. The defaults live in `UpgradeType` (values) and `UpgradeConfig` (fields).
 
-- How far a sound can be heard depends on `attenuation_distance` in `sounds.json` and on the volume. Check in the 26.3 sources whether a lower volume also shortens the range, or whether the suppressor needs its own sound events per tier.
-- Item model definitions need to switch parts on and off by data component. Check what 26.3's item model definitions offer (composite models and component conditions) before building the models.
-- A bigger magazine must not keep extra rounds after the part is removed: clamp the ammo to the new magazine size.
+**Noise and hearing range.** Every weapon has a hearing range (48 blocks; the sniper 96). Shots are sent to players within that range by our own packet, and the sound fades out at that distance. The suppressor shortens the range.
 
 ## 5. Phase 1 — Supply crate
 
@@ -372,7 +370,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | **M1 Supply crate MVP** ✅ *done 2026-10-08* | Crate block and block entity, three rarity loot tables (placeholder vanilla loot), falling-crate entity, scheduler with SavedData, location picking, announcements and countdown, chunk ticket, despawn, admin commands, server config. |
 | **M2 Weapon framework** ✅ *done 2026-10-08* | Weapon base item, central stats record, ammo item, ammo/reload data components, reload keybind and packet, projectile entity, custom damage type, placeholder sounds, ammo HUD. One working test gun. |
 | **M3 Weapon roster** ✅ *done 2026-10-08* | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
-| **M4 Weapon modification** | Weapon workbench block, menu and screen; 21 upgrade parts; installed-parts data component and effective stats; visible parts on the weapon models; tooltips; game tests (§4.5, D30–D36). |
+| **M4 Weapon modification** 🟡 *implemented 2026-10-08; two-player test pending* | Weapon workbench block, menu and screen; 21 upgrade parts; installed-parts data component and effective stats; visible parts on the weapon models; tooltips; game tests (§4.5, D30–D36). |
 | **M5 Integration & polish** | Weapons and upgrade parts in crate loot (OD-19), optional OPAC integration (OD-22), config documentation, two-player playtest on a dedicated server, release v0.1.0. |
 
 ---
@@ -432,6 +430,16 @@ The supply crate comes first because it is self-contained and proves out the sha
 - **Item models:** cuboid `elements` allow free rotation on any axis and `light_emission` from 0 to 15. The model must fit in −16..32 on every axis. Display transforms apply translation (in pixels), then rotation, then scale. First person looks along −z. A custom arm pose comes from `IClientItemExtensions.getArmPose`, registered with `RegisterClientExtensionsEvent`. `CROSSBOW_HOLD` turns the holding arm 0.3 rad inward (`AnimationUtils.animateCrossbowHold`).
 - **Client input:** `ComputeFovModifierEvent` for zoom and `CalculatePlayerTurnEvent` for mouse sensitivity. Turn speed is `(sensitivity × 0.6 + 0.2)³ × 8` (`MouseHandler`). `RenderGuiLayerEvent.Pre` (cancel by layer name, e.g. `VanillaGuiLayers.CROSSHAIR`) hides vanilla HUD parts, and cancelling `RenderHandEvent` hides the first-person hand and item.
 - **GameTests run concurrently in one world.** Give each test a backstop wall and filter projectiles by owner, or stray bullets from one test hit another test's targets.
+### Learned while building M4 (verified against 26.3 sources)
+
+- **Sounds:** a variable-range `SoundEvent` played with volume ≤ 1 is only sent to players within **16 blocks** (`SoundEvent.getRange`). The client fades a sound out linearly to `attenuation_distance` × max(volume, 1); a volume below 1 makes it quieter but does not shorten that distance. For a per-shot range, send your own payload and play a `SimpleSoundInstance` whose `getOrResolve` swaps in a `Sound` with a different attenuation distance.
+- **Server-to-client payloads** can be registered in common code with `playToClient(type, codec)` and no handler; the client adds the handler with `RegisterClientPayloadHandlersEvent`. `PacketDistributor.sendToPlayersNear` sends by distance.
+- **Menus and screens:** `MenuType` registers with `new MenuType<>(Constructor::new, FeatureFlags.VANILLA_SET)`, screens with `RegisterMenuScreensEvent`. Screens draw in `extractBackground` / `extractLabels` / `extractTooltip` (the 26.2 GUI rename). A slot's empty icon is `Slot.getNoItemIcon()`, a sprite under `textures/gui/sprites/`. A container can be a live view of an item's component (`workbench.UpgradeFields`): vanilla's click code only uses `setItem` / `removeItem`, so `getItem` may return a fresh copy.
+- **Item model properties:** custom range-dispatch properties register with `RegisterRangeSelectItemModelPropertyEvent`, which also fires in the data run, so `ItemModelUtils.rangeSelect` / `composite` / `EmptyModel.Unbaked` can generate item definitions that use them.
+- **Item names:** `Item.Properties` sets `item_name` after the component initializer, so a colored name needs an override of `Item.getName(ItemStack)`.
+- **Config lists:** `defineList(path, default, newElement, validator, ModConfigSpec.Range.of(n, n))` checks the list length. Values can be read before the config is loaded through `getDefault()` (check `SPEC.isLoaded()`).
+- **Block loot:** `BlockLootSubProvider` needs `getKnownBlocks()` overridden to the mod's own blocks. Its constructor takes the feature flags (`FeatureFlags.REGISTRY.allFlags()`).
+- **GameTests:** `makeMockServerPlayer` players have no connection, so anything that sends them packets (e.g. putting items back in their inventory) crashes. Mark them removed to take the "drop at their feet" path instead.
 - If your knowledge stops around 1.21.1, also skim the 1.21.2 – 1.21.11 primers. Rendering, item models and GUIs changed a lot in that span.
 
 ### Reference code
@@ -491,6 +499,9 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | M3 done | Two-player test on a dedicated server passed. The owner approved the sniper scope HUD. | Owner |
 | 2026-10-08 | D30–D36 | Weapon modification: workbench with weapon-dependent upgrade fields; tiered pure upgrades (I/II/III); seven upgrade types, no damage; crate-only parts; visible on the model; removable and free to install; built as the new M4 before crate loot and release | Owner |
 | 2026-10-08 | §4.5 details | Field layout, per-weapon fields, per-tier effects, one item per type and tier, workbench that stores nothing. *Provisional* until the M4 balance and playtest. | Agent |
+| 2026-10-08 | Upgrade tuning | Owner asked for easy tuning of the values and of which weapon accepts which upgrade. They are in the synced server config (`[weaponUpgrades]`), so no build is needed. Weapon base stats stay in code (OD-29 unchanged). | Owner / Agent |
+| 2026-10-08 | M4 details | Workbench recipe: iron, fusion core, barrel, crafting table, grip (`IFI / BCG / III`). Parts stack to 16. Taking out a magazine upgrade drops the rounds that no longer fit. Range raises bullet speed only (range follows). Part names are colored by tier. Parts of a type the weapon no longer accepts stay on it, without effect. *Provisional.* | Agent |
+| 2026-10-08 | Gunshot range | Found while building the suppressor: gunshots only reached players within 16 blocks (vanilla's limit for normal sounds). Shots now carry 48 blocks (sniper 96), the distances `sounds.json` already intended, and fade out there. *Provisional.* | Agent |
 
 ---
 
