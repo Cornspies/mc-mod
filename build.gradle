@@ -53,9 +53,20 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
+        // A second client for multiplayer tests (DESIGN.md §3.5). Two dev clients with the same name kick
+        // each other, so this one plays as "Dev2" and keeps its own options and logs in run-client2.
+        client2 {
+            client()
+            programArguments.addAll '--username', 'Dev2'
+            gameDirectory = project.file('run-client2')
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
         server {
             server()
             programArgument '--nogui'
+            // Own folder, so a server and a client running at the same time don't write the same log files.
+            gameDirectory = project.file('run-server')
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 

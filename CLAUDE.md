@@ -26,7 +26,8 @@ On Windows use `gradlew.bat` instead of `./gradlew`.
 
 - `./gradlew build` — compile and package
 - `./gradlew runClient` — start a dev client
-- `./gradlew runServer` — start a dedicated dev server (must work before a feature counts as done)
+- `./gradlew runServer` — start a dedicated dev server in `run-server/` (must work before a feature counts as done)
+- `./gradlew runClient2` — a second dev client, "Dev2", in `run-client2/`, for two-player tests (the main client is "Dev" in `run/`)
 - `./gradlew runData` — data generation (loot tables, models, lang) into `src/generated/resources`
 - `./gradlew runGameTestServer` — run game tests
 
@@ -37,7 +38,7 @@ On Windows use `gradlew.bat` instead of `./gradlew`.
 - Gradle doesn't pass stdin through, so typing `stop` does nothing. Send SIGTERM to the game JVM instead (the java process with `fml.modFolders=fusionfactions` in its command line). It still saves and shuts down cleanly. Gradle then reports `BUILD FAILED`; that's expected.
 - First startup logs `Failed to load properties from file: server.properties`. That's harmless.
 - Don't stop the JVM with `pkill -f <pattern>`: the pattern also matches your own shell command and kills it. Loop over `pgrep -x java` and check each `/proc/<pid>/cmdline` instead.
-- To run commands on the dev server without a client, temporarily set `enable-rcon=true` and an `rcon.password` in `run/server.properties`, and talk to port 25575. Also set `pause-when-empty-seconds=0`, or an empty server stops ticking after 60 s. Undo all three afterwards.
+- To run commands on the dev server without a client, temporarily set `enable-rcon=true` and an `rcon.password` in `run-server/server.properties`, and talk to port 25575. Also set `pause-when-empty-seconds=0`, or an empty server stops ticking after 60 s. Undo all three afterwards.
 - Spawn chunks aren't kept loaded in 26.x. Use `/forceload add` before `/setblock` or `/data` near spawn on an empty server.
 
 ### Reading the 26.3 sources (rule 2)
