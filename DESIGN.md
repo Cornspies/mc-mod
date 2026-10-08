@@ -63,6 +63,13 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 | D27 | Recipes use **vanilla items plus our own parts** (barrel, core, grip) | Was OD-09. |
 | D28 | **Hip-fire** for all weapons; the **sniper has a zoom key** that cycles zoom levels | Was OD-10. |
 | D29 | **Static 3D item models** with a simple held pose, no animations, in v1 | Was OD-13. |
+| D30 | Phase 1 adds **weapon modification**: a craftable **weapon workbench** with the weapon in a center field and **upgrade fields around it, depending on the weapon** | Owner idea, 2026-10-08. Spec in §4.5. |
+| D31 | Upgrades are **tiered pure upgrades**: tiers **I / II / III**, each improves one stat with no downside | Higher tiers are rarer. |
+| D32 | Upgrade types: **penetration, magazine size, noise, recoil, reload speed, accuracy, range**. **No damage upgrade** | Owner named the first four and picked the next three; damage was left out to keep time-to-kill readable. |
+| D33 | Upgrade parts are **crate-only** | No recipes. The workbench itself is craftable. |
+| D34 | Installed parts are **visible on the weapon model** | First and third person, so enemies can read a loadout. |
+| D35 | Parts can be **removed at the workbench and are returned** intact. Installing is **free** apart from the part | |
+| D36 | Weapon modification is the **new M4**, before crate loot and the v0.1.0 release (now M5) | So the crate loot (OD-19) includes parts from the start. |
 
 ---
 
@@ -190,6 +197,51 @@ A sniper headshot kills an unarmored or iron-armored player in one hit.
 
 ---
 
+### 4.5 Weapon modification (D30–D35)
+
+**Goal:** a reason to keep fighting over crates after a team has its guns, and a way to make a weapon your own.
+
+**Weapon workbench** (block, craftable):
+
+- Right-click opens a menu: the weapon goes in a center field, with up to 8 upgrade fields around it (a 3×3 grid).
+- Each field is one upgrade type, always in the same position, so the layout is familiar across weapons. Only the fields the weapon supports are open; the others are locked and drawn greyed out.
+- Placing a part in a field installs it on the weapon right away; taking it out removes it and gives it back (D35). Taking the weapon out keeps its parts on it.
+- The workbench stores nothing. Closing the menu returns anything still in it to the player, like a crafting table, so nothing can be stolen from it.
+- Every change happens through the server-side menu, which validates the weapon, the field and the part (§3.2).
+
+**Upgrade types and fields.** Proposed field position in the 3×3 grid, where the part shows on the model, and per-tier effect (I / II / III). The weapon is drawn with its muzzle to the left, like its inventory icon, so muzzle parts sit on the left and the stock on the right. The top-left field stays free for a later type. The numbers are a first proposal for the balance pass.
+
+| Type | Field | On the model | Effect per tier |
+|---|---|---|---|
+| Penetration | top right | glowing core in a different color | +10 / +20 / +30 percentage points of armor piercing |
+| Magazine | bottom | bigger magazine | +20 / +40 / +60% rounds |
+| Noise (suppressor) | left | suppressor on the muzzle | fire sound carries 25 / 50 / 75% less far |
+| Recoil | right | stock or grip pad | −20 / −35 / −50% camera kick |
+| Reload speed | bottom right | magazine coupler | −15 / −30 / −45% reload time per round |
+| Accuracy | top | sight on top | −20 / −35 / −50% spread |
+| Range | bottom left | longer barrel | +15 / +30 / +50% bullet speed and lifetime |
+
+**Fields per weapon (proposal).** Upgrades that would do nothing are left out, e.g. accuracy on the sniper, which has no spread.
+
+| Weapon | Penetration | Magazine | Noise | Recoil | Reload | Accuracy | Range |
+|---|---|---|---|---|---|---|---|
+| Pistol | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ |
+| Auto pistol | | ✓ | ✓ | ✓ | ✓ | ✓ | |
+| SMG | | ✓ | ✓ | ✓ | ✓ | ✓ | |
+| Shotgun | | ✓ | | ✓ | ✓ | ✓ | ✓ |
+| Sniper rifle | ✓ | ✓ | ✓ | ✓ | ✓ | | ✓ |
+| Gatling gun | ✓ | ✓ | | ✓ | ✓ | ✓ | |
+
+**Parts** are items, one per type and tier (7 × 3 = 21), named like "Magazine Upgrade II". They come only from supply crates (D33). Proposal for OD-19: tier I mostly in common crates, tier II in rare, tier III in legendary.
+
+**Stats.** The installed parts are a data component on the weapon. The server computes the effective stats from the base stats in `Weapons` plus the parts; the client uses the same calculation only for cosmetic effects and the tooltip. A weapon's tooltip lists its parts.
+
+**Technical points to check during M4:**
+
+- How far a sound can be heard depends on `attenuation_distance` in `sounds.json` and on the volume. Check in the 26.3 sources whether a lower volume also shortens the range, or whether the suppressor needs its own sound events per tier.
+- Item model definitions need to switch parts on and off by data component. Check what 26.3's item model definitions offer (composite models and component conditions) before building the models.
+- A bigger magazine must not keep extra rounds after the part is removed: clamp the ammo to the new magazine size.
+
 ## 5. Phase 1 — Supply crate
 
 ### 5.1 Goals
@@ -282,13 +334,13 @@ None open. All v1 weapon decisions are in §2 (D19–D29); armor against weapons
 
 | ID | Question | Options | Recommendation | Blocks |
 |---|---|---|---|---|
-| OD-19 | Loot contents per tier | — | Define once weapons exist | M4 |
+| OD-19 | Loot contents per tier | — | Define once weapons and upgrade parts exist. Parts: tier I in common, II in rare, III in legendary crates (§4.5) | M5 |
 
 ### Server and faction
 
 | ID | Question | Options | Recommendation | Blocks |
 |---|---|---|---|---|
-| OD-22 | Team and claims mod | Open Parties and Claims (OPAC) / other / none | OPAC as an optional integration. NeoForge 26.3 beta builds exist (latest 0.32.8, 2026-10-05) | M4 |
+| OD-22 | Team and claims mod | Open Parties and Claims (OPAC) / other / none | OPAC as an optional integration. NeoForge 26.3 beta builds exist (latest 0.32.8, 2026-10-05) | M5 |
 | OD-23 | Raid rules | Always raidable / raid windows ("War Day", an idea from the original's TODO list) / offline protection | Decide before Phase 2 | Phase 2 |
 
 ### Phase 2
@@ -320,7 +372,8 @@ The supply crate comes first because it is self-contained and proves out the sha
 | **M1 Supply crate MVP** ✅ *done 2026-10-08* | Crate block and block entity, three rarity loot tables (placeholder vanilla loot), falling-crate entity, scheduler with SavedData, location picking, announcements and countdown, chunk ticket, despawn, admin commands, server config. |
 | **M2 Weapon framework** ✅ *done 2026-10-08* | Weapon base item, central stats record, ammo item, ammo/reload data components, reload keybind and packet, projectile entity, custom damage type, placeholder sounds, ammo HUD. One working test gun. |
 | **M3 Weapon roster** ✅ *done 2026-10-08* | v1 roster (OD-03) with models and textures, recipes (OD-09), balance pass (OD-06). |
-| **M4 Integration & polish** | Weapons in crate loot (OD-19), optional OPAC integration (OD-22), config documentation, two-player playtest on a dedicated server, release v0.1.0. |
+| **M4 Weapon modification** | Weapon workbench block, menu and screen; 21 upgrade parts; installed-parts data component and effective stats; visible parts on the weapon models; tooltips; game tests (§4.5, D30–D36). |
+| **M5 Integration & polish** | Weapons and upgrade parts in crate loot (OD-19), optional OPAC integration (OD-22), config documentation, two-player playtest on a dedicated server, release v0.1.0. |
 
 ---
 
@@ -436,6 +489,8 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | M3 recipes | Parts and recipes as in §4.3. The auto pistol and SMG are upgrades of the previous weapon. The heavy-weapon recipe switch is a startup config (`heavyWeaponRecipes`, off), not a synced one, because recipes load before the synced config. So it is per server, not per world, and needs a restart. *Provisional.* | Agent |
 | 2026-10-08 | M3 aiming and models | Zoom is 3× and 6× on the Z key, first person only, with slower mouse movement. The scope overlay was first the vanilla spyglass; after owner feedback it is a typical shooter sniper scope (§4.2), with its texture from `tools/scope_overlay.py`. Weapons are held in the crossbow aiming pose in third person. Models come from `tools/weapon_models.py`; sounds are vanilla placeholders. *Provisional.* | Agent |
 | 2026-10-08 | M3 done | Two-player test on a dedicated server passed. The owner approved the sniper scope HUD. | Owner |
+| 2026-10-08 | D30–D36 | Weapon modification: workbench with weapon-dependent upgrade fields; tiered pure upgrades (I/II/III); seven upgrade types, no damage; crate-only parts; visible on the model; removable and free to install; built as the new M4 before crate loot and release | Owner |
+| 2026-10-08 | §4.5 details | Field layout, per-weapon fields, per-tier effects, one item per type and tier, workbench that stores nothing. *Provisional* until the M4 balance and playtest. | Agent |
 
 ---
 
