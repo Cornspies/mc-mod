@@ -29,16 +29,20 @@ import net.neoforged.neoforge.event.EventHooks;
 // causing entity and the bullet as the direct entity (§3.2.4), so team friendly-fire rules apply.
 public class BulletEntity extends Projectile {
     private static final double GRAVITY = 0.01;
-    // Water pulls bullets down harder. Fast bullets barely notice, but once drag has slowed one, it
-    // curves down and sinks (at about 2 blocks per second) until it reaches the ground.
-    private static final double GRAVITY_IN_WATER = 0.04;
+    // Gravity for bullets that water has slowed down, in water and after leaving it. Fast bullets barely
+    // notice, but once drag has slowed one, it curves down: underwater it sinks (about 2 blocks per
+    // second) until it reaches the ground, in air it drops in a short arc.
+    private static final double GRAVITY_SLOWED = 0.04;
     private static final int TRAIL_PARTICLES_PER_TICK = 3;
     // Underwater the trail is a dense line of bubbles, one per this many blocks (at least one per tick),
     // so the bullet's path is easy to follow (there's no instant tracer underwater, see WeaponClientEffects).
     private static final double BUBBLE_SPACING = 0.3;
     // Same as vanilla arrows.
     private static final double WATER_INERTIA = 0.6;
-    // Blocks per tick. Slower bullets are spent: they don't hurt anything and just sink.
+    // A bullet that water has slowed keeps losing speed in air, so the more water it went through, the
+    // sooner it comes down after leaving it.
+    private static final double AIR_INERTIA_AFTER_WATER = 0.9;
+    // Blocks per tick. Slower bullets are spent: they don't hurt anything and just drop to the ground.
     private static final double MIN_SPEED = 0.25;
     // A spent bullet sinking through deep water disappears after this many ticks at the latest.
     private static final int MAX_AGE_TICKS = 600;
@@ -49,6 +53,10 @@ public class BulletEntity extends Projectile {
     private int lifetimeTicks = 60;
     // Distance moved in the last tick, used to recognise position updates that are one tick behind.
     private double lastStep;
+    // Set once the bullet has been in water. Stays set after it leaves the water.
+    private boolean slowedByWater;
+    // Set once the bullet is too slow to hurt anything. Stays set, also if it speeds up again by falling.
+    private boolean spent;
 
     public BulletEntity(EntityType<? extends BulletEntity> type, Level level) {
         super(type, level);
@@ -101,16 +109,12 @@ public class BulletEntity extends Projectile {
 
     @Override
     protected double getDefaultGravity() {
-        return this.isInWater() ? GRAVITY_IN_WATER : GRAVITY;
-    }
-
-    private boolean isSpent() {
-        return this.getDeltaMovement().lengthSqr() < MIN_SPEED * MIN_SPEED;
+        return this.isInWater() || this.slowedByWater ? GRAVITY_SLOWED : GRAVITY;
     }
 
     @Override
     protected boolean canHitEntity(Entity entity) {
-        return !this.isSpent() && super.canHitEntity(entity);
+        return !this.spent && super.canHitEntity(entity);
     }
 
     @Override
@@ -139,10 +143,16 @@ public class BulletEntity extends Projectile {
         if (inWater) {
             // Water slows bullets like arrows, which limits their underwater range to about 9 blocks.
             this.setDeltaMovement(this.getDeltaMovement().scale(WATER_INERTIA));
+            this.slowedByWater = true;
+        } else if (this.slowedByWater) {
+            this.setDeltaMovement(this.getDeltaMovement().scale(AIR_INERTIA_AFTER_WATER));
         }
         this.applyGravity();
-        // The normal lifetime only applies in flight. Spent bullets sink until they reach the ground (onHitBlock).
-        if (!this.level().isClientSide() && (this.tickCount > MAX_AGE_TICKS || (!this.isSpent() && this.tickCount > this.lifetimeTicks))) {
+        if (this.getDeltaMovement().lengthSqr() < MIN_SPEED * MIN_SPEED) {
+            this.spent = true;
+        }
+        // The normal lifetime only applies in flight. Spent bullets drop until they reach the ground (onHitBlock).
+        if (!this.level().isClientSide() && (this.tickCount > MAX_AGE_TICKS || (!this.spent && this.tickCount > this.lifetimeTicks))) {
             this.discard();
         }
     }
