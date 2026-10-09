@@ -2,12 +2,12 @@ package com.cornspies.fusionfactions.registry;
 
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.missile.MissileLauncherBlock;
+import com.cornspies.fusionfactions.missile.SiloCasingBlock;
 import com.cornspies.fusionfactions.missile.SiloControllerBlock;
 import com.cornspies.fusionfactions.missile.SiloHatchBlock;
 import com.cornspies.fusionfactions.supplydrop.SupplyCrateBlock;
 import com.cornspies.fusionfactions.workbench.WeaponWorkbenchBlock;
 
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -43,7 +43,7 @@ public final class ModBlocks {
                     .strength(5.0F, 6.0F));
 
     // Missile silo (D55, DESIGN.md §6.8): casing, hatch and controller, as hard as the launcher.
-    public static final DeferredBlock<Block> SILO_CASING = BLOCKS.registerBlock("silo_casing", Block::new, ModBlocks::siloProperties);
+    public static final DeferredBlock<SiloCasingBlock> SILO_CASING = BLOCKS.registerBlock("silo_casing", SiloCasingBlock::new, ModBlocks::siloProperties);
     public static final DeferredBlock<SiloHatchBlock> SILO_HATCH = BLOCKS.registerBlock("silo_hatch", SiloHatchBlock::new, ModBlocks::siloProperties);
     public static final DeferredBlock<SiloControllerBlock> SILO_CONTROLLER = BLOCKS.registerBlock("silo_controller", SiloControllerBlock::new,
             ModBlocks::siloProperties);

@@ -19,7 +19,7 @@ public class SiloHatchBlock extends Block {
 
     public SiloHatchBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, false).setValue(SiloStructure.FORMED, false));
     }
 
     public static void open(ServerLevel level, BlockPos pos) {
@@ -43,6 +43,6 @@ public class SiloHatchBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(OPEN);
+        builder.add(OPEN, SiloStructure.FORMED);
     }
 }
