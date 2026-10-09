@@ -1,5 +1,8 @@
 package com.cornspies.fusionfactions.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.config.MissileConfig;
 import com.cornspies.fusionfactions.missile.LaunchStatus;
@@ -15,6 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 
 // Missile launcher screen (DESIGN.md §6.4): missile and designator slots, a readout with the target, the
@@ -24,7 +28,9 @@ public class MissileLauncherScreen extends AbstractContainerScreen<MissileLaunch
     private static final Identifier BACKGROUND = FusionFactions.id("textures/gui/container/missile_launcher.png");
     // The readout panel's text area, matching tools/missile_textures.py.
     private static final int TEXT_X = 53;
-    private static final int TEXT_Y = 21;
+    private static final int TEXT_Y = 20;
+    private static final int LINE_HEIGHT = 9;
+    private static final int MAX_LINES = 4;
     private static final int TEXT_WIDTH = 113;
     private static final int TEXT_COLOR = 0xFF7CE08F;
     private static final int TEXT_DIM = 0xFF4E8A5B;
@@ -75,25 +81,47 @@ public class MissileLauncherScreen extends AbstractContainerScreen<MissileLaunch
         }
     }
 
+    // Target, distance and status, one line after another, wrapped to the panel. The panel holds MAX_LINES lines;
+    // if a long status needs the room, the distance goes first.
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
-        int y = TEXT_Y;
+        List<FormattedCharSequence> lines = new ArrayList<>();
+        List<Integer> colors = new ArrayList<>();
         GlobalPos target = this.menu.target();
+        FormattedCharSequence distanceLine = null;
         if (target == null) {
-            graphics.text(this.font, Component.translatable("container.fusionfactions.missile_launcher.no_target"), TEXT_X, y, TEXT_DIM, false);
+            add(lines, colors, Component.translatable("container.fusionfactions.missile_launcher.no_target"), TEXT_DIM);
         } else {
             BlockPos pos = target.pos();
-            graphics.text(this.font, Component.translatable("container.fusionfactions.missile_launcher.target", pos.getX(), pos.getY(), pos.getZ()),
-                    TEXT_X, y, TEXT_COLOR, false);
-            y += 10;
+            add(lines, colors, Component.translatable("container.fusionfactions.missile_launcher.target", pos.getX(), pos.getY(), pos.getZ()), TEXT_COLOR);
             int distance = (int) MissileFlight.horizontalDistance(this.menu.pos(), pos);
             Component line = this.menu.missile().getItem() instanceof MissileItem missile
                     ? Component.translatable("container.fusionfactions.missile_launcher.distance_range", distance, MissileConfig.range(missile.tier()))
                     : Component.translatable("container.fusionfactions.missile_launcher.distance", distance);
-            graphics.text(this.font, line, TEXT_X, y, TEXT_COLOR, false);
+            distanceLine = add(lines, colors, line, TEXT_COLOR).getFirst();
         }
-        LaunchStatus status = this.menu.status();
-        graphics.textWithWordWrap(this.font, status.message(), TEXT_X, TEXT_Y + 20, TEXT_WIDTH, TEXT_COLOR);
+        List<FormattedCharSequence> status = this.font.split(this.menu.status().message(), TEXT_WIDTH);
+        if (distanceLine != null && lines.size() + status.size() > MAX_LINES) {
+            int index = lines.indexOf(distanceLine);
+            lines.remove(index);
+            colors.remove(index);
+        }
+        for (FormattedCharSequence line : status) {
+            lines.add(line);
+            colors.add(TEXT_COLOR);
+        }
+        for (int i = 0; i < Math.min(lines.size(), MAX_LINES); i++) {
+            graphics.text(this.font, lines.get(i), TEXT_X, TEXT_Y + i * LINE_HEIGHT, colors.get(i), false);
+        }
+    }
+
+    private List<FormattedCharSequence> add(List<FormattedCharSequence> lines, List<Integer> colors, Component text, int color) {
+        List<FormattedCharSequence> split = this.font.split(text, TEXT_WIDTH);
+        for (FormattedCharSequence line : split) {
+            lines.add(line);
+            colors.add(color);
+        }
+        return split;
     }
 }
