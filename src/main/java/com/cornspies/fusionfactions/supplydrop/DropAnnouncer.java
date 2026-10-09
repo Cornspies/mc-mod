@@ -1,6 +1,7 @@
 package com.cornspies.fusionfactions.supplydrop;
 
 import com.cornspies.fusionfactions.config.ServerConfig;
+import com.cornspies.fusionfactions.util.Compass;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -16,7 +17,6 @@ import net.minecraft.sounds.SoundSource;
 
 // Server-wide chat messages and sounds for drops (D14, DESIGN.md §5.2 step 3).
 final class DropAnnouncer {
-    private static final String[] DIRECTIONS = { "north", "north_east", "east", "south_east", "south", "south_west", "west", "north_west" };
     private static final int ROUNDING = 50;
 
     static void announced(MinecraftServer server, ServerLevel level, ActiveDrop drop, int seconds) {
@@ -59,19 +59,13 @@ final class DropAnnouncer {
                 yield distance < ROUNDING
                         ? Component.translatable("fusionfactions.drop.location.near_spawn")
                         : Component.translatable("fusionfactions.drop.location.direction", distance,
-                                Component.translatable("fusionfactions.direction." + compass(dx, dz)));
+                                Component.translatable("fusionfactions.direction." + Compass.direction(dx, dz)));
             }
         };
     }
 
     private static int round(int value) {
         return Math.round(value / (float) ROUNDING) * ROUNDING;
-    }
-
-    // 8-way compass direction. North is -Z, east is +X.
-    private static String compass(int dx, int dz) {
-        double degrees = Math.toDegrees(Math.atan2(dx, -dz));
-        return DIRECTIONS[Math.floorMod(Math.round(degrees / 45.0), DIRECTIONS.length)];
     }
 
     private static void broadcast(MinecraftServer server, Component message) {
