@@ -76,10 +76,20 @@ New in the upcoming 0.2.0 (Phase 2, in development).
 | `empDisableSeconds` | `[30, 60, 90]` | How long EMP missiles shut down missile launchers and silos in their radius, by tier. |
 | `incendiaryPower` | `[2, 3, 4]` | Blast power of incendiary missiles by tier. |
 | `incendiaryFireRadius` | `[6, 8, 10]` | Radius incendiary missiles set on fire, by tier. |
+| `missileHealth` | `[10, 20, 40]` | Health of a missile on its way down, by tier. Bullets and interceptors damage it. |
+| `radar.range` | `256` | How far a radar sees missiles (horizontal). |
+| `radar.launchAreaSize` | `100` | Half the size of the square a radar reports as the launch area. |
+| `radar.energyPerTick` | `20` | FE a radar uses per tick, if `requirePower` is on. |
+| `interceptor.range` | `96` | How far an interceptor reaches. It needs a clear line of sight. |
+| `interceptor.cooldownTicks` | `40` | Ticks between two interceptor shots. |
+| `interceptor.damage` | `20.0` | Damage of one interceptor hit. |
+| `interceptor.energyPerShot` | `10000` | FE per interceptor shot, if `requirePower` is on. |
 
 Missile blasts break blocks without dropping them; containers spill their contents. Blocks in the block tag `fusionfactions:missile_immune` never break (bedrock, barriers, portals, command blocks and supply crates by default). Add your own with a datapack at `data/fusionfactions/tags/block/missile_immune.json`. Protection and claim mods that stop explosions also stop missiles.
 
 Tier III missiles only come from legendary supply crates and need a **missile silo**: a 3×3 shaft, 4 blocks deep. Bottom layer: 9 silo casing. The two layers above: 8 casing around an empty middle. Top layer: 8 casing around a silo hatch. Replace any one casing of the three upper layers with the silo controller, which has the launch menu. The sky above the hatch must be open.
+
+**Counterplay.** A radar alerts the team of the player who placed it (their vanilla `/team`, or just them without one) about every missile that enters its range, with a launch area that contains the launch spot. It gives a redstone signal while it sees missiles. Interceptors shoot down missiles coming down near them, and players can shoot them down with weapons.
 
 Missiles in flight are saved with the world and keep flying after a restart. Their launch and target areas are kept loaded, so they work with nobody nearby.
 

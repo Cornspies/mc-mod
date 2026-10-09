@@ -1,7 +1,7 @@
 # Fusion Factions — Design Document
 
 > **Mod ID:** `fusionfactions` · **Package:** `com.cornspies.fusionfactions` · **License:** MIT
-> **Status:** Phase 1 released as v0.1.0; Phase 2 in development (M7 and M8 done, M9 next) · **Last updated:** 2026-10-09
+> **Status:** Phase 1 released as v0.1.0; Phase 2 in development (M7 and M8 done, M9 implemented) · **Last updated:** 2026-10-09
 > **Audience:** the project owner and the coding agent (Claude Code). Read together with `CLAUDE.md`.
 
 ---
@@ -400,7 +400,7 @@ Anyone can use the blocks (D58). Anyone can also break them; they are as hard as
 |---|---|
 | Explosive | Blast power 6 / 9 / 12 (TNT is 4): craters roughly 5 / 7 / 9 blocks in radius. Hurts entities in range |
 | Breaching | Blast power 4 / 5 / 6, also breaks hard blocks. For bunkers |
-| EMP | No block damage. Drains all FE from blocks within 8 / 12 / 16 blocks, and shuts down launchers and silos there (radars and interceptors in M9) for 30 / 60 / 90 s |
+| EMP | No block damage. Drains all FE from blocks within 8 / 12 / 16 blocks, and shuts down launchers, silos, radars and interceptors there for 30 / 60 / 90 s |
 | Incendiary | Blast power 2 / 3 / 4, then sets fire on flammable surfaces within 6 / 8 / 10 blocks and ignites entities |
 
 ### 6.7 Power (D47, D59)
@@ -424,14 +424,17 @@ Anyone can use the blocks (D58). Anyone can also break them; they are as hard as
 - Scans a radius of 256 blocks (horizontal, any height) once a second.
 - Sees every missile whose position is in range: on the launch climb, in cruise (its point on the line) and on descent.
 - On the first contact with a missile it alerts the **team of the player who placed it** (vanilla scoreboard team; just that player if they have none), wherever they are, in chat and with a sound: the radar's position, whether the missile comes down inside the range and when, and the **launch area**: a ±100-block square that contains the launch spot, placed at random around it (not centered on it).
-- Its menu lists current contacts; while it has any, it gives a redstone signal (for alarms).
+- Its menu shows a scope (north up) with a blip per contact and a list: distance, direction and the seconds to impact for missiles coming down in range (red), or "passing". While it has contacts it gives a redstone signal (for alarms).
+- A radar placed without a player (e.g. by a command) has no owner and alerts nobody; its menu still works. The launch area is the same for every radar, so two radars can't narrow it down.
+- An EMP shuts it down like a launcher.
 
 **Interceptor:**
 
 - Fires at descending missiles within 96 blocks with a clear line of sight, one shot every 2 s.
-- A shot is a fast homing projectile that deals 20 damage, so tier I–II missiles take one hit and tier III two.
+- A shot is a fast homing projectile that deals 20 damage, so tier I–II missiles take one hit and tier III two. Interceptors skip a missile that rockets already on their way will bring down, so several interceptors share the work.
+- It works on its own; right click shows its state (ready, reloading, no power, shut down by an EMP).
 
-**Shooting down:** weapon bullets damage a descending missile like any entity (sniper 18, pistol 6 …).
+**Shooting down:** weapon bullets damage a descending missile like any entity (sniper 18, pistol 6 …). Its hitbox is the drawn missile, about 5.5 blocks long. A missile destroyed in the air bursts harmlessly and its flight ends; the player who brought it down sees "Missile shot down!".
 
 ### 6.10 Admin commands (permission level 2)
 
@@ -665,6 +668,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | OD-28 → D53, D54 | Cooldown, interceptor, shooting down, and a radar that reports the launch area to the placer's team | Owner |
 | 2026-10-08 | D55–D59 | Launcher for I–II and silo for III; up-then-down flight; tier III crate-only; anyone can use the blocks; FE with `requirePower` off by default | Owner |
 | 2026-10-08 | Phase 2 spec | Numbers and details in §6.4–§6.10 (radii, flight speed, cooldowns, health, silo shape, power costs). *Provisional* until the Phase 2 playtests. | Agent |
+| 2026-10-09 | M9 details | Radar: scans once a second; alerts the owner's team in chat with a sound, once per missile; launch area as in §6.9, from a random offset seeded by the flight. Interceptor: looks for targets every 2 ticks; its rocket flies 4 blocks per tick straight at the missile's middle and gives up after 4 s; rockets on their way count against the missile's health so interceptors don't overkill. Missile health 10 / 20 / 40, hitbox 0.8 × 5.4 blocks. Radar and interceptor have a 100k FE buffer each. Recipes: radar from amethyst, a compass, iron, a fusion core and a redstone block; interceptor from barrels, a firework rocket, iron, a fusion core and a dispenser. *Provisional.* | Agent |
 | 2026-10-09 | M7, M8 done | Owner tested missiles, the silo and its formed look, and approved both milestones. Merged into `main`. | Owner |
 | 2026-10-09 | Silo look, launcher screen | Owner asked for a formation animation and a darker, connected look for a complete silo, and for the readout text to stay inside its panel. Each formed block gets a block state `part` (its place in the 3×3×4 silo) with its own model; the controller checks its silo every 10 ticks and forms it over about 1.5 s. The readout lays out target, distance and status line by line in four lines and drops the distance if a long status needs the room. *Provisional.* | Owner / Agent |
 | 2026-10-09 | M8 details | Incendiary missiles: entities within the fire radius burn for 8 s; fire lands on about a third of the spots in the radius where it can stay, after the blast, and those spots go through the explosion event too. EMP missiles drain every FE handler in the radius from every side and break nothing; missile blocks hit by one show "shut down" with the seconds left. The silo is checked whenever its menu is open and before each launch, not on every block change. Recipes: each type's tier I is the explosive recipe with its payload (diamond, lightning rod, blaze powder), tier II adds a richer payload (netherite scrap, redstone blocks, blaze rods); silo casing (4) from iron and obsidian, hatch from casing, an iron trapdoor, iron and redstone, controller from casing, a missile launcher, barrels, a fusion core and a redstone block. A quarter of the legendary crates hold one tier III missile. Missile types are told apart by the band on the model and icon: dark, violet, cyan, orange. *Provisional.* | Agent |
