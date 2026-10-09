@@ -1,7 +1,9 @@
 package com.cornspies.fusionfactions.registry;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.missile.InterceptorBlockEntity;
 import com.cornspies.fusionfactions.missile.MissileLauncherBlockEntity;
+import com.cornspies.fusionfactions.missile.RadarBlockEntity;
 import com.cornspies.fusionfactions.missile.SiloControllerBlockEntity;
 import com.cornspies.fusionfactions.supplydrop.SupplyCrateBlockEntity;
 
@@ -21,6 +23,11 @@ public final class ModBlockEntityTypes {
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SiloControllerBlockEntity>> SILO_CONTROLLER = BLOCK_ENTITY_TYPES.register(
             "silo_controller", () -> new BlockEntityType<>(SiloControllerBlockEntity::new, ModBlocks.SILO_CONTROLLER.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RadarBlockEntity>> RADAR = BLOCK_ENTITY_TYPES.register(
+            "radar", () -> new BlockEntityType<>(RadarBlockEntity::new, ModBlocks.RADAR.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<InterceptorBlockEntity>> INTERCEPTOR = BLOCK_ENTITY_TYPES.register(
+            "interceptor", () -> new BlockEntityType<>(InterceptorBlockEntity::new, ModBlocks.INTERCEPTOR.get()));
 
     private ModBlockEntityTypes() {
     }

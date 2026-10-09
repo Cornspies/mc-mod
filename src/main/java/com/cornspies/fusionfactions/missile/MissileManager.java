@@ -12,9 +12,12 @@ import com.cornspies.fusionfactions.registry.ModSounds;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
@@ -100,6 +103,26 @@ public final class MissileManager {
         MissileFlight flight = data.find(missile.flightId());
         if (flight != null && flight.phase() == MissileFlight.Phase.DESCENT) {
             detonate(level, data, flight, at, missile);
+        }
+    }
+
+    // A missile on its way down was destroyed by bullets or an interceptor (D53): it bursts in the air without
+    // harming anything, and the flight ends.
+    static void onShotDown(ServerLevel level, MissileEntity missile, @Nullable Entity attacker) {
+        missile.discard();
+        MissileData data = MissileData.get(level.getServer());
+        MissileFlight flight = data.find(missile.flightId());
+        Vec3 at = missile.position().add(0.0, missile.getBbHeight() / 2.0, 0.0);
+        level.sendParticles(ParticleTypes.EXPLOSION, true, true, at.x, at.y, at.z, 4, 0.5, 1.5, 0.5, 0.0);
+        level.sendParticles(ParticleTypes.LARGE_SMOKE, true, true, at.x, at.y, at.z, 30, 0.6, 2.0, 0.6, 0.05);
+        level.playSound(null, at.x, at.y, at.z, ModSounds.MISSILE_SHOT_DOWN.get(), SoundSource.BLOCKS, 8.0F, 1.0F);
+        if (flight != null) {
+            FusionFactions.LOGGER.info("Missile #{} was shot down at {} by {}", flight.id(), BlockPos.containing(at),
+                    attacker != null ? attacker.getName().getString() : "something");
+            retire(level.getServer(), data, flight);
+        }
+        if (attacker instanceof ServerPlayer player) {
+            player.sendOverlayMessage(Component.translatable("fusionfactions.missile.shot_down"));
         }
     }
 

@@ -2,7 +2,9 @@ package com.cornspies.fusionfactions.missile;
 
 import org.jspecify.annotations.Nullable;
 
+import com.cornspies.fusionfactions.config.MissileConfig;
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
+import com.cornspies.fusionfactions.weapon.ModDamageTypes;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -45,6 +47,10 @@ public class MissileEntity extends Projectile {
     private static final EntityDataAccessor<Boolean> DATA_DESCENDING = SynchedEntityData.defineId(MissileEntity.class, EntityDataSerializers.BOOLEAN);
 
     private int flightId = -1;
+    // Only a missile on its way down can be shot (D53); set when it's spawned for the descent.
+    private float health;
+    // Damage of interceptor rockets on their way to this missile, so interceptors don't all fire at one missile.
+    float incomingDamage;
 
     public MissileEntity(EntityType<? extends MissileEntity> type, Level level) {
         super(type, level);
@@ -73,7 +79,9 @@ public class MissileEntity extends Projectile {
     }
 
     static MissileEntity descending(Level level, MissileFlight flight, Vec3 position, @Nullable Entity shooter) {
-        return new MissileEntity(level, flight, position, true, shooter);
+        MissileEntity missile = new MissileEntity(level, flight, position, true, shooter);
+        missile.health = MissileConfig.missileHealth(flight.tier());
+        return missile;
     }
 
     public MissileType missileType() {
@@ -150,9 +158,32 @@ public class MissileEntity extends Projectile {
         return MoveSimulationType.SERVER_AND_CLIENT;
     }
 
+    // Bullets and interceptors can hit a missile on its way down, but not its own blast or the climb.
+    @Override
+    public boolean isPickable() {
+        return this.isDescending() && !this.isRemoved();
+    }
+
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
-        return false;
+        if (!this.isDescending() || this.isRemoved() || source.is(ModDamageTypes.MISSILE) && source.getDirectEntity() == this) {
+            return false;
+        }
+        this.health -= damage;
+        level.sendParticles(ParticleTypes.SMOKE, true, true, this.getX(), this.getY() + this.getBbHeight() / 2.0, this.getZ(), 6, 0.2, 0.6, 0.2, 0.02);
+        if (this.health <= 0.0F) {
+            MissileManager.onShotDown(level, this, source.getEntity());
+        }
+        return true;
+    }
+
+    public float health() {
+        return this.health;
+    }
+
+    // Whether more interceptor fire is needed to bring this missile down.
+    boolean needsInterception() {
+        return this.isPickable() && this.health - this.incomingDamage > 0.0F;
     }
 
     @Override

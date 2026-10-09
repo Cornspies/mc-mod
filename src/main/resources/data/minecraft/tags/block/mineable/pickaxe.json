@@ -4,6 +4,8 @@
     "fusionfactions:missile_launcher",
     "fusionfactions:silo_casing",
     "fusionfactions:silo_hatch",
-    "fusionfactions:silo_controller"
+    "fusionfactions:silo_controller",
+    "fusionfactions:radar",
+    "fusionfactions:interceptor"
   ]
 }

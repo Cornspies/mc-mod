@@ -27,6 +27,14 @@ public final class MissileConfig {
     private static ModConfigSpec.ConfigValue<List<? extends Number>> empDisableSeconds;
     private static ModConfigSpec.ConfigValue<List<? extends Number>> incendiaryPower;
     private static ModConfigSpec.ConfigValue<List<? extends Number>> incendiaryFireRadius;
+    private static ModConfigSpec.ConfigValue<List<? extends Number>> missileHealth;
+    private static ModConfigSpec.IntValue radarRange;
+    private static ModConfigSpec.IntValue radarAreaSize;
+    private static ModConfigSpec.IntValue radarEnergyPerTick;
+    private static ModConfigSpec.IntValue interceptorRange;
+    private static ModConfigSpec.IntValue interceptorCooldownTicks;
+    private static ModConfigSpec.DoubleValue interceptorDamage;
+    private static ModConfigSpec.IntValue interceptorEnergy;
 
     static void define(ModConfigSpec.Builder builder) {
         builder.comment("Missiles, launchers and their counterplay (Phase 2).").push("missiles");
@@ -80,6 +88,37 @@ public final class MissileConfig {
                 List.of(2, 3, 4), 1, 32);
         incendiaryFireRadius = tiers(builder, "incendiaryFireRadius", "Radius in blocks that incendiary missiles set on fire, per tier.",
                 List.of(6, 8, 10), 1, 32);
+
+        missileHealth = tiers(builder, "missileHealth", "Health of a missile on its way down, per tier. Bullets and interceptors damage it.",
+                List.of(10, 20, 40), 1, 10_000);
+
+        builder.comment("Radar blocks: they track missiles and alert the team of the player who placed them.").push("radar");
+        radarRange = builder
+                .comment("How far a radar sees missiles, in blocks (horizontal, any height).")
+                .defineInRange("range", 256, 16, 4096);
+        radarAreaSize = builder
+                .comment("Half the size of the square a radar reports as the launch area, in blocks. The launch spot is",
+                        "somewhere inside it, not necessarily in the middle.")
+                .defineInRange("launchAreaSize", 100, 0, 10_000);
+        radarEnergyPerTick = builder
+                .comment("FE a radar uses per tick, if requirePower is on.")
+                .defineInRange("energyPerTick", 20, 0, 100_000);
+        builder.pop();
+
+        builder.comment("Interceptor blocks: they shoot down missiles coming down near them.").push("interceptor");
+        interceptorRange = builder
+                .comment("How far an interceptor reaches, in blocks. It needs a clear line of sight to the missile.")
+                .defineInRange("range", 96, 8, 512);
+        interceptorCooldownTicks = builder
+                .comment("Ticks between two interceptor shots (20 ticks = 1 second).")
+                .defineInRange("cooldownTicks", 40, 1, 72_000);
+        interceptorDamage = builder
+                .comment("Damage of one interceptor hit. Compare with missileHealth.")
+                .defineInRange("damage", 20.0, 0.0, 10_000.0);
+        interceptorEnergy = builder
+                .comment("FE an interceptor shot takes, if requirePower is on.")
+                .defineInRange("energyPerShot", 10_000, 0, 10_000_000);
+        builder.pop();
 
         builder.pop();
     }
@@ -158,6 +197,38 @@ public final class MissileConfig {
 
     public static int incendiaryFireRadius(int tier) {
         return get(incendiaryFireRadius).get(tier - 1).intValue();
+    }
+
+    public static float missileHealth(int tier) {
+        return get(missileHealth).get(tier - 1).floatValue();
+    }
+
+    public static int radarRange() {
+        return get(radarRange);
+    }
+
+    public static int radarAreaSize() {
+        return get(radarAreaSize);
+    }
+
+    public static int radarEnergyPerTick() {
+        return get(radarEnergyPerTick);
+    }
+
+    public static int interceptorRange() {
+        return get(interceptorRange);
+    }
+
+    public static int interceptorCooldownTicks() {
+        return get(interceptorCooldownTicks);
+    }
+
+    public static float interceptorDamage() {
+        return get(interceptorDamage).floatValue();
+    }
+
+    public static int interceptorEnergy() {
+        return get(interceptorEnergy);
     }
 
     // Before the config is loaded (e.g. in the main menu) the defaults apply.

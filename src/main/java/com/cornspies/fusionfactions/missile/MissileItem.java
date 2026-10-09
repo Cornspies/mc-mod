@@ -53,6 +53,7 @@ public class MissileItem extends Item {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         builder.accept(effect(this.type, this.tier).withStyle(ChatFormatting.GRAY));
         builder.accept(Component.translatable("tooltip.fusionfactions.missile.range", MissileConfig.minRange(), MissileConfig.range(this.tier))

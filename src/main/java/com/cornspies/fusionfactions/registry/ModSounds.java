@@ -29,6 +29,10 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> MISSILE_INCOMING = register("missile.incoming");
     public static final DeferredHolder<SoundEvent, SoundEvent> MISSILE_EXPLODE = register("missile.explode");
     public static final DeferredHolder<SoundEvent, SoundEvent> MISSILE_EMP = register("missile.emp");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MISSILE_SHOT_DOWN = register("missile.shot_down");
+    // Counterplay (DESIGN.md §6.9).
+    public static final DeferredHolder<SoundEvent, SoundEvent> RADAR_ALERT = register("radar.alert");
+    public static final DeferredHolder<SoundEvent, SoundEvent> INTERCEPTOR_LAUNCH = register("interceptor.launch");
 
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
         return SOUND_EVENTS.register(name, id -> SoundEvent.createVariableRangeEvent(id));

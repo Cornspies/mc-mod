@@ -47,6 +47,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> SILO_CASING = ITEMS.registerSimpleBlockItem(ModBlocks.SILO_CASING);
     public static final DeferredItem<BlockItem> SILO_HATCH = ITEMS.registerSimpleBlockItem(ModBlocks.SILO_HATCH);
     public static final DeferredItem<BlockItem> SILO_CONTROLLER = ITEMS.registerSimpleBlockItem(ModBlocks.SILO_CONTROLLER);
+    public static final DeferredItem<BlockItem> RADAR = ITEMS.registerSimpleBlockItem(ModBlocks.RADAR);
+    public static final DeferredItem<BlockItem> INTERCEPTOR = ITEMS.registerSimpleBlockItem(ModBlocks.INTERCEPTOR);
 
     // Movement speed while aiming down sights, as a share of walking speed.
     private static final float AIM_MOVE_SPEED = 0.8F;

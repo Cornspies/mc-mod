@@ -2,6 +2,7 @@ package com.cornspies.fusionfactions.registry;
 
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.missile.MissileLauncherMenu;
+import com.cornspies.fusionfactions.missile.RadarMenu;
 import com.cornspies.fusionfactions.workbench.WeaponWorkbenchMenu;
 
 import net.minecraft.core.registries.Registries;
@@ -20,6 +21,9 @@ public final class ModMenuTypes {
     // Opened with the launcher's position as extra data.
     public static final DeferredHolder<MenuType<?>, MenuType<MissileLauncherMenu>> MISSILE_LAUNCHER = MENU_TYPES.register("missile_launcher",
             () -> IMenuTypeExtension.create(MissileLauncherMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<RadarMenu>> RADAR = MENU_TYPES.register("radar",
+            () -> IMenuTypeExtension.create(RadarMenu::new));
 
     private ModMenuTypes() {
     }

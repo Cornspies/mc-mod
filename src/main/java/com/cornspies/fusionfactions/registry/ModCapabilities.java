@@ -8,6 +8,8 @@ public final class ModCapabilities {
     public static void register(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntityTypes.MISSILE_LAUNCHER.get(), (launcher, side) -> launcher.energy());
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntityTypes.SILO_CONTROLLER.get(), (controller, side) -> controller.energy());
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntityTypes.RADAR.get(), (radar, side) -> radar.energy());
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntityTypes.INTERCEPTOR.get(), (interceptor, side) -> interceptor.energy());
     }
 
     private ModCapabilities() {

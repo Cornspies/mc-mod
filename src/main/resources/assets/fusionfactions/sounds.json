@@ -1,4 +1,13 @@
 {
+  "interceptor.launch": {
+    "subtitle": "subtitles.fusionfactions.interceptor.launch",
+    "sounds": [
+      {
+        "name": "minecraft:fireworks/launch1",
+        "pitch": 0.8
+      }
+    ]
+  },
   "missile.emp": {
     "subtitle": "subtitles.fusionfactions.missile.emp",
     "sounds": [
@@ -45,6 +54,29 @@
       {
         "name": "minecraft:item/trident/riptide3",
         "pitch": 0.6
+      }
+    ]
+  },
+  "missile.shot_down": {
+    "subtitle": "subtitles.fusionfactions.missile.shot_down",
+    "sounds": [
+      {
+        "name": "minecraft:random/explode4",
+        "pitch": 1.3,
+        "volume": 0.8
+      }
+    ]
+  },
+  "radar.alert": {
+    "subtitle": "subtitles.fusionfactions.radar.alert",
+    "sounds": [
+      {
+        "name": "minecraft:note/bit",
+        "pitch": 1.5
+      },
+      {
+        "name": "minecraft:note/bit",
+        "pitch": 1.2
       }
     ]
   },
