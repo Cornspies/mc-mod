@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.missile.MissileItem;
 import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.supplydrop.CrateRarity;
 import com.cornspies.fusionfactions.weapon.upgrade.UpgradeItem;
@@ -20,7 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-// Supply crate loot (D43, D44), rolled many times. Registered by WeaponGameTests.
+// Supply crate loot (D43, D44, D57), rolled many times. Registered by WeaponGameTests.
 public final class CrateLootGameTests {
     public static final DeferredRegister<Consumer<GameTestHelper>> TEST_FUNCTIONS = DeferredRegister.create(Registries.TEST_FUNCTION, FusionFactions.MODID);
 
@@ -36,6 +37,7 @@ public final class CrateLootGameTests {
             int tier = rarity.ordinal() + 1;
             LootTable table = helper.getLevel().getServer().reloadableRegistries().getLootTable(rarity.lootTable());
             int heavy = 0;
+            int missiles = 0;
             for (int roll = 0; roll < ROLLS; roll++) {
                 LootParams params = new LootParams.Builder(helper.getLevel())
                         .withParameter(LootContextParams.ORIGIN, helper.absoluteVec(Vec3.ZERO))
@@ -52,6 +54,10 @@ public final class CrateLootGameTests {
                                 || (rarity == CrateRarity.LEGENDARY && part.tier() == 2);
                         helper.assertTrue(allowed, rarity + " crate held a tier " + part.tier() + " part");
                     }
+                    if (stack.getItem() instanceof MissileItem missile) {
+                        helper.assertValueEqual(missile.tier(), 3, rarity + " crate missile tier");
+                        missiles++;
+                    }
                     if (stack.is(ModItems.SNIPER_RIFLE.get()) || stack.is(ModItems.GATLING_GUN.get())) {
                         heavyHere = true;
                     }
@@ -61,9 +67,11 @@ public final class CrateLootGameTests {
                 }
             }
             if (rarity == CrateRarity.LEGENDARY) {
+                helper.assertTrue(missiles > ROLLS * 0.15 && missiles < ROLLS * 0.35, "about a quarter of the legendary crates should hold a tier III missile, not " + missiles + "/" + ROLLS);
                 helper.assertTrue(heavy > ROLLS * 0.35 && heavy < ROLLS * 0.65, "about half the legendary crates should hold a heavy weapon, not " + heavy + "/" + ROLLS);
             } else {
                 helper.assertValueEqual(heavy, 0, rarity + " crates with a heavy weapon");
+                helper.assertValueEqual(missiles, 0, rarity + " crates with a missile");
             }
         }
         helper.succeed();
