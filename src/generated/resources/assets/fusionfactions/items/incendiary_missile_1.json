@@ -1,0 +1,24 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "cases": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "fusionfactions:item/incendiary_missile_1"
+        },
+        "when": [
+          "gui",
+          "ground",
+          "fixed",
+          "on_shelf"
+        ]
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "fusionfactions:item/incendiary_missile_1_3d"
+    },
+    "property": "minecraft:display_context"
+  }
+}

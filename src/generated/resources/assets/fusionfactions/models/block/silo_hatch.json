@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "fusionfactions:block/silo_casing",
+    "side": "fusionfactions:block/silo_casing",
+    "top": "fusionfactions:block/silo_hatch_top"
+  }
+}

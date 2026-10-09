@@ -6,6 +6,7 @@ import java.util.List;
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.client.UpgradeTierProperty;
 import com.cornspies.fusionfactions.missile.MissileType;
+import com.cornspies.fusionfactions.missile.SiloHatchBlock;
 import com.cornspies.fusionfactions.registry.ModBlocks;
 import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.supplydrop.SupplyCrateBlock;
@@ -53,6 +54,30 @@ public class ModModelProvider extends ModelProvider {
 
         blockModels.createTrivialBlock(ModBlocks.WEAPON_WORKBENCH.get(), TexturedModel.CUBE_BOTTOM_TOP);
         blockModels.createTrivialBlock(ModBlocks.MISSILE_LAUNCHER.get(), TexturedModel.CUBE_BOTTOM_TOP);
+
+        // Missile silo: casing on every side; the controller has a panel on its sides; the hatch's top opens.
+        Block casing = ModBlocks.SILO_CASING.get();
+        blockModels.createTrivialCube(casing);
+        Material casingTexture = TextureMapping.getBlockTexture(casing);
+        Block controller = ModBlocks.SILO_CONTROLLER.get();
+        Identifier controllerModel = ModelTemplates.CUBE_BOTTOM_TOP.create(controller, new TextureMapping()
+                .put(TextureSlot.TOP, casingTexture)
+                .put(TextureSlot.BOTTOM, casingTexture)
+                .put(TextureSlot.SIDE, TextureMapping.getBlockTexture(controller)), blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(controller, BlockModelGenerators.plainVariant(controllerModel)));
+        blockModels.registerSimpleItemModel(controller, controllerModel);
+        Block hatch = ModBlocks.SILO_HATCH.get();
+        Identifier closed = ModelTemplates.CUBE_BOTTOM_TOP.create(hatch, new TextureMapping()
+                .put(TextureSlot.TOP, TextureMapping.getBlockTexture(hatch, "_top"))
+                .put(TextureSlot.BOTTOM, casingTexture)
+                .put(TextureSlot.SIDE, casingTexture), blockModels.modelOutput);
+        Identifier open = ModelTemplates.CUBE_BOTTOM_TOP.createWithSuffix(hatch, "_open", new TextureMapping()
+                .put(TextureSlot.TOP, TextureMapping.getBlockTexture(hatch, "_top_open"))
+                .put(TextureSlot.BOTTOM, casingTexture)
+                .put(TextureSlot.SIDE, casingTexture), blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(hatch).with(BlockModelGenerators.createBooleanModelDispatch(SiloHatchBlock.OPEN,
+                BlockModelGenerators.plainVariant(open), BlockModelGenerators.plainVariant(closed))));
+        blockModels.registerSimpleItemModel(hatch, closed);
 
         // Missiles: a flat icon in inventories, on the ground and in frames; the 3D model from tools/missile_models.py
         // in hand and in flight (client.MissileRenderer).

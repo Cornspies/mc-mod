@@ -41,6 +41,7 @@ PALETTE = [
     (70, 120, 255),   # 11 tier I (blue)
     (240, 150, 30),   # 12 tier II (orange)
     (230, 50, 40),    # 13 tier III (red)
+    (130, 80, 190),   # 14 violet (breaching missiles)
 ]
 BLACK, DARK, METAL, LIGHT, CYAN, BRIGHT, LEATHER, LEATHER_DARK, ORANGE, LENS, BLUE = range(11)
 TIER_COLORS = {1: 11, 2: 12, 3: 13}

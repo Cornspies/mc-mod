@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "F": "fusionfactions:fusion_core",
+    "M": "fusionfactions:incendiary_missile_1",
+    "P": "minecraft:blaze_powder",
+    "R": "minecraft:blaze_rod",
+    "T": "minecraft:tnt"
+  },
+  "pattern": [
+    "RTR",
+    "PMP",
+    "RFR"
+  ],
+  "result": {
+    "id": "fusionfactions:incendiary_missile_2"
+  }
+}

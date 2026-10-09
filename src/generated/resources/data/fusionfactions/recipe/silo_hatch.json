@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": "fusionfactions:silo_casing",
+    "I": "#c:ingots/iron",
+    "R": "#c:dusts/redstone",
+    "T": "minecraft:iron_trapdoor"
+  },
+  "pattern": [
+    "ITI",
+    "C C",
+    "IRI"
+  ],
+  "result": {
+    "id": "fusionfactions:silo_hatch"
+  }
+}

@@ -133,6 +133,31 @@
         }
       ],
       "rolls": 1
+    },
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:explosive_missile_3"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:breaching_missile_3"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:emp_missile_3"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fusionfactions:incendiary_missile_3"
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 12
+        }
+      ],
+      "rolls": 1
     }
   ],
   "random_sequence": "fusionfactions:supply_crate/legendary"

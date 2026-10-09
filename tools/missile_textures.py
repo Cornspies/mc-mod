@@ -5,12 +5,14 @@
 - the target designator icon
 - the missile launcher screen background (176x176 on a 256x256 sheet) and its empty-slot silhouettes
 - the missile launcher block (top, side, bottom)
+- the missile silo blocks: casing, hatch (closed and open) and controller
 
 Run from the repository root:  python3 tools/missile_textures.py
 """
 from workbench_textures import ASSETS, BG, BODY, DARK, DARK_EDGE, LIGHT, LIGHT_EDGE, SLOT_BG, SLOT_DARK, TIER_COLORS, icon_pixels, silhouette, write_png
 
-TYPES = ['explosive']
+# The band in the middle of the icon shows the type, like on the 3D model.
+TYPES = {'explosive': (24, 26, 30), 'breaching': (130, 80, 190), 'emp': (70, 210, 250), 'incendiary': (230, 140, 40)}
 
 # 16x16. '#' body, '-' light metal, '+' tier color, 'o' dark detail, '*' exhaust glow, '.' transparent.
 MISSILE_ICON = [
@@ -21,8 +23,8 @@ MISSILE_ICON = [
     '..........----..',
     '.........-+--...',
     '........----....',
-    '.......----.....',
-    '......-oo-......',
+    '.......oooo.....',
+    '......oooo......',
     '.....----.......',
     '..#.----........',
     '..##---.........',
@@ -61,9 +63,9 @@ INVENTORY_Y = 93
 SCREEN_BG, SCREEN_EDGE = (16, 26, 20), (40, 60, 46)
 
 
-def missile_icon(tier):
+def missile_icon(kind, tier):
     return icon_pixels(MISSILE_ICON, {'#': BODY + (255,), '-': LIGHT + (255,), '+': TIER_COLORS[tier] + (255,),
-                                      'o': DARK + (255,), '*': EXHAUST + (255,)})
+                                      'o': TYPES[kind] + (255,), '*': EXHAUST + (255,)})
 
 
 def designator_icon():
@@ -169,12 +171,53 @@ def block_face(kind):
     return px
 
 
+def silo_face(kind):
+    metal, dark, edge, warn, light = (82, 88, 100), (50, 54, 62), (36, 38, 44), (230, 170, 40), (120, 128, 142)
+    px = [[metal + (255,) for _ in range(16)] for _ in range(16)]
+    for i in range(16):
+        for j in (0, 15):
+            px[i][j] = edge + (255,)
+            px[j][i] = edge + (255,)
+    if kind == 'casing':
+        # Heavy plates with rivets in the corners.
+        for i in range(1, 15):
+            px[7][i] = dark + (255,)
+            px[i][7] = dark + (255,)
+        for x, y in ((2, 2), (12, 2), (2, 12), (12, 12), (5, 5), (9, 9), (5, 9), (9, 5)):
+            px[y][x] = light + (255,)
+    elif kind in ('hatch_top', 'hatch_top_open'):
+        # Two doors with warning stripes along their edges, or the dark shaft once they're open.
+        for y in range(1, 15):
+            for x in range(1, 15):
+                if kind == 'hatch_top_open':
+                    px[y][x] = ((14, 15, 18) if 3 <= x <= 12 and 3 <= y <= 12 else warn if (x + y) // 2 % 2 == 0 else (30, 30, 30)) + (255,)
+                elif x in (7, 8):
+                    px[y][x] = (warn if y // 2 % 2 == 0 else (30, 30, 30)) + (255,)
+                elif y in (1, 14) or x in (1, 14):
+                    px[y][x] = dark + (255,)
+    elif kind == 'controller':
+        # A control panel: a screen, buttons and a warning light.
+        for y in range(2, 8):
+            for x in range(2, 14):
+                px[y][x] = (16, 26, 20, 255)
+        for x in range(3, 10):
+            px[4][x] = (124, 224, 143, 255)
+        for x in range(3, 7):
+            px[6][x] = (78, 138, 91, 255)
+        for x, color in ((3, (230, 50, 40)), (6, (240, 150, 30)), (9, (70, 120, 255))):
+            for y in range(10, 13):
+                px[y][x] = color + (255,)
+                px[y][x + 1] = color + (255,)
+        px[11][12] = warn + (255,)
+    return px
+
+
 def main():
     for rows in (MISSILE_ICON, DESIGNATOR_ICON):
         assert len(rows) == 16 and all(len(r) == 16 for r in rows)
     for kind in TYPES:
         for tier in (1, 2, 3):
-            write_png(ASSETS / f'item/{kind}_missile_{tier}.png', 16, 16, missile_icon(tier))
+            write_png(ASSETS / f'item/{kind}_missile_{tier}.png', 16, 16, missile_icon(kind, tier))
     write_png(ASSETS / 'item/target_designator.png', 16, 16, designator_icon())
     write_png(ASSETS / 'gui/container/missile_launcher.png', 256, 256, gui())
     sprites = ASSETS / 'gui/sprites/container/missile_launcher'
@@ -182,6 +225,8 @@ def main():
     write_png(sprites / 'designator.png', 16, 16, silhouette(DESIGNATOR_ICON))
     for kind in ('top', 'side', 'bottom'):
         write_png(ASSETS / f'block/missile_launcher_{kind}.png', 16, 16, block_face(kind))
+    for kind in ('casing', 'hatch_top', 'hatch_top_open', 'controller'):
+        write_png(ASSETS / f'block/silo_{kind}.png', 16, 16, silo_face(kind))
     print('wrote missile textures')
 
 

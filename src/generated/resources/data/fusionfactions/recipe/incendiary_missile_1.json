@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "F": "fusionfactions:fusion_core",
+    "G": "#c:gunpowders",
+    "I": "#c:ingots/iron",
+    "P": "minecraft:blaze_powder",
+    "T": "minecraft:tnt"
+  },
+  "pattern": [
+    "IPI",
+    "ITI",
+    "GFG"
+  ],
+  "result": {
+    "id": "fusionfactions:incendiary_missile_1"
+  }
+}

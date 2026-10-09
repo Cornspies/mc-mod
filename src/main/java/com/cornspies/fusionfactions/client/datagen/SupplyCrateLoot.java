@@ -1,5 +1,6 @@
 package com.cornspies.fusionfactions.client.datagen;
 
+import com.cornspies.fusionfactions.missile.MissileType;
 import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.supplydrop.CrateRarity;
 import com.cornspies.fusionfactions.weapon.upgrade.UpgradeType;
@@ -14,7 +15,7 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
-// Supply crate loot (OD-19 → D43): only our own items. Every crate has ammo, weapon parts and upgrade
+// Supply crate loot (OD-19 → D43): only our own items. Legendary crates may hold a tier III missile (D57). Every crate has ammo, weapon parts and upgrade
 // parts of its tier (tier I in common, II in rare, III in legendary crates); weapons are a chance, the
 // crate-only sniper and gatling only in legendary crates (D44). Each pool is one kind of loot, so the
 // odds stay readable. Servers can override the tables with a datapack (supply_crate/<rarity>).
@@ -50,7 +51,9 @@ public class SupplyCrateLoot implements LootTableSubProvider {
                 // Half the legendary crates hold one of the crate-only heavy weapons (D44)...
                 .withPool(single(item(ModItems.SNIPER_RIFLE.get(), 1), item(ModItems.GATLING_GUN.get(), 1), nothing(2)))
                 // ...and some a close-range weapon as well.
-                .withPool(single(item(ModItems.SMG.get(), 1), item(ModItems.SHOTGUN.get(), 1), nothing(4))));
+                .withPool(single(item(ModItems.SMG.get(), 1), item(ModItems.SHOTGUN.get(), 1), nothing(4)))
+                // Tier III missiles only come from here (D57): a quarter of the crates hold one, any type.
+                .withPool(single(missileEntries(3, nothing(3 * MissileType.values().length)))));
     }
 
     // One roll from the given entries.
@@ -80,6 +83,16 @@ public class SupplyCrateLoot implements LootTableSubProvider {
         LootPoolEntryContainer.Builder<?>[] entries = new LootPoolEntryContainer.Builder<?>[types.length + extra.length];
         for (int i = 0; i < types.length; i++) {
             entries[i] = item(ModItems.upgrade(types[i], tier).get(), 1);
+        }
+        System.arraycopy(extra, 0, entries, types.length, extra.length);
+        return entries;
+    }
+
+    private static LootPoolEntryContainer.Builder<?>[] missileEntries(int tier, LootPoolEntryContainer.Builder<?>... extra) {
+        MissileType[] types = MissileType.values();
+        LootPoolEntryContainer.Builder<?>[] entries = new LootPoolEntryContainer.Builder<?>[types.length + extra.length];
+        for (int i = 0; i < types.length; i++) {
+            entries[i] = item(ModItems.missile(types[i], tier).get(), 1);
         }
         System.arraycopy(extra, 0, entries, types.length, extra.length);
         return entries;

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "open=false": {
+      "model": "fusionfactions:block/silo_hatch"
+    },
+    "open=true": {
+      "model": "fusionfactions:block/silo_hatch_open"
+    }
+  }
+}

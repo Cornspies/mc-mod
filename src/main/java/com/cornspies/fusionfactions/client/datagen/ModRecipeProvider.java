@@ -10,7 +10,11 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.world.item.Items;
+import net.minecraft.tags.BlockItemTags;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.Tags;
 
 // Weapon recipes (D27): vanilla items make three parts (barrel, core, grip), and the parts make the
@@ -133,6 +137,42 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ModItems.missile(MissileType.EXPLOSIVE, 1).get()), this.has(ModItems.missile(MissileType.EXPLOSIVE, 1).get()))
                 .save(this.output);
 
+        // The other missile types (D48): the same body, with a different payload. Tier II is tier I upgraded.
+        this.missile(MissileType.BREACHING, this.tag(Tags.Items.GEMS_DIAMOND), Items.NETHERITE_SCRAP);
+        this.missile(MissileType.EMP, this.tag(BlockItemTags.LIGHTNING_RODS.item()), Items.REDSTONE_BLOCK);
+        this.missile(MissileType.INCENDIARY, Ingredient.of(Items.BLAZE_POWDER), Items.BLAZE_ROD);
+
+        // Missile silo (D55, DESIGN.md §6.8): 31 casing, a hatch and a controller.
+        this.shaped(RecipeCategory.COMBAT, ModItems.SILO_CASING.get(), 4)
+                .pattern("IOI")
+                .pattern("O O")
+                .pattern("IOI")
+                .define('I', Tags.Items.INGOTS_IRON)
+                .define('O', Tags.Items.OBSIDIANS)
+                .unlockedBy(getHasName(ModItems.MISSILE_LAUNCHER.get()), this.has(ModItems.MISSILE_LAUNCHER.get()))
+                .save(this.output);
+        this.shaped(RecipeCategory.COMBAT, ModItems.SILO_HATCH.get())
+                .pattern("ITI")
+                .pattern("C C")
+                .pattern("IRI")
+                .define('I', Tags.Items.INGOTS_IRON)
+                .define('T', Items.IRON_TRAPDOOR)
+                .define('C', ModItems.SILO_CASING.get())
+                .define('R', Tags.Items.DUSTS_REDSTONE)
+                .unlockedBy(getHasName(ModItems.SILO_CASING.get()), this.has(ModItems.SILO_CASING.get()))
+                .save(this.output);
+        this.shaped(RecipeCategory.COMBAT, ModItems.SILO_CONTROLLER.get())
+                .pattern("BFB")
+                .pattern("CLC")
+                .pattern("CRC")
+                .define('B', ModItems.BARREL.get())
+                .define('F', ModItems.FUSION_CORE.get())
+                .define('C', ModItems.SILO_CASING.get())
+                .define('L', ModItems.MISSILE_LAUNCHER.get())
+                .define('R', Tags.Items.STORAGE_BLOCKS_REDSTONE)
+                .unlockedBy(getHasName(ModItems.SILO_CASING.get()), this.has(ModItems.SILO_CASING.get()))
+                .save(this.output);
+
         RecipeOutput heavyWeapons = this.output.withConditions(HeavyWeaponRecipesCondition.INSTANCE);
         this.shapeless(RecipeCategory.COMBAT, ModItems.SNIPER_RIFLE.get())
                 .requires(ModItems.BARREL.get(), 2)
@@ -148,5 +188,33 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.IRON_BLOCK)
                 .unlockedBy(getHasName(ModItems.FUSION_CORE.get()), this.has(ModItems.FUSION_CORE.get()))
                 .save(heavyWeapons);
+    }
+
+    // Tier I: the payload, TNT, iron, gunpowder and a fusion core. Tier II: tier I with more payload, a richer
+    // payload in the corners, and another fusion core.
+    private void missile(MissileType type, Ingredient payload, ItemLike richPayload) {
+        Item tierOne = ModItems.missile(type, 1).get();
+        this.shaped(RecipeCategory.COMBAT, tierOne)
+                .pattern("IPI")
+                .pattern("ITI")
+                .pattern("GFG")
+                .define('I', Tags.Items.INGOTS_IRON)
+                .define('P', payload)
+                .define('T', Items.TNT)
+                .define('G', Tags.Items.GUNPOWDERS)
+                .define('F', ModItems.FUSION_CORE.get())
+                .unlockedBy(getHasName(ModItems.MISSILE_LAUNCHER.get()), this.has(ModItems.MISSILE_LAUNCHER.get()))
+                .save(this.output);
+        this.shaped(RecipeCategory.COMBAT, ModItems.missile(type, 2).get())
+                .pattern("RTR")
+                .pattern("PMP")
+                .pattern("RFR")
+                .define('R', richPayload)
+                .define('T', Items.TNT)
+                .define('P', payload)
+                .define('M', tierOne)
+                .define('F', ModItems.FUSION_CORE.get())
+                .unlockedBy(getHasName(tierOne), this.has(tierOne))
+                .save(this.output);
     }
 }
