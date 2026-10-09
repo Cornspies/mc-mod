@@ -55,6 +55,8 @@ public class ModModelProvider extends ModelProvider {
 
         blockModels.createTrivialBlock(ModBlocks.WEAPON_WORKBENCH.get(), TexturedModel.CUBE_BOTTOM_TOP);
         blockModels.createTrivialBlock(ModBlocks.MISSILE_LAUNCHER.get(), TexturedModel.CUBE_BOTTOM_TOP);
+        blockModels.createTrivialBlock(ModBlocks.RADAR.get(), TexturedModel.CUBE_BOTTOM_TOP);
+        blockModels.createTrivialBlock(ModBlocks.INTERCEPTOR.get(), TexturedModel.CUBE_BOTTOM_TOP);
 
         // Missile silo: casing on every side; the controller has a panel on its sides; the hatch's top opens. Once
         // the silo is complete, each block shows the model for its part of it (tools/silo_textures.py).

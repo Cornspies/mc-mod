@@ -173,6 +173,30 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ModItems.SILO_CASING.get()), this.has(ModItems.SILO_CASING.get()))
                 .save(this.output);
 
+        // Counterplay (D53, DESIGN.md §6.9).
+        this.shaped(RecipeCategory.COMBAT, ModItems.RADAR.get())
+                .pattern("ACA")
+                .pattern("IFI")
+                .pattern("IRI")
+                .define('A', Items.AMETHYST_SHARD)
+                .define('C', Items.COMPASS)
+                .define('I', Tags.Items.INGOTS_IRON)
+                .define('F', ModItems.FUSION_CORE.get())
+                .define('R', Tags.Items.STORAGE_BLOCKS_REDSTONE)
+                .unlockedBy(getHasName(ModItems.FUSION_CORE.get()), this.has(ModItems.FUSION_CORE.get()))
+                .save(this.output);
+        this.shaped(RecipeCategory.COMBAT, ModItems.INTERCEPTOR.get())
+                .pattern("BRB")
+                .pattern("IFI")
+                .pattern("IDI")
+                .define('B', ModItems.BARREL.get())
+                .define('R', Items.FIREWORK_ROCKET)
+                .define('I', Tags.Items.INGOTS_IRON)
+                .define('F', ModItems.FUSION_CORE.get())
+                .define('D', Items.DISPENSER)
+                .unlockedBy(getHasName(ModItems.FUSION_CORE.get()), this.has(ModItems.FUSION_CORE.get()))
+                .save(this.output);
+
         RecipeOutput heavyWeapons = this.output.withConditions(HeavyWeaponRecipesCondition.INSTANCE);
         this.shapeless(RecipeCategory.COMBAT, ModItems.SNIPER_RIFLE.get())
                 .requires(ModItems.BARREL.get(), 2)

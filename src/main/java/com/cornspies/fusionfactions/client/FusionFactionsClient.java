@@ -48,6 +48,8 @@ public class FusionFactionsClient {
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntityTypes.FALLING_CRATE.get(), FallingCrateRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.MISSILE.get(), MissileRenderer::new);
+        // Interceptor rockets are drawn as their smoke trail, sent by the server.
+        event.registerEntityRenderer(ModEntityTypes.INTERCEPTOR_ROCKET.get(), NoopRenderer::new);
         // Bullets are drawn as a particle trail by the entity itself.
         event.registerEntityRenderer(ModEntityTypes.BULLET.get(), NoopRenderer::new);
     }
@@ -55,6 +57,7 @@ public class FusionFactionsClient {
     private static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.WEAPON_WORKBENCH.get(), WeaponWorkbenchScreen::new);
         event.register(ModMenuTypes.MISSILE_LAUNCHER.get(), MissileLauncherScreen::new);
+        event.register(ModMenuTypes.RADAR.get(), RadarScreen::new);
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {

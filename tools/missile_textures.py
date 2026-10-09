@@ -6,6 +6,7 @@
 - the missile launcher screen background (176x176 on a 256x256 sheet) and its empty-slot silhouettes
 - the missile launcher block (top, side, bottom)
 - the missile silo blocks: casing, hatch (closed and open) and controller
+- the radar screen background and the radar and interceptor blocks
 
 Run from the repository root:  python3 tools/missile_textures.py
 """
@@ -212,6 +213,107 @@ def silo_face(kind):
     return px
 
 
+RADAR_W, RADAR_H = 176, 110
+SCOPE = (8, 18, 88)  # x, y and size of the scope
+RADAR_LIST = (92, 18, 170, 102)  # the contact list, x0, y0, x1, y1
+
+
+def radar_gui():
+    img = [[(0, 0, 0, 0)] * 256 for _ in range(256)]
+
+    def put(x, y, color):
+        img[y][x] = color + (255,) if len(color) == 3 else color
+
+    def fill(x0, y0, x1, y1, color):
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                put(x, y, color)
+
+    w, h = RADAR_W, RADAR_H
+    fill(1, 1, w - 1, h - 1, BG)
+    fill(2, 0, w - 3, 1, (0, 0, 0))
+    fill(2, h - 1, w - 3, h, (0, 0, 0))
+    fill(0, 2, 1, h - 3, (0, 0, 0))
+    fill(w - 1, 2, w, h - 3, (0, 0, 0))
+    for x, y in ((1, 1), (w - 2, h - 2), (w - 3, 1), (1, h - 3), (w - 2, 2), (2, h - 2)):
+        put(x, y, (0, 0, 0))
+    fill(2, 1, w - 3, 3, LIGHT_EDGE)
+    fill(1, 2, 3, h - 3, LIGHT_EDGE)
+    fill(3, h - 3, w - 2, h - 1, DARK_EDGE)
+    fill(w - 3, 3, w - 1, h - 2, DARK_EDGE)
+    for x, y in ((w - 3, 2), (2, h - 3)):
+        put(x, y, BG)
+    put(3, 3, LIGHT_EDGE)
+
+    def sunken(x0, y0, x1, y1):
+        fill(x0, y0, x1, y0 + 1, SLOT_DARK)
+        fill(x0, y0, x0 + 1, y1, SLOT_DARK)
+        fill(x0 + 1, y1 - 1, x1, y1, LIGHT_EDGE)
+        fill(x1 - 1, y0 + 1, x1, y1, LIGHT_EDGE)
+        fill(x0 + 1, y0 + 1, x1 - 1, y1 - 1, SCREEN_EDGE)
+        fill(x0 + 2, y0 + 2, x1 - 2, y1 - 2, SCREEN_BG)
+
+    # The scope: range rings and a cross on the dark screen, north up.
+    sx, sy, size = SCOPE
+    sunken(sx, sy, sx + size, sy + size)
+    cx, cy, r = sx + size / 2, sy + size / 2, size / 2 - 3
+    ring = (40, 96, 56)
+    for y in range(sy + 2, sy + size - 2):
+        for x in range(sx + 2, sx + size - 2):
+            d = ((x + 0.5 - cx) ** 2 + (y + 0.5 - cy) ** 2) ** 0.5
+            if any(abs(d - r * f) < 0.5 for f in (1.0, 0.66, 0.33)) or (d < r and (abs(x + 0.5 - cx) < 0.5 or abs(y + 0.5 - cy) < 0.5)):
+                put(x, y, ring)
+    sunken(*RADAR_LIST)
+    return img
+
+
+def radar_face(kind):
+    metal, dark, edge, green = (82, 88, 100), (50, 54, 62), (36, 38, 44), (90, 200, 110)
+    px = [[metal + (255,) for _ in range(16)] for _ in range(16)]
+    for i in range(16):
+        for j in (0, 15):
+            px[i][j] = edge + (255,)
+            px[j][i] = edge + (255,)
+    if kind == 'radar_top':
+        # A dish seen from above.
+        for y in range(16):
+            for x in range(16):
+                d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+                if d < 6.5:
+                    px[y][x] = ((150, 158, 172) if d > 5.5 else (110, 118, 132) if d > 2 else dark) + (255,)
+        px[7][7] = px[7][8] = px[8][7] = px[8][8] = (230, 50, 40, 255)
+    elif kind == 'radar_side':
+        # A round scope screen with a sweep line.
+        for y in range(3, 13):
+            for x in range(3, 13):
+                d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+                if d < 5:
+                    px[y][x] = (16, 26, 20, 255)
+        for i in range(5):
+            px[7 - i if i < 4 else 4][8 + i if i < 4 else 11] = green + (255,)
+        px[6][6] = (230, 170, 40, 255)
+    elif kind == 'interceptor_top':
+        # Four launch tubes.
+        for cx, cy in ((4, 4), (11, 4), (4, 11), (11, 11)):
+            for y in range(cy - 2, cy + 2):
+                for x in range(cx - 2, cx + 2):
+                    px[y][x] = (20, 22, 26, 255)
+            px[cy - 2][cx - 2] = (150, 158, 172, 255)
+    elif kind == 'interceptor_side':
+        for y in range(2, 14):
+            for x in (3, 7, 11):
+                px[y][x] = dark + (255,)
+                px[y][x + 1] = dark + (255,)
+        for x in range(1, 15):
+            px[13][x] = (230, 170, 40, 255) if x % 4 < 2 else (30, 30, 30, 255)
+    else:
+        for y in range(1, 15):
+            for x in range(1, 15):
+                if (x + y) % 4 == 0:
+                    px[y][x] = dark + (255,)
+    return px
+
+
 def main():
     for rows in (MISSILE_ICON, DESIGNATOR_ICON):
         assert len(rows) == 16 and all(len(r) == 16 for r in rows)
@@ -225,6 +327,9 @@ def main():
     write_png(sprites / 'designator.png', 16, 16, silhouette(DESIGNATOR_ICON))
     for kind in ('top', 'side', 'bottom'):
         write_png(ASSETS / f'block/missile_launcher_{kind}.png', 16, 16, block_face(kind))
+    write_png(ASSETS / 'gui/container/radar.png', 256, 256, radar_gui())
+    for kind in ('radar_top', 'radar_side', 'interceptor_top', 'interceptor_side', 'radar_bottom', 'interceptor_bottom'):
+        write_png(ASSETS / f'block/{kind}.png', 16, 16, radar_face(kind))
     for kind in ('casing', 'hatch_top', 'hatch_top_open', 'controller'):
         write_png(ASSETS / f'block/silo_{kind}.png', 16, 16, silo_face(kind))
     print('wrote missile textures')
