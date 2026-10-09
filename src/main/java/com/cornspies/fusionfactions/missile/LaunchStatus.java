@@ -20,7 +20,9 @@ public record LaunchStatus(Check check, int value) {
         SKY_BLOCKED,
         COOLDOWN,
         RAID_WINDOW_CLOSED,
-        NO_POWER;
+        NO_POWER,
+        SILO_INCOMPLETE,
+        DISABLED;
 
         public String translationKey() {
             return "container.fusionfactions.missile_launcher.status." + this.name().toLowerCase(Locale.ROOT);

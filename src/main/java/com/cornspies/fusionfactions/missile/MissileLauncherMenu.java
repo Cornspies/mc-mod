@@ -23,8 +23,9 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-// Missile launcher menu (DESIGN.md §6.4): missile and designator slots, and the launch button. The server
-// checks every launch again (MissileLauncherBlockEntity.status), whatever the screen showed.
+// Menu of the missile launcher and the silo controller (DESIGN.md §6.4): missile and designator slots, and the
+// launch button. The server
+// checks every launch again (AbstractLauncherBlockEntity.status), whatever the screen showed.
 public class MissileLauncherMenu extends AbstractContainerMenu {
     public static final int LAUNCH_BUTTON = 0;
     public static final int MISSILE_X = 26;
@@ -42,22 +43,22 @@ public class MissileLauncherMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess access;
     private final BlockPos pos;
 
-    // Client side: the position comes with the open-menu packet.
+    // Client side: the position comes with the open-menu packet. It is where missiles start (for the distance shown).
     public MissileLauncherMenu(int containerId, Inventory inventory, RegistryFriendlyByteBuf buffer) {
-        this(containerId, inventory, new SimpleContainer(2), new SimpleContainerData(MissileLauncherBlockEntity.DATA_COUNT), ContainerLevelAccess.NULL,
+        this(containerId, inventory, new SimpleContainer(2), new SimpleContainerData(AbstractLauncherBlockEntity.DATA_COUNT), ContainerLevelAccess.NULL,
                 buffer.readBlockPos());
     }
 
     public MissileLauncherMenu(int containerId, Inventory inventory, Container container, ContainerData data, ContainerLevelAccess access, BlockPos pos) {
         super(ModMenuTypes.MISSILE_LAUNCHER.get(), containerId);
         checkContainerSize(container, 2);
-        checkContainerDataCount(data, MissileLauncherBlockEntity.DATA_COUNT);
+        checkContainerDataCount(data, AbstractLauncherBlockEntity.DATA_COUNT);
         this.container = container;
         this.data = data;
         this.access = access;
         this.pos = pos;
-        this.addSlot(new FilteredSlot(container, MissileLauncherBlockEntity.MISSILE_SLOT, MISSILE_X, MISSILE_Y, "missile"));
-        this.addSlot(new FilteredSlot(container, MissileLauncherBlockEntity.DESIGNATOR_SLOT, DESIGNATOR_X, DESIGNATOR_Y, "designator"));
+        this.addSlot(new FilteredSlot(container, AbstractLauncherBlockEntity.MISSILE_SLOT, MISSILE_X, MISSILE_Y, "missile"));
+        this.addSlot(new FilteredSlot(container, AbstractLauncherBlockEntity.DESIGNATOR_SLOT, DESIGNATOR_X, DESIGNATOR_Y, "designator"));
         this.addStandardInventorySlots(inventory, 8, INVENTORY_Y);
         this.addDataSlots(data);
     }
@@ -67,11 +68,11 @@ public class MissileLauncherMenu extends AbstractContainerMenu {
     }
 
     public ItemStack missile() {
-        return this.container.getItem(MissileLauncherBlockEntity.MISSILE_SLOT);
+        return this.container.getItem(AbstractLauncherBlockEntity.MISSILE_SLOT);
     }
 
     public @Nullable GlobalPos target() {
-        return TargetDesignatorItem.target(this.container.getItem(MissileLauncherBlockEntity.DESIGNATOR_SLOT));
+        return TargetDesignatorItem.target(this.container.getItem(AbstractLauncherBlockEntity.DESIGNATOR_SLOT));
     }
 
     public LaunchStatus status() {
@@ -94,7 +95,7 @@ public class MissileLauncherMenu extends AbstractContainerMenu {
             return true;
         }
         this.access.execute((level, blockPos) -> {
-            if (level instanceof ServerLevel serverLevel && level.getBlockEntity(blockPos) instanceof MissileLauncherBlockEntity launcher) {
+            if (level instanceof ServerLevel serverLevel && level.getBlockEntity(blockPos) instanceof AbstractLauncherBlockEntity launcher) {
                 launcher.launch(serverLevel, serverPlayer);
             }
         });
@@ -114,11 +115,11 @@ public class MissileLauncherMenu extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
         } else if (stack.getItem() instanceof MissileItem) {
-            if (!this.moveItemStackTo(stack, MissileLauncherBlockEntity.MISSILE_SLOT, MissileLauncherBlockEntity.MISSILE_SLOT + 1, false)) {
+            if (!this.moveItemStackTo(stack, AbstractLauncherBlockEntity.MISSILE_SLOT, AbstractLauncherBlockEntity.MISSILE_SLOT + 1, false)) {
                 return ItemStack.EMPTY;
             }
         } else if (stack.getItem() instanceof TargetDesignatorItem) {
-            if (!this.moveItemStackTo(stack, MissileLauncherBlockEntity.DESIGNATOR_SLOT, MissileLauncherBlockEntity.DESIGNATOR_SLOT + 1, false)) {
+            if (!this.moveItemStackTo(stack, AbstractLauncherBlockEntity.DESIGNATOR_SLOT, AbstractLauncherBlockEntity.DESIGNATOR_SLOT + 1, false)) {
                 return ItemStack.EMPTY;
             }
         } else if (slotIndex < HOTBAR_START) {
@@ -143,7 +144,7 @@ public class MissileLauncherMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return stillValid(this.access, player, ModBlocks.MISSILE_LAUNCHER.get());
+        return stillValid(this.access, player, ModBlocks.MISSILE_LAUNCHER.get()) || stillValid(this.access, player, ModBlocks.SILO_CONTROLLER.get());
     }
 
     // A slot that only takes what the launcher accepts there, with an empty-slot icon.
@@ -162,7 +163,7 @@ public class MissileLauncherMenu extends AbstractContainerMenu {
 
         @Override
         public int getMaxStackSize(ItemStack stack) {
-            return this.getContainerSlot() == MissileLauncherBlockEntity.DESIGNATOR_SLOT ? 1 : super.getMaxStackSize(stack);
+            return this.getContainerSlot() == AbstractLauncherBlockEntity.DESIGNATOR_SLOT ? 1 : super.getMaxStackSize(stack);
         }
 
         @Override

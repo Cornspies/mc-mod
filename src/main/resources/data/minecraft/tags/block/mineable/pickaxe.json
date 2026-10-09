@@ -1,6 +1,9 @@
 {
   "values": [
     "fusionfactions:weapon_workbench",
-    "fusionfactions:missile_launcher"
+    "fusionfactions:missile_launcher",
+    "fusionfactions:silo_casing",
+    "fusionfactions:silo_hatch",
+    "fusionfactions:silo_controller"
   ]
 }

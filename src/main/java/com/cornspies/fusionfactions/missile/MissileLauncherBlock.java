@@ -24,7 +24,7 @@ public class MissileLauncherBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof MissileLauncherBlockEntity launcher) {
-            player.openMenu(launcher, pos);
+            player.openMenu(launcher, launcher.menuPos());
         }
         return InteractionResult.SUCCESS;
     }
