@@ -70,8 +70,16 @@ New in the upcoming 0.2.0 (Phase 2, in development).
 | `designatorRange` | `256` | How far away the target designator can mark a block. |
 | `hardBlockResistance` | `600.0` | Blocks with at least this blast resistance (obsidian is 1200) stop missile blasts. |
 | `explosivePower` | `[6, 9, 12]` | Blast power of explosive missiles by tier (TNT is 4). |
+| `siloCooldownSeconds` | `120` | Time a missile silo needs between launches. |
+| `breachingPower` | `[4, 5, 6]` | Blast power of breaching missiles by tier. They also break hard blocks like obsidian. |
+| `empRadius` | `[8, 12, 16]` | Radius in which EMP missiles drain all FE, by tier. |
+| `empDisableSeconds` | `[30, 60, 90]` | How long EMP missiles shut down missile launchers and silos in their radius, by tier. |
+| `incendiaryPower` | `[2, 3, 4]` | Blast power of incendiary missiles by tier. |
+| `incendiaryFireRadius` | `[6, 8, 10]` | Radius incendiary missiles set on fire, by tier. |
 
 Missile blasts break blocks without dropping them; containers spill their contents. Blocks in the block tag `fusionfactions:missile_immune` never break (bedrock, barriers, portals, command blocks and supply crates by default). Add your own with a datapack at `data/fusionfactions/tags/block/missile_immune.json`. Protection and claim mods that stop explosions also stop missiles.
+
+Tier III missiles only come from legendary supply crates and need a **missile silo**: a 3×3 shaft, 4 blocks deep. Bottom layer: 9 silo casing. The two layers above: 8 casing around an empty middle. Top layer: 8 casing around a silo hatch. Replace any one casing of the three upper layers with the silo controller, which has the launch menu. The sky above the hatch must be open.
 
 Missiles in flight are saved with the world and keep flying after a restart. Their launch and target areas are kept loaded, so they work with nobody nearby.
 
@@ -89,7 +97,7 @@ Default contents:
 |---|---|---|
 | Common | 16–32 ammo, 1–2 stacks of weapon parts, 1–2 tier I upgrades | 50%: pistol or auto pistol |
 | Rare | 32–48 ammo, 2–3 stacks of weapon parts, 1–2 tier II upgrades | 50%: an extra tier I upgrade. 70%: SMG, shotgun or auto pistol |
-| Legendary | 48–64 ammo, 1–2 tier III upgrades, 1–2 tier II upgrades | 50%: sniper rifle or gatling gun. 33%: SMG or shotgun |
+| Legendary | 48–64 ammo, 1–2 tier III upgrades, 1–2 tier II upgrades | 50%: sniper rifle or gatling gun. 33%: SMG or shotgun. 25%: a tier III missile |
 
 Weapons in crates come loaded.
 
@@ -113,4 +121,4 @@ Permission level 2 (operators).
 - **Left click** fires, **right click** (hold) aims down sights, **R** reloads, **Z** or the mouse wheel switches the sniper's zoom while scoped. Keys can be changed under Controls → Fusion Factions.
 - With a gun in hand, left click doesn't hit or break blocks.
 - Weapon damage counts as the shooter's attack, so vanilla team friendly-fire settings and PvP-protection mods apply.
-- Missiles: mark a target with the target designator (right click a block, up to 256 blocks away), put it and a missile into a missile launcher under open sky, and press Launch. Anyone can use any launcher.
+- Missiles: mark a target with the target designator (right click a block, up to 256 blocks away), put it and a missile into a missile launcher under open sky, and press Launch. Anyone can use any launcher. Explosive missiles blow craters, breaching missiles also break obsidian, EMP missiles drain power and shut down launchers, incendiary missiles set fires.
