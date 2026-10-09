@@ -1,4 +1,18 @@
 {
+  "missile.emp": {
+    "subtitle": "subtitles.fusionfactions.missile.emp",
+    "sounds": [
+      {
+        "name": "minecraft:block/beacon/deactivate",
+        "pitch": 0.5
+      },
+      {
+        "name": "minecraft:random/explode2",
+        "pitch": 1.6,
+        "volume": 0.6
+      }
+    ]
+  },
   "missile.explode": {
     "subtitle": "subtitles.fusionfactions.missile.explode",
     "sounds": [

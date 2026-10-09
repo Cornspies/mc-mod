@@ -21,6 +21,12 @@ public final class MissileConfig {
     private static ModConfigSpec.IntValue designatorRange;
     private static ModConfigSpec.DoubleValue hardBlockResistance;
     private static ModConfigSpec.ConfigValue<List<? extends Number>> explosivePower;
+    private static ModConfigSpec.IntValue siloCooldownSeconds;
+    private static ModConfigSpec.ConfigValue<List<? extends Number>> breachingPower;
+    private static ModConfigSpec.ConfigValue<List<? extends Number>> empRadius;
+    private static ModConfigSpec.ConfigValue<List<? extends Number>> empDisableSeconds;
+    private static ModConfigSpec.ConfigValue<List<? extends Number>> incendiaryPower;
+    private static ModConfigSpec.ConfigValue<List<? extends Number>> incendiaryFireRadius;
 
     static void define(ModConfigSpec.Builder builder) {
         builder.comment("Missiles, launchers and their counterplay (Phase 2).").push("missiles");
@@ -50,6 +56,9 @@ public final class MissileConfig {
         launcherCooldownSeconds = builder
                 .comment("Seconds a missile launcher needs between launches.")
                 .defineInRange("launcherCooldownSeconds", 60, 0, 24 * 3600);
+        siloCooldownSeconds = builder
+                .comment("Seconds a missile silo needs between launches.")
+                .defineInRange("siloCooldownSeconds", 120, 0, 24 * 3600);
         launchEnergy = tiers(builder, "launchEnergy", "FE a launch takes per missile tier, if requirePower is on.",
                 List.of(50_000, 100_000, 200_000), 0, 100_000_000);
         designatorRange = builder
@@ -61,6 +70,16 @@ public final class MissileConfig {
                 .defineInRange("hardBlockResistance", 600.0, 1.0, 1.0E9);
         explosivePower = tiers(builder, "explosivePower", "Blast power of explosive missiles per tier (TNT is 4).",
                 List.of(6, 9, 12), 1, 32);
+        breachingPower = tiers(builder, "breachingPower", "Blast power of breaching missiles per tier. They also break hard blocks.",
+                List.of(4, 5, 6), 1, 32);
+        empRadius = tiers(builder, "empRadius", "Radius in blocks in which EMP missiles drain all FE, per tier.",
+                List.of(8, 12, 16), 1, 64);
+        empDisableSeconds = tiers(builder, "empDisableSeconds", "Seconds EMP missiles disable missile launchers and silos in their radius, per tier.",
+                List.of(30, 60, 90), 0, 3600);
+        incendiaryPower = tiers(builder, "incendiaryPower", "Blast power of incendiary missiles per tier.",
+                List.of(2, 3, 4), 1, 32);
+        incendiaryFireRadius = tiers(builder, "incendiaryFireRadius", "Radius in blocks that incendiary missiles set on fire, per tier.",
+                List.of(6, 8, 10), 1, 32);
 
         builder.pop();
     }
@@ -115,6 +134,30 @@ public final class MissileConfig {
 
     public static float explosivePower(int tier) {
         return get(explosivePower).get(tier - 1).floatValue();
+    }
+
+    public static int siloCooldownTicks() {
+        return get(siloCooldownSeconds) * 20;
+    }
+
+    public static float breachingPower(int tier) {
+        return get(breachingPower).get(tier - 1).floatValue();
+    }
+
+    public static int empRadius(int tier) {
+        return get(empRadius).get(tier - 1).intValue();
+    }
+
+    public static int empDisableTicks(int tier) {
+        return get(empDisableSeconds).get(tier - 1).intValue() * 20;
+    }
+
+    public static float incendiaryPower(int tier) {
+        return get(incendiaryPower).get(tier - 1).floatValue();
+    }
+
+    public static int incendiaryFireRadius(int tier) {
+        return get(incendiaryFireRadius).get(tier - 1).intValue();
     }
 
     // Before the config is loaded (e.g. in the main menu) the defaults apply.

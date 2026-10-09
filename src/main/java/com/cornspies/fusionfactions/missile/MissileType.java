@@ -8,7 +8,14 @@ import net.minecraft.util.StringRepresentable;
 
 // Missile types (D48). Each comes in tiers I to III; what they do on impact is in MissileBlast.
 public enum MissileType implements StringRepresentable {
-    EXPLOSIVE("explosive");
+    // Blows a crater.
+    EXPLOSIVE("explosive"),
+    // A smaller blast that also breaks hard blocks (bunker buster).
+    BREACHING("breaching"),
+    // No block damage; drains FE and disables missile blocks nearby.
+    EMP("emp"),
+    // A small blast that sets the area on fire.
+    INCENDIARY("incendiary");
 
     public static final Codec<MissileType> CODEC = StringRepresentable.fromEnum(MissileType::values);
     public static final int MAX_TIER = 3;

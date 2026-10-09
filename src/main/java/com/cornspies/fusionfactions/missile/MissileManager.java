@@ -45,7 +45,8 @@ public final class MissileManager {
     });
 
     // A blast's blocks still to break, a batch per tick. Not saved: after a restart the rest stays standing.
-    record PendingBlast(ResourceKey<Level> dimension, @Nullable Explosion explosion, Iterator<BlockPos> blocks, UUID ticketOwner, BlockPos target) {
+    record PendingBlast(ResourceKey<Level> dimension, @Nullable Explosion explosion, Iterator<BlockPos> blocks, @Nullable Runnable after,
+            UUID ticketOwner, BlockPos target) {
     }
 
     public static void registerTicketController(RegisterTicketControllersEvent event) {
@@ -183,7 +184,8 @@ public final class MissileManager {
             FusionFactions.LOGGER.info("Missile #{}'s explosion was cancelled by another mod", flight.id());
         }
         data.pending.add(new PendingBlast(level.dimension(), blast == null ? null : blast.explosion(),
-                blast == null ? List.<BlockPos>of().iterator() : blast.blocks().iterator(), flight.ticketOwner(), flight.target()));
+                blast == null ? List.<BlockPos>of().iterator() : blast.blocks().iterator(), blast == null ? null : blast.after(),
+                flight.ticketOwner(), flight.target()));
     }
 
     private static void breakBlocks(MinecraftServer server, MissileData data) {
@@ -198,6 +200,9 @@ public final class MissileManager {
                 }
                 if (blast.blocks().hasNext()) {
                     return;
+                }
+                if (blast.after() != null) {
+                    blast.after().run();
                 }
                 forceTargetArea(level, blast.ticketOwner(), blast.target(), false);
             }
