@@ -1,7 +1,115 @@
 {
   "variants": {
-    "": {
+    "part=0": {
       "model": "fusionfactions:block/silo_controller"
+    },
+    "part=1": {
+      "model": "fusionfactions:block/silo/controller_1"
+    },
+    "part=10": {
+      "model": "fusionfactions:block/silo/controller_10"
+    },
+    "part=11": {
+      "model": "fusionfactions:block/silo/controller_11"
+    },
+    "part=12": {
+      "model": "fusionfactions:block/silo/controller_12"
+    },
+    "part=13": {
+      "model": "fusionfactions:block/silo/controller_13"
+    },
+    "part=14": {
+      "model": "fusionfactions:block/silo/controller_14"
+    },
+    "part=15": {
+      "model": "fusionfactions:block/silo/controller_15"
+    },
+    "part=16": {
+      "model": "fusionfactions:block/silo/controller_16"
+    },
+    "part=17": {
+      "model": "fusionfactions:block/silo/controller_17"
+    },
+    "part=18": {
+      "model": "fusionfactions:block/silo/controller_18"
+    },
+    "part=19": {
+      "model": "fusionfactions:block/silo/controller_19"
+    },
+    "part=2": {
+      "model": "fusionfactions:block/silo/controller_2"
+    },
+    "part=20": {
+      "model": "fusionfactions:block/silo/controller_20"
+    },
+    "part=21": {
+      "model": "fusionfactions:block/silo/controller_21"
+    },
+    "part=22": {
+      "model": "fusionfactions:block/silo/controller_22"
+    },
+    "part=23": {
+      "model": "fusionfactions:block/silo/controller_23"
+    },
+    "part=24": {
+      "model": "fusionfactions:block/silo/controller_24"
+    },
+    "part=25": {
+      "model": "fusionfactions:block/silo/controller_25"
+    },
+    "part=26": {
+      "model": "fusionfactions:block/silo/controller_26"
+    },
+    "part=27": {
+      "model": "fusionfactions:block/silo/controller_27"
+    },
+    "part=28": {
+      "model": "fusionfactions:block/silo/controller_28"
+    },
+    "part=29": {
+      "model": "fusionfactions:block/silo/controller_29"
+    },
+    "part=3": {
+      "model": "fusionfactions:block/silo/controller_3"
+    },
+    "part=30": {
+      "model": "fusionfactions:block/silo/controller_30"
+    },
+    "part=31": {
+      "model": "fusionfactions:block/silo/controller_31"
+    },
+    "part=32": {
+      "model": "fusionfactions:block/silo/controller_32"
+    },
+    "part=33": {
+      "model": "fusionfactions:block/silo/controller_33"
+    },
+    "part=34": {
+      "model": "fusionfactions:block/silo/controller_34"
+    },
+    "part=35": {
+      "model": "fusionfactions:block/silo/controller_35"
+    },
+    "part=36": {
+      "model": "fusionfactions:block/silo/controller_36"
+    },
+    "part=4": {
+      "model": "fusionfactions:block/silo/controller_4"
+    },
+    "part=5": {
+      "model": "fusionfactions:block/silo/controller_5"
+    },
+    "part=6": {
+      "model": "fusionfactions:block/silo/controller_6"
+    },
+    "part=7": {
+      "model": "fusionfactions:block/silo/controller_7"
+    },
+    "part=8": {
+      "model": "fusionfactions:block/silo/controller_8"
+    },
+    "part=9": {
+      "model": "fusionfactions:block/silo/controller_9"
     }
   }
 }

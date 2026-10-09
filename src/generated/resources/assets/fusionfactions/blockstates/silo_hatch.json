@@ -1,10 +1,16 @@
 {
   "variants": {
-    "open=false": {
+    "formed=false,open=false": {
       "model": "fusionfactions:block/silo_hatch"
     },
-    "open=true": {
+    "formed=false,open=true": {
       "model": "fusionfactions:block/silo_hatch_open"
+    },
+    "formed=true,open=false": {
+      "model": "fusionfactions:block/silo/hatch"
+    },
+    "formed=true,open=true": {
+      "model": "fusionfactions:block/silo/hatch_open"
     }
   }
 }

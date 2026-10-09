@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "north": "fusionfactions:block/silo/wall_2_0",
+    "south": "fusionfactions:block/silo/inner",
+    "west": "fusionfactions:block/silo/wall_0_0",
+    "east": "fusionfactions:block/silo/inner",
+    "up": "fusionfactions:block/silo/top_0_0",
+    "down": "fusionfactions:block/silo/bottom",
+    "particle": "fusionfactions:block/silo/wall_1_1"
+  }
+}

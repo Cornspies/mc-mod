@@ -7,6 +7,7 @@ import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.client.UpgradeTierProperty;
 import com.cornspies.fusionfactions.missile.MissileType;
 import com.cornspies.fusionfactions.missile.SiloHatchBlock;
+import com.cornspies.fusionfactions.missile.SiloStructure;
 import com.cornspies.fusionfactions.registry.ModBlocks;
 import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.supplydrop.SupplyCrateBlock;
@@ -55,16 +56,21 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialBlock(ModBlocks.WEAPON_WORKBENCH.get(), TexturedModel.CUBE_BOTTOM_TOP);
         blockModels.createTrivialBlock(ModBlocks.MISSILE_LAUNCHER.get(), TexturedModel.CUBE_BOTTOM_TOP);
 
-        // Missile silo: casing on every side; the controller has a panel on its sides; the hatch's top opens.
+        // Missile silo: casing on every side; the controller has a panel on its sides; the hatch's top opens. Once
+        // the silo is complete, each block shows the model for its part of it (tools/silo_textures.py).
         Block casing = ModBlocks.SILO_CASING.get();
-        blockModels.createTrivialCube(casing);
+        Identifier casingModel = TexturedModel.CUBE.create(casing, blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(casing).with(PropertyDispatch.initial(SiloStructure.PART)
+                .generate(part -> BlockModelGenerators.plainVariant(part == 0 ? casingModel : silo("casing_" + part)))));
+        blockModels.registerSimpleItemModel(casing, casingModel);
         Material casingTexture = TextureMapping.getBlockTexture(casing);
         Block controller = ModBlocks.SILO_CONTROLLER.get();
         Identifier controllerModel = ModelTemplates.CUBE_BOTTOM_TOP.create(controller, new TextureMapping()
                 .put(TextureSlot.TOP, casingTexture)
                 .put(TextureSlot.BOTTOM, casingTexture)
                 .put(TextureSlot.SIDE, TextureMapping.getBlockTexture(controller)), blockModels.modelOutput);
-        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(controller, BlockModelGenerators.plainVariant(controllerModel)));
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(controller).with(PropertyDispatch.initial(SiloStructure.PART)
+                .generate(part -> BlockModelGenerators.plainVariant(part == 0 ? controllerModel : silo("controller_" + part)))));
         blockModels.registerSimpleItemModel(controller, controllerModel);
         Block hatch = ModBlocks.SILO_HATCH.get();
         Identifier closed = ModelTemplates.CUBE_BOTTOM_TOP.create(hatch, new TextureMapping()
@@ -75,8 +81,10 @@ public class ModModelProvider extends ModelProvider {
                 .put(TextureSlot.TOP, TextureMapping.getBlockTexture(hatch, "_top_open"))
                 .put(TextureSlot.BOTTOM, casingTexture)
                 .put(TextureSlot.SIDE, casingTexture), blockModels.modelOutput);
-        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(hatch).with(BlockModelGenerators.createBooleanModelDispatch(SiloHatchBlock.OPEN,
-                BlockModelGenerators.plainVariant(open), BlockModelGenerators.plainVariant(closed))));
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(hatch).with(PropertyDispatch.initial(SiloStructure.FORMED, SiloHatchBlock.OPEN)
+                .generate((formed, isOpen) -> BlockModelGenerators.plainVariant(formed
+                        ? silo(isOpen ? "hatch_open" : "hatch")
+                        : isOpen ? open : closed))));
         blockModels.registerSimpleItemModel(hatch, closed);
 
         // Missiles: a flat icon in inventories, on the ground and in frames; the 3D model from tools/missile_models.py
@@ -116,5 +124,10 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.BARREL.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.FUSION_CORE.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.GRIP.get(), ModelTemplates.FLAT_ITEM);
+    }
+
+    // A formed silo model from tools/silo_textures.py.
+    private static Identifier silo(String name) {
+        return FusionFactions.id("block/silo/" + name);
     }
 }
