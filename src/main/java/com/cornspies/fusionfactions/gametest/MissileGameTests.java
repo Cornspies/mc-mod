@@ -73,13 +73,16 @@ public final class MissileGameTests {
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> SILO_STRUCTURE =
             TEST_FUNCTIONS.register("silo_structure", () -> MissileGameTests::siloStructure);
 
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> SILO_FORMS =
+            TEST_FUNCTIONS.register("silo_forms", () -> MissileGameTests::siloForms);
+
     private static final int MAX_TICKS = 400;
     // Keeps other tests out of the blast.
     private static final int PADDING = 48;
 
     static void register(RegisterGameTestsEvent event, Holder<TestEnvironmentDefinition<?>> environment) {
         for (var function : List.of(MISSILE_HITS_TARGET, LAUNCHER_CHECKS, RAID_WINDOWS, BREACHING_BREAKS_OBSIDIAN, EMP_SHUTS_DOWN_LAUNCHER,
-                INCENDIARY_SETS_FIRE, SILO_STRUCTURE)) {
+                INCENDIARY_SETS_FIRE, SILO_STRUCTURE, SILO_FORMS)) {
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
             event.registerTest(function.getId(), new FunctionGameTestInstance(function.key(), data));
@@ -294,23 +297,8 @@ public final class MissileGameTests {
     private static void siloStructure(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos hatch = new BlockPos(5, 0, 5);
-        for (int layer = 0; layer <= SiloStructure.DEPTH; layer++) {
-            for (int dx = -1; dx <= 1; dx++) {
-                for (int dz = -1; dz <= 1; dz++) {
-                    BlockPos pos = hatch.offset(dx, -layer, dz);
-                    boolean middle = dx == 0 && dz == 0;
-                    if (!middle || layer == SiloStructure.DEPTH) {
-                        helper.setBlock(pos, ModBlocks.SILO_CASING.get());
-                    } else if (layer == 0) {
-                        helper.setBlock(pos, ModBlocks.SILO_HATCH.get());
-                    } else {
-                        helper.setBlock(pos, Blocks.AIR);
-                    }
-                }
-            }
-        }
+        buildSilo(helper, hatch);
         BlockPos controllerPos = hatch.offset(-1, -1, 0);
-        helper.setBlock(controllerPos, ModBlocks.SILO_CONTROLLER.get());
         SiloControllerBlockEntity controller = (SiloControllerBlockEntity) level.getBlockEntity(helper.absolutePos(controllerPos));
         controller.setItem(MissileLauncherBlockEntity.MISSILE_SLOT, new ItemStack(ModItems.missile(MissileType.EXPLOSIVE, 3).get(), 2));
         ItemStack designator = new ItemStack(ModItems.TARGET_DESIGNATOR.get());
@@ -331,6 +319,49 @@ public final class MissileGameTests {
         helper.assertValueEqual(incomplete.check(), LaunchStatus.Check.SILO_INCOMPLETE, "status without a casing");
         helper.assertValueEqual(incomplete.value(), 1, "missing blocks");
         helper.succeed();
+    }
+
+    // A complete silo forms, layer by layer, into its connected look: every casing and the controller get their
+    // part and the hatch is formed. Without a casing it turns back to plain blocks.
+    private static void siloForms(GameTestHelper helper) {
+        BlockPos hatch = new BlockPos(5, 0, 5);
+        buildSilo(helper, hatch);
+        BlockPos casing = hatch.offset(1, -SiloStructure.DEPTH, 1);
+        BlockPos controller = hatch.offset(-1, -1, 0);
+        helper.startSequence()
+                .thenWaitUntil(() -> {
+                    helper.assertTrue(helper.getBlockState(hatch).getValue(SiloStructure.FORMED), "the hatch should be formed");
+                    helper.assertValueEqual(helper.getBlockState(casing).getValue(SiloStructure.PART),
+                            SiloStructure.part(helper.absolutePos(hatch), helper.absolutePos(casing)), "a floor casing's part");
+                    helper.assertValueEqual(helper.getBlockState(controller).getValue(SiloStructure.PART),
+                            SiloStructure.part(helper.absolutePos(hatch), helper.absolutePos(controller)), "the controller's part");
+                })
+                .thenExecute(() -> helper.setBlock(casing, Blocks.STONE))
+                .thenWaitUntil(() -> {
+                    helper.assertFalse(helper.getBlockState(hatch).getValue(SiloStructure.FORMED), "the hatch should be plain again");
+                    helper.assertValueEqual(helper.getBlockState(controller).getValue(SiloStructure.PART), 0, "the controller's part");
+                })
+                .thenSucceed();
+    }
+
+    // A silo with its hatch at the given position and the controller in the ring below it, on the west side.
+    private static void buildSilo(GameTestHelper helper, BlockPos hatch) {
+        for (int layer = 0; layer <= SiloStructure.DEPTH; layer++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    BlockPos pos = hatch.offset(dx, -layer, dz);
+                    boolean middle = dx == 0 && dz == 0;
+                    if (!middle || layer == SiloStructure.DEPTH) {
+                        helper.setBlock(pos, ModBlocks.SILO_CASING.get());
+                    } else if (layer == 0) {
+                        helper.setBlock(pos, ModBlocks.SILO_HATCH.get());
+                    } else {
+                        helper.setBlock(pos, Blocks.AIR);
+                    }
+                }
+            }
+        }
+        helper.setBlock(hatch.offset(-1, -1, 0), ModBlocks.SILO_CONTROLLER.get());
     }
 
     private static void assertSiloStatus(GameTestHelper helper, SiloControllerBlockEntity controller, LaunchStatus.Check expected) {
