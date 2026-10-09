@@ -17,6 +17,9 @@ import com.cornspies.fusionfactions.missile.MissileFlight;
 import com.cornspies.fusionfactions.missile.MissileLauncherBlockEntity;
 import com.cornspies.fusionfactions.missile.MissileManager;
 import com.cornspies.fusionfactions.missile.MissileType;
+import com.cornspies.fusionfactions.missile.MissileEntity;
+import com.cornspies.fusionfactions.missile.RadarBlock;
+import com.cornspies.fusionfactions.missile.RadarBlockEntity;
 import com.cornspies.fusionfactions.missile.RaidWindows;
 import com.cornspies.fusionfactions.missile.SiloControllerBlockEntity;
 import com.cornspies.fusionfactions.missile.SiloHatchBlock;
@@ -24,6 +27,7 @@ import com.cornspies.fusionfactions.missile.SiloStructure;
 import com.cornspies.fusionfactions.registry.ModBlocks;
 import com.cornspies.fusionfactions.registry.ModDataComponents;
 import com.cornspies.fusionfactions.registry.ModItems;
+import com.cornspies.fusionfactions.weapon.ModDamageTypes;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -76,15 +80,26 @@ public final class MissileGameTests {
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> SILO_FORMS =
             TEST_FUNCTIONS.register("silo_forms", () -> MissileGameTests::siloForms);
 
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> MISSILE_SHOT_DOWN =
+            TEST_FUNCTIONS.register("missile_shot_down", () -> MissileGameTests::missileShotDown);
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> INTERCEPTOR_STOPS_MISSILE =
+            TEST_FUNCTIONS.register("interceptor_stops_missile", () -> MissileGameTests::interceptorStopsMissile);
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> RADAR_TRACKS_MISSILE =
+            TEST_FUNCTIONS.register("radar_tracks_missile", () -> MissileGameTests::radarTracksMissile);
+
     private static final int MAX_TICKS = 400;
+    // An interceptor reaches further than the usual padding; keep other tests' missiles out of its range (128 is the most
+    // a test may ask for).
+    private static final int INTERCEPTOR_PADDING = 128;
     // Keeps other tests out of the blast.
     private static final int PADDING = 48;
 
     static void register(RegisterGameTestsEvent event, Holder<TestEnvironmentDefinition<?>> environment) {
         for (var function : List.of(MISSILE_HITS_TARGET, LAUNCHER_CHECKS, RAID_WINDOWS, BREACHING_BREAKS_OBSIDIAN, EMP_SHUTS_DOWN_LAUNCHER,
-                INCENDIARY_SETS_FIRE, SILO_STRUCTURE, SILO_FORMS)) {
+                INCENDIARY_SETS_FIRE, SILO_STRUCTURE, SILO_FORMS, MISSILE_SHOT_DOWN, INTERCEPTOR_STOPS_MISSILE, RADAR_TRACKS_MISSILE)) {
+            int padding = function == INTERCEPTOR_STOPS_MISSILE ? INTERCEPTOR_PADDING : PADDING;
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
-                    MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
+                    MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, padding);
             event.registerTest(function.getId(), new FunctionGameTestInstance(function.key(), data));
         }
     }
@@ -362,6 +377,71 @@ public final class MissileGameTests {
             }
         }
         helper.setBlock(hatch.offset(-1, -1, 0), ModBlocks.SILO_CONTROLLER.get());
+    }
+
+    // A missile on its way down can be hit; enough damage bursts it in the air, and nothing below is harmed.
+    private static void missileShotDown(GameTestHelper helper) {
+        BlockPos top = platform(helper, 6, 6);
+        MissileFlight flight = launchAt(helper, MissileType.EXPLOSIVE, 1, top);
+        AABB column = new AABB(helper.absoluteVec(new Vec3(4, -4, 4)), helper.absoluteVec(new Vec3(9, 200, 9)));
+        MissileEntity[] missile = new MissileEntity[1];
+        helper.startSequence()
+                .thenWaitUntil(() -> {
+                    List<MissileEntity> missiles = helper.getLevel().getEntitiesOfClass(MissileEntity.class, column, MissileEntity::isDescending);
+                    helper.assertFalse(missiles.isEmpty(), "the missile should be coming down");
+                    missile[0] = missiles.getFirst();
+                })
+                .thenExecute(() -> {
+                    helper.assertTrue(missile[0].canBeHitByProjectile(), "bullets should be able to hit the missile");
+                    helper.assertTrue(missile[0].hurtServer(helper.getLevel(), helper.getLevel().damageSources().source(ModDamageTypes.BULLET),
+                            MissileConfig.missileHealth(1) + 1.0F), "the missile should take the hit");
+                    helper.assertTrue(landed(helper, flight), "the flight should end when the missile is shot down");
+                })
+                .thenExecuteAfter(100, () -> helper.assertBlockPresent(Blocks.STONE, top))
+                .thenSucceed();
+    }
+
+    // An interceptor next to the target shoots the missile down before it lands.
+    private static void interceptorStopsMissile(GameTestHelper helper) {
+        BlockPos top = platform(helper, 6, 6);
+        helper.setBlock(top.offset(0, 1, 3), ModBlocks.INTERCEPTOR.get());
+        MissileFlight flight = launchAt(helper, MissileType.EXPLOSIVE, 1, top);
+        helper.startSequence()
+                .thenWaitUntil(() -> helper.assertTrue(landed(helper, flight), "the missile should be gone"))
+                .thenExecuteAfter(20, () -> {
+                    helper.assertBlockPresent(Blocks.STONE, top);
+                    helper.assertBlockPresent(ModBlocks.INTERCEPTOR.get(), top.offset(0, 1, 3));
+                })
+                .thenSucceed();
+    }
+
+    // A radar sees a missile coming down in its range, gives a redstone signal, and loses the contact once the
+    // missile is gone. The launch area it reports contains the launch spot.
+    private static void radarTracksMissile(GameTestHelper helper) {
+        BlockPos top = platform(helper, 6, 6);
+        BlockPos radarPos = top.offset(-2, 1, -2);
+        helper.setBlock(radarPos, ModBlocks.RADAR.get());
+        RadarBlockEntity radar = (RadarBlockEntity) helper.getLevel().getBlockEntity(helper.absolutePos(radarPos));
+        MissileFlight flight = launchAt(helper, MissileType.EXPLOSIVE, 1, top);
+        helper.startSequence()
+                .thenWaitUntil(() -> {
+                    helper.assertFalse(radar.contacts().isEmpty(), "the radar should see the missile");
+                    helper.assertTrue(radar.contacts().getFirst().impactSeconds() > 0, "the missile comes down in range");
+                    helper.assertTrue(helper.getBlockState(radarPos).getValue(RadarBlock.POWERED), "the radar should give a signal");
+                })
+                .thenExecute(() -> {
+                    int[] area = RadarBlockEntity.launchArea(flight);
+                    BlockPos launch = flight.launchPos();
+                    helper.assertTrue(area[0] <= launch.getX() && launch.getX() <= area[1] && area[2] <= launch.getZ() && launch.getZ() <= area[3],
+                            "the launch area should contain the launch spot");
+                    helper.assertValueEqual(area[1] - area[0], 2 * MissileConfig.radarAreaSize(), "launch area width");
+                    MissileManager.cancel(helper.getLevel().getServer(), flight.id());
+                })
+                .thenWaitUntil(() -> {
+                    helper.assertTrue(radar.contacts().isEmpty(), "the contact should be gone");
+                    helper.assertFalse(helper.getBlockState(radarPos).getValue(RadarBlock.POWERED), "the signal should stop");
+                })
+                .thenSucceed();
     }
 
     private static void assertSiloStatus(GameTestHelper helper, SiloControllerBlockEntity controller, LaunchStatus.Check expected) {
