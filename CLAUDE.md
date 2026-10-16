@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Minecraft mod for a faction PvP server: sci-fi weapons and falling supply crates (Phase 1), a missile launcher (Phase 2).
+Minecraft mod for a faction PvP server: sci-fi weapons and falling supply crates (Phase 1), a missile launcher (Phase 2), industry and a guided rocket launcher (Phase 3).
 The full design, including what is decided and what is still open, is in **@DESIGN.md**. Read it before starting a task.
 
 ## Current status
@@ -18,6 +18,7 @@ The full design, including what is decided and what is still open, is in **@DESI
 - **M8 (missile types and silo): done** (owner approved 2026-10-09).
 - **M9 (counterplay): done** (owner approved 2026-10-16). M7 to M9 are merged into `main`.
 - **M10 (integration & release): done** (owner approved 2026-10-16). **Phase 2 is released as v0.2.0** (tag `v0.2.0`). M7 to M10 are merged into `main`.
+- **Phase 3 (industry and rocket launcher, DESIGN.md §6b):** all decisions answered (D60–D74), milestones M11–M15 in §8. Next: M11 (resources).
 - Missile models come from `tools/missile_models.py`, missile icons, launcher textures and screen from `tools/missile_textures.py`, the formed silo's textures and models from `tools/silo_textures.py`, the radar, interceptor and interceptor rocket models from `tools/machine_models.py`.
 - Aim positions for first person come from `tools/weapon_models.py` too (`weapon_aim.json`).
 - Upgrade values and the fields per weapon are in the synced config (`[weaponUpgrades]`). Part models come from `tools/weapon_models.py`, part icons and workbench textures from `tools/workbench_textures.py`.

@@ -1,7 +1,7 @@
 # Fusion Factions — Design Document
 
 > **Mod ID:** `fusionfactions` · **Package:** `com.cornspies.fusionfactions` · **License:** MIT
-> **Status:** Phase 1 released as v0.1.0; Phase 2 released as v0.2.0 · **Last updated:** 2026-10-16
+> **Status:** Phase 1 released as v0.1.0; Phase 2 released as v0.2.0; Phase 3 planned (D60–D74) · **Last updated:** 2026-10-16
 > **Audience:** the project owner and the coding agent (Claude Code). Read together with `CLAUDE.md`.
 
 ---
@@ -12,7 +12,7 @@
 |---|---|
 | §2 Decided | Fixed. Do not change without the owner's approval. |
 | §3 Technical baseline | Agreed during planning. Treat as decided unless the owner overrides it. |
-| §4–§6 Feature specs | What to build. Anything marked *(OD-xx)* depends on an open decision. |
+| §4–§6b Feature specs | What to build. Anything marked *(OD-xx)* depends on an open decision. |
 | §7 Open decisions | **Do not decide these silently.** If an open decision blocks the current task, ask the owner. If it doesn't block, implement the listed recommendation as a default (behind a constant or config option) and record it in §10. |
 | §9 Technical notes | Facts about Minecraft 26.x / NeoForge that may be newer than the agent's training data. |
 | §10 Decision log | Append a row whenever something gets decided. |
@@ -25,6 +25,7 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 
 - **Phase 1:** sci-fi "fusion" style firearms, and **supply crates** that fall from the sky at intervals, announced to the whole server, so teams converge and fight over the loot.
 - **Phase 2:** a **missile launcher** for long-range raiding, designed to sit alongside Mekanism.
+- **Phase 3:** **industry** (ores, power, machines, materials) that missiles and weapons are built from, and a guided **rocket launcher**.
 
 **Inspiration:** *Fusion Warfare* by TeamMonumental (Minecraft 1.7.10, last updated April 2016, GPLv2), <https://github.com/TeamMonumental/FusionWarfare>. We take the *feel* of its weapons and its falling supply crate. This is **not a port**: no code is copied and models are not reproduced 1:1. Appendix A summarizes what the original did, as reference only.
 
@@ -42,7 +43,7 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 | D6 | **Phase 1 scope:** weapons in a similar style + falling, publicly announced supply crate | |
 | D7 | **Phase 2 scope:** missile launcher | |
 | D8 | Phase 2 is **partially based on Mekanism** | How deep the integration goes is OD-24. |
-| D9 | Everything else from Fusion Warfare is **out of scope** | Machines, generators, reactors, cables and beacons, auras and turrets, team GUI, reinforced blocks, scuba gear, tools and armor, ore generation. Can be revisited later. |
+| D9 | Everything else from Fusion Warfare is **out of scope** | Machines, generators, reactors, cables and beacons, auras and turrets, team GUI, reinforced blocks, scuba gear, tools and armor, ore generation. Can be revisited later. **Amended by D60:** Phase 3 adds our own ores, machines, generators, cables and one helmet. |
 | D10 | Name **Fusion Factions**, mod ID **`fusionfactions`**, Java package and group ID **`com.cornspies.fusionfactions`** | Was OD-01. |
 | D11 | License: **MIT** | Was OD-02. |
 | D12 | Crate schedule: **fixed interval** (default 90 min), only while at least `minPlayersOnline` players are online (default 2) | Was OD-15. Both values are config options. See §10 for how the player minimum is applied. |
@@ -93,6 +94,21 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 | D57 | Missiles of **tier I–II are crafted**, **tier III comes only from legendary crates** | Owner, 2026-10-08. Matches the weapons. |
 | D58 | **Anyone can use** a launcher, silo, radar or interceptor | Owner, 2026-10-08. Capturing an enemy launcher is part of the game. |
 | D59 | Power: the blocks take **FE**, but `requirePower` is **off by default** until the server has a tech mod | Owner, 2026-10-08. Vanilla has no power source and D9 rules out our own generators. |
+| D60 | **Phase 3 scope:** a guided rocket launcher, resources generated in the world, materials made from them, machines to process them and the power to run them | Owner, 2026-10-16. Amends D9 (ore generation, machines, generators, cables, armor). |
+| D61 | Rocket launcher **locks on by aiming**: hold aim on a player to lock, then the rocket homes on them with a **limited turn rate** | Owner, 2026-10-16. |
+| D62 | **Lock warning** only for players with gear: a **helmet with a threat-warning implant**, or a **handheld radar** held in a hand that **needs FE** | Owner, 2026-10-16. Without the gear, no warning. |
+| D63 | The warning helmet is **strong armor** (diamond-level); the implant is installed into it at the weapon workbench | Owner, 2026-10-16. OD-30 (weapon knockback) stays open. |
+| D64 | Rockets **damage entities only**, no blocks | Owner, 2026-10-16. |
+| D65 | Rocket launcher **legendary-crate-only**; its **rockets are crafted** and are **their own ammo item** | Owner, 2026-10-16. Amends D20 (one shared ammo item). |
+| D66 | The **interceptor needs FE and ammo**: its own crafted **interceptor rockets** | Owner, 2026-10-16. |
+| D67 | Power: **combustion generator and solar panel**, our **own FE cable**, a **charging station**; `requirePower` **defaults to true** for every missile block and machine | Owner, 2026-10-16. Amends D59. |
+| D68 | Missile inventory icons redrawn at **64×64**, clearer | Owner, 2026-10-16. |
+| D69 | Ores: **bauxite** (aluminum), **niter** (oxidizer), **rare earth**, **lithium**. Bauxite and niter everywhere; rare earth and lithium only in some biomes | Owner, 2026-10-16. Contested regions. |
+| D70 | Machines: **crusher, chemical mixer, circuit fabricator, assembler** | Owner, 2026-10-16. |
+| D71 | **Three chip tiers**: basic, advanced, military, for missile tiers I / II / III | Owner, 2026-10-16. |
+| D72 | The new materials are needed by **missiles, missile blocks and weapons, every part** (barrel, grip, core and ammo) | Owner, 2026-10-16. |
+| D73 | Build order: **industry first** (M11–M13), then the rocket launcher (M14), then interceptor ammo, icons and the release (M15) | Owner, 2026-10-16. |
+| D74 | Missiles, rockets and missile blocks are built in the **assembler** instead of the crafting table | Owner, 2026-10-16 (part of D70). |
 
 ---
 
@@ -450,6 +466,98 @@ What Fusion Warfare's missiles did, and what to avoid, is in Appendix A.3.
 
 ---
 
+## 6b. Phase 3 — Industry and the rocket launcher
+
+Decided in D60–D74. As in Phase 2, the numbers below are first defaults, *provisional* until the Phase 3 playtests, and go into the synced config where they are balance values.
+
+### 6b.1 Goals
+
+- Missiles become an industrial effort: real-world-inspired materials (aluminum, oxidizer, chips, batteries) mined from the world and processed in machines that need power. Teams have to build, defend and raid factories, not just crates.
+- A guided rocket launcher for fights between players, with counterplay for those who carry the right gear.
+- Contested regions: the scarce ores only exist in some biomes.
+
+### 6b.2 Resources (D69)
+
+Each ore has a stone and a deepslate variant and drops a raw item (Fortune works like on vanilla ores). All items get `c:` tags (`c:ores/aluminum`, `c:raw_materials/aluminum`, `c:ingots/aluminum`, `c:dusts/…`), so aluminum or niter from other mods works in our recipes and ours in theirs (D47).
+
+| Ore | Drops | Where | Processed into |
+|---|---|---|---|
+| Bauxite | raw bauxite | everywhere, y −16 to 112, about as common as copper | aluminum ingot (furnace), aluminum dust (crusher, 2 per raw) |
+| Niter | 2–4 niter | everywhere, y 0 to 80, in smaller veins | used as is: the oxidizer for rocket fuel and ammo |
+| Rare earth | raw rare earth | **only in mountain biomes** (`c:is_mountain`), y −32 to 64, scarce | rare earth dust (crusher, 2 per raw) |
+| Lithium | raw lithium | **only in desert and badlands biomes** (`c:is_desert`, `c:is_badlands`), y −32 to 64, scarce | lithium ingot (furnace), lithium dust (crusher) |
+
+Silicon comes from vanilla materials: the crusher grinds nether quartz into 2 silicon dust (sand into 1, slowly), which smelts into silicon.
+
+**Existing worlds:** ores only generate in chunks generated after the update. A server that has explored the area around spawn has to explore further out, or reset parts of the map.
+
+### 6b.3 Power (D66, D67, D59 amended)
+
+- **Combustion generator:** burns furnace fuels into FE, 40 FE/t. Coal lasts 1600 ticks (64k FE); rocket fuel burns four times as long. Buffer 100k FE.
+- **Solar panel:** 8 FE/t under open sky by day, less in rain, nothing at night. Buffer 10k FE.
+- **FE cable:** one tier, connects automatically to cables and to any block with the energy capability (ours, Mekanism's, …), carries 2000 FE/t. Cables form a network; generators push into it, consumers pull from it.
+- **Charging station:** charges the FE item in its slot (the handheld radar, or any FE item from other mods) at 500 FE/t.
+- `requirePower` now defaults to **true**: launchers, silo, radar, interceptor and all machines need FE. Existing config files keep their old value (`false`) until the admin changes it (`docs/SERVER.md` says so).
+
+### 6b.4 Machines (D70)
+
+Every machine is a block with a menu: input slots, an output slot, a progress arrow and an energy bar. It works only while powered. Hoppers and pipes insert from the top and sides and extract from the bottom. Machine recipes are datapack recipes (own recipe types, generated with `runData`), so servers can change them.
+
+| Machine | Does | FE/t, ticks |
+|---|---|---|
+| Crusher | ore or raw item → 2 dusts; quartz → 2 silicon dust; sand → 1 silicon dust; aluminum ingot → aluminum dust | 20, 100 |
+| Chemical mixer | 1 aluminum dust + 2 niter + 1 binder (slime ball or resin clump) → 2 rocket fuel | 40, 200 |
+| Circuit fabricator | silicon → 2 wafers; wafer + inputs → chip (below) | 60, 200 (wafers 100) |
+| Assembler | builds missiles, rockets, interceptor rockets, the missile blocks and the weapons' parts from 3×3 inputs, like a powered crafting table with its own recipes | 40, 100 |
+
+### 6b.5 Materials (D71, D72)
+
+| Material | Recipe | Used for |
+|---|---|---|
+| Aluminum ingot / dust | bauxite, see 6b.2 | airframes, weapon barrels and grips, fuel |
+| Rocket fuel | chemical mixer | missiles, rockets, interceptor rockets; also generator fuel |
+| Silicon wafer | circuit fabricator | chips |
+| Basic chip | fabricator: wafer + copper ingot + 2 redstone | tier I missiles, interceptor rockets, guided rockets, fusion core, designator |
+| Advanced chip | fabricator: basic chip + wafer + gold ingot + rare earth dust | tier II missiles, radar, launcher, handheld radar, implant |
+| Military chip | fabricator: advanced chip + 2 rare earth dust + diamond + lithium dust | tier III missiles (crafted ones too now: see below), silo controller |
+| Battery | assembler: lithium ingot + copper ingot + redstone | handheld radar, guided rockets |
+| Airframe | assembler: 4 aluminum ingots + iron ingot | missiles (one per tier level), rockets |
+
+**Recipe changes (D72):**
+
+- **Missiles:** built in the assembler from airframes, rocket fuel, the tier's chip and the type's payload (TNT, diamond, lightning rod, blaze powder as now). Tier III stays crate-only (D57) unless the owner decides otherwise.
+- **Missile blocks:** launcher, silo casing / hatch / controller, radar, interceptor and designator need aluminum and chips instead of the fusion core.
+- **Weapons, every part:** barrel = aluminum + iron; grip = aluminum + leather; fusion core = basic chip + amethyst + aluminum; ammo (8) = copper ingot + niter + redstone, shapeless (niter replaces the gunpowder). Weapon recipes themselves stay as they are (built from the parts).
+
+### 6b.6 Rocket launcher (D61–D65)
+
+- A seventh weapon, **legendary-crate-only** (like the sniper and gatling: 25% of legendary crates, on top of their other loot). Its **rockets are their own ammo item** (D65, amends D20), built in the assembler from an airframe, rocket fuel, a basic chip, a battery and TNT → 4 rockets.
+- **Lock-on** (D61): aim down sights at a player within 96 blocks with a clear line of sight. After 1.5 s of keeping them near the crosshair, the shooter hears a lock tone and sees a lock marker on them. Losing them for more than 0.5 s resets the lock.
+- Fire with a lock: the rocket homes on that player, flying 1.5 blocks/tick and turning at most 6° per tick, so dodging sideways at the last moment or getting behind cover beats it. Without a lock it flies straight. It lives for 10 s.
+- **Blast:** entities only, no block damage (D64). 16 damage at the center, falling off over 3 blocks, our weapon damage type with the shooter as the causing entity (so friendly fire rules apply).
+- Magazine 1, reload 3 s. Workbench fields: reload speed, range (lock range), sight. Third-person pose like the other weapons, held on the shoulder.
+
+### 6b.7 Lock warning gear (D62, D63)
+
+The target only gets a warning if they have one of these:
+
+- **Tactical helmet** (D63): diamond-level protection (3 armor, 2 toughness), crafted from aluminum, diamonds and an advanced chip. It has one implant field at the weapon workbench.
+- **Threat-warning implant:** installed into the tactical helmet at the workbench. With it, the wearer hears a warning tone and sees a direction marker while someone is locking on, and a faster tone once they are locked.
+- **Handheld radar:** an FE item (100k FE, a battery and an advanced chip), charged at the charging station. Held in either hand it gives the same warning and uses 10 FE/t while held. Empty, it does nothing.
+
+Players without the gear get no warning: the rocket's sound and smoke trail are all they have.
+
+### 6b.8 Interceptor changes (D66)
+
+- The interceptor **always needs FE and ammo**: one **interceptor rocket** per shot (assembler: airframe, rocket fuel, basic chip → 4 rockets).
+- It gets a menu: a rocket slot (stacks of 16, hoppers can fill it), the energy bar and its status. Right click opens the menu instead of the status message.
+
+### 6b.9 Missile icons (D68)
+
+The 12 missile inventory icons are redrawn at **64×64**: a missile body at an angle with a large, readable type symbol on it (explosive: blast, breaching: drill tip, EMP: lightning, incendiary: flame), the tier color on the nose and fins, and tier marks (I / II / III stripes). Only the inventory icons change; the 3D model stays.
+
+---
+
 ## 7. Open decisions
 
 **Blocks** = the milestone (§8) that needs the answer.
@@ -469,6 +577,10 @@ None open (OD-23 → D46).
 ### Phase 2
 
 None open (OD-24 to OD-28 → D47–D59).
+
+### Phase 3
+
+None open (D60–D74). Details in §6b are *provisional* (§10).
 
 ### Later
 
@@ -503,6 +615,16 @@ The supply crate comes first because it is self-contained and proves out the sha
 | **M8 Missile types and silo** ✅ *done 2026-10-09* | Breaching, EMP and incendiary missiles; tier III; missile silo multiblock; recipes; tier III missiles in legendary crates. |
 | **M9 Counterplay** ✅ *done 2026-10-16* | Radar block with team alerts and launch area, interceptor block, shooting missiles down. |
 | **M10 Integration & release** ✅ *done 2026-10-16, released as v0.2.0* | Models and textures pass, `docs/SERVER.md`, two-player playtest on a dedicated server, release v0.2.0. |
+
+### Phase 3
+
+| Milestone | Deliverables |
+|---|---|
+| **M11 Resources** | Bauxite, niter, rare earth and lithium ores (stone and deepslate), raw items, dusts, ingots, world generation with biome limits, `c:` tags, smelting, ore textures, game tests. |
+| **M12 Power** | Combustion generator, solar panel, FE cable network, charging station, `requirePower` default true, game tests. |
+| **M13 Machines and materials** | Crusher, chemical mixer, circuit fabricator, assembler with their recipe types; silicon, wafers, chips I–III, rocket fuel, battery, airframe; new recipes for missiles, missile blocks and weapon parts and ammo (D72). |
+| **M14 Rocket launcher** | Rocket launcher weapon and model, rockets, lock-on, guided rocket, tactical helmet with implant, handheld radar, lock warning HUD and sounds. |
+| **M15 Integration & release** | Interceptor ammo and menu, 64×64 missile icons, crate loot, `docs/SERVER.md`, two-player playtest, release v0.3.0. |
 
 ---
 
@@ -685,6 +807,8 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-16 | M9 done | Owner tested the radar, interceptor and shooting missiles down, and approved the milestone. Merged into `main`. | Owner |
 | 2026-10-16 | M10 models and textures | The launcher, plain silo, radar and interceptor textures get the bevelled look of the crates and the workbench. The radar and the interceptor become 3D models (`tools/machine_models.py`), smaller than a block; the radar's dish turns while it is online. Interceptor rockets are drawn as small rockets instead of only their trail. Missile, weapon and crate models are unchanged. *Provisional.* | Agent |
 | 2026-10-16 | M10 done, v0.2.0 | Owner playtested Phase 2 and approved it, together with glowing night sights and accents on the weapons and redrawn upgrade icons. Phase 2 released as v0.2.0. | Owner |
+| 2026-10-16 | D60–D74 | Phase 3: guided rocket launcher, lock warning gear, interceptor ammo and power, generators and cables, four ores, four machines, three chip tiers, materials in missiles, missile blocks and weapons, 64×64 missile icons, industry first | Owner |
+| 2026-10-16 | Phase 3 spec | Material chain, numbers and placement in §6b (ore heights and biomes, generator output, cable throughput, machine recipes and times, chip recipes, rocket stats, helmet stats and recipe, handheld radar capacity, rocket launcher in 25% of legendary crates, tier III missiles stay crate-only). *Provisional.* | Agent |
 
 ---
 
