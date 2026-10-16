@@ -93,6 +93,21 @@ Tier III missiles only come from legendary supply crates and need a **missile si
 
 Missiles in flight are saved with the world and keep flying after a restart. Their launch and target areas are kept loaded, so they work with nobody nearby.
 
+### Ores
+
+New in the upcoming 0.3.0 (Phase 3, in development). Four ores generate in the overworld:
+
+| Ore | Where | Mined with |
+|---|---|---|
+| Bauxite (aluminum) | everywhere, y −16 to 112, about as common as copper | stone pickaxe |
+| Niter | everywhere, y 0 to 80 | stone pickaxe |
+| Rare earth | only in mountain biomes, y −32 to 160 | iron pickaxe |
+| Lithium | only in desert and badlands biomes, y −32 to 64 | iron pickaxe |
+
+**Ores only generate in new chunks.** In a world that already exists, players find them only in areas nobody has visited yet. To get them near spawn, pre-generate or reset those regions.
+
+The biomes for each ore are the biome tags `fusionfactions:has_ore/bauxite`, `…/niter`, `…/rare_earth` and `…/lithium`. Change them, or replace the features in `data/fusionfactions/worldgen/`, with a datapack. The items carry common `c:` tags (`c:ingots/aluminum`, `c:dusts/niter`, …), so other mods' aluminum works in our recipes and ours in theirs.
+
 ### Heavy weapon recipes: `fusionfactions-startup.toml`
 
 `heavyWeaponRecipes = false` (default): the sniper rifle and gatling gun can't be crafted and only come from supply crates. Set it to `true` to enable their recipes.

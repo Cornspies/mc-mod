@@ -482,10 +482,12 @@ Each ore has a stone and a deepslate variant and drops a raw item (Fortune works
 
 | Ore | Drops | Where | Processed into |
 |---|---|---|---|
-| Bauxite | raw bauxite | everywhere, y −16 to 112, about as common as copper | aluminum ingot (furnace), aluminum dust (crusher, 2 per raw) |
-| Niter | 2–4 niter | everywhere, y 0 to 80, in smaller veins | used as is: the oxidizer for rocket fuel and ammo |
-| Rare earth | raw rare earth | **only in mountain biomes** (`c:is_mountain`), y −32 to 64, scarce | rare earth dust (crusher, 2 per raw) |
-| Lithium | raw lithium | **only in desert and badlands biomes** (`c:is_desert`, `c:is_badlands`), y −32 to 64, scarce | lithium ingot (furnace), lithium dust (crusher) |
+| Bauxite | raw bauxite | everywhere, y −16 to 112 (most around 48), about as common as copper: 16 veins of up to 10 per chunk | aluminum ingot (furnace), aluminum dust (crusher, 2 per raw) |
+| Niter | 2–4 niter | everywhere, y 0 to 80, 8 veins of up to 8 per chunk | used as is: the oxidizer for rocket fuel and ammo |
+| Rare earth | raw rare earth | **only in mountain biomes** (`c:is_mountain`), y −32 to 160 so it also shows in the mountains themselves, 8 veins of up to 7 per chunk (about 5 blocks per chunk) | rare earth dust (crusher, 2 per raw) |
+| Lithium | raw lithium | **only in desert and badlands biomes** (`c:is_desert`, `c:is_badlands`), y −32 to 64, 3 veins of up to 7 per chunk (about 10 blocks per chunk) | lithium ingot (furnace), lithium dust (crusher) |
+
+Bauxite and niter need a stone pickaxe, rare earth and lithium an iron one. Raw bauxite and raw lithium (and the ores and dusts) smelt into ingots; raw rare earth is only ground in the crusher (M13). Where an ore generates is the biome tag `fusionfactions:has_ore/<ore>`, which a datapack can change.
 
 Silicon comes from vanilla materials: the crusher grinds nether quartz into 2 silicon dust (sand into 1, slowly), which smelts into silicon.
 
@@ -620,7 +622,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 
 | Milestone | Deliverables |
 |---|---|
-| **M11 Resources** | Bauxite, niter, rare earth and lithium ores (stone and deepslate), raw items, dusts, ingots, world generation with biome limits, `c:` tags, smelting, ore textures, game tests. |
+| **M11 Resources** ✅ *implemented, waiting for the owner's test* | Bauxite, niter, rare earth and lithium ores (stone and deepslate), raw items, dusts, ingots, world generation with biome limits, `c:` tags, smelting, ore textures, game tests. |
 | **M12 Power** | Combustion generator, solar panel, FE cable network, charging station, `requirePower` default true, game tests. |
 | **M13 Machines and materials** | Crusher, chemical mixer, circuit fabricator, assembler with their recipe types; silicon, wafers, chips I–III, rocket fuel, battery, airframe; new recipes for missiles, missile blocks and weapon parts and ammo (D72). |
 | **M14 Rocket launcher** | Rocket launcher weapon and model, rockets, lock-on, guided rocket, tactical helmet with implant, handheld radar, lock warning HUD and sounds. |
@@ -722,6 +724,14 @@ The supply crate comes first because it is self-contained and proves out the sha
 - **Block entity renderers** have the same extract/submit split as entity renderers (`createRenderState`, `extractRenderState`, `submit`), register with `EntityRenderersEvent.RegisterRenderers.registerBlockEntityRenderer`. Animation state that the server doesn't need (the radar dish's angle) can live in a field of the block entity, updated by a client ticker.
 - **Blocks smaller than a cube** need `Properties.noOcclusion()` and a `getShape` override.
 
+### Learned while building M11 (verified against 26.3 sources)
+
+- **Configured features are gone as a separate type:** `Registries.FEATURE` (`worldgen/feature`) holds the configured feature itself, e.g. `new OreFeature(List<BlockReplacement>, size)`; `PlacedFeature` points at a `Holder<Feature>`. Generate them, the placed features and NeoForge biome modifiers (`BiomeModifiers.AddFeaturesBiomeModifier`) with `GatherDataEvent.createWorldRegistryObjects`.
+- **Render layers come from the texture:** each quad picks solid, cutout or translucent from its sprite's transparency. A two-element model (vanilla stone or deepslate, then a transparent overlay) makes an ore without copying vanilla's textures, like the grass block's side overlay.
+- **Recipe IDs:** `RecipeBuilder.save(output, String)` parses the id in the `minecraft` namespace, which the mod-filtered datagen drops. Save with a `ResourceKey` in our namespace.
+- NeoForge applies biome modifiers before game tests run, so `Biome.getGenerationSettings().features()` shows the added features.
+
+
 ### Reference code
 
 - **Mekanism `26.3` branch** (MIT): <https://github.com/mekanism/Mekanism/tree/26.3>. Real-world code for block entities, menus and screens, energy, models and data generation on this exact version.
@@ -809,6 +819,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-16 | M10 done, v0.2.0 | Owner playtested Phase 2 and approved it, together with glowing night sights and accents on the weapons and redrawn upgrade icons. Phase 2 released as v0.2.0. | Owner |
 | 2026-10-16 | D60–D74 | Phase 3: guided rocket launcher, lock warning gear, interceptor ammo and power, generators and cables, four ores, four machines, three chip tiers, materials in missiles, missile blocks and weapons, 64×64 missile icons, industry first | Owner |
 | 2026-10-16 | Phase 3 spec | Material chain, numbers and placement in §6b (ore heights and biomes, generator output, cable throughput, machine recipes and times, chip recipes, rocket stats, helmet stats and recipe, handheld radar capacity, rocket launcher in 25% of legendary crates, tier III missiles stay crate-only). *Provisional.* | Agent |
+| 2026-10-16 | M11 details | Ore amounts tuned by counting a freshly generated area (per chunk: bauxite 40–80, niter 15–35, rare earth about 5 in mountains, lithium about 10 in deserts). Ores are as hard as iron ore; niter ore drops experience like redstone ore. Ingots smelt from raw items, ores and dusts (faster in a blast furnace). The ores' `c:` tags follow the material (`c:ores/aluminum` for bauxite, `c:dusts/niter` and `c:dusts/saltpeter` for niter). Ores are drawn as an overlay on vanilla stone and deepslate (`tools/resource_textures.py`). *Provisional.* | Agent |
 
 ---
 
