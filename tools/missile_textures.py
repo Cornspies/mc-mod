@@ -6,10 +6,12 @@
 - the missile launcher screen background (176x176 on a 256x256 sheet) and its empty-slot silhouettes
 - the missile launcher block (top, side, bottom)
 - the missile silo blocks: casing, hatch (closed and open) and controller
-- the radar screen background and the radar and interceptor blocks
+- the radar screen background and the textures of the radar and interceptor models (tools/machine_models.py)
 
 Run from the repository root:  python3 tools/missile_textures.py
 """
+import json
+
 from workbench_textures import ASSETS, BG, BODY, DARK, DARK_EDGE, LIGHT, LIGHT_EDGE, SLOT_BG, SLOT_DARK, TIER_COLORS, icon_pixels, silhouette, write_png
 
 # The band in the middle of the icon shows the type, like on the 3D model.
@@ -131,88 +133,6 @@ def gui():
     return img
 
 
-def block_face(kind):
-    metal, dark, edge, warn = (82, 88, 100), (50, 54, 62), (36, 38, 44), (230, 170, 40)
-    px = [[metal + (255,) for _ in range(16)] for _ in range(16)]
-    for i in range(16):
-        for j in (0, 15):
-            px[i][j] = edge + (255,)
-            px[j][i] = edge + (255,)
-    if kind == 'top':
-        # A launch hatch: a dark round opening with rails and warning corners.
-        for y in range(16):
-            for x in range(16):
-                d = (x - 7.5) ** 2 + (y - 7.5) ** 2
-                if d < 20:
-                    px[y][x] = (20, 22, 26, 255)
-                elif d < 30:
-                    px[y][x] = dark + (255,)
-        for x, y in ((1, 1), (2, 1), (1, 2), (14, 1), (13, 1), (14, 2), (1, 14), (2, 14), (1, 13), (14, 14), (13, 14), (14, 13)):
-            px[y][x] = warn + (255,)
-        for y in range(5, 11):
-            px[y][7] = (110, 118, 132, 255)
-            px[y][8] = (110, 118, 132, 255)
-    elif kind == 'side':
-        # Warning stripes along the top, a panel with vents below.
-        for x in range(1, 15):
-            for y in (2, 3):
-                px[y][x] = (warn if (x + y) // 2 % 2 == 0 else (30, 30, 30)) + (255,)
-        for y in range(6, 14):
-            for x in range(3, 13):
-                px[y][x] = dark + (255,)
-        for y in (8, 10, 12):
-            for x in range(4, 12):
-                px[y][x] = (24, 26, 30, 255)
-        px[6][11] = (230, 50, 40, 255)
-    else:
-        for y in range(1, 15):
-            for x in range(1, 15):
-                if (x + y) % 4 == 0:
-                    px[y][x] = dark + (255,)
-    return px
-
-
-def silo_face(kind):
-    metal, dark, edge, warn, light = (82, 88, 100), (50, 54, 62), (36, 38, 44), (230, 170, 40), (120, 128, 142)
-    px = [[metal + (255,) for _ in range(16)] for _ in range(16)]
-    for i in range(16):
-        for j in (0, 15):
-            px[i][j] = edge + (255,)
-            px[j][i] = edge + (255,)
-    if kind == 'casing':
-        # Heavy plates with rivets in the corners.
-        for i in range(1, 15):
-            px[7][i] = dark + (255,)
-            px[i][7] = dark + (255,)
-        for x, y in ((2, 2), (12, 2), (2, 12), (12, 12), (5, 5), (9, 9), (5, 9), (9, 5)):
-            px[y][x] = light + (255,)
-    elif kind in ('hatch_top', 'hatch_top_open'):
-        # Two doors with warning stripes along their edges, or the dark shaft once they're open.
-        for y in range(1, 15):
-            for x in range(1, 15):
-                if kind == 'hatch_top_open':
-                    px[y][x] = ((14, 15, 18) if 3 <= x <= 12 and 3 <= y <= 12 else warn if (x + y) // 2 % 2 == 0 else (30, 30, 30)) + (255,)
-                elif x in (7, 8):
-                    px[y][x] = (warn if y // 2 % 2 == 0 else (30, 30, 30)) + (255,)
-                elif y in (1, 14) or x in (1, 14):
-                    px[y][x] = dark + (255,)
-    elif kind == 'controller':
-        # A control panel: a screen, buttons and a warning light.
-        for y in range(2, 8):
-            for x in range(2, 14):
-                px[y][x] = (16, 26, 20, 255)
-        for x in range(3, 10):
-            px[4][x] = (124, 224, 143, 255)
-        for x in range(3, 7):
-            px[6][x] = (78, 138, 91, 255)
-        for x, color in ((3, (230, 50, 40)), (6, (240, 150, 30)), (9, (70, 120, 255))):
-            for y in range(10, 13):
-                px[y][x] = color + (255,)
-                px[y][x + 1] = color + (255,)
-        px[11][12] = warn + (255,)
-    return px
-
-
 RADAR_W, RADAR_H = 176, 110
 SCOPE = (8, 18, 88)  # x, y and size of the scope
 RADAR_LIST = (92, 18, 170, 102)  # the contact list, x0, y0, x1, y1
@@ -267,50 +187,215 @@ def radar_gui():
     return img
 
 
-def radar_face(kind):
-    metal, dark, edge, green = (82, 88, 100), (50, 54, 62), (36, 38, 44), (90, 200, 110)
-    px = [[metal + (255,) for _ in range(16)] for _ in range(16)]
+# Block faces share the look of the supply crate and the workbench: a dark outline, a light bevel on the top and
+# left, a shadow on the bottom and right, and sunken panels.
+EDGE, SHADOW, METAL, HIGHLIGHT, SHINE = (30, 32, 38), (56, 60, 70), (82, 88, 100), (112, 120, 134), (146, 156, 170)
+PANEL, HOLE, STRIPE = (48, 52, 60), (16, 17, 20), (30, 30, 32)
+WARN, RED, GREEN, CYAN = (230, 170, 40), (230, 50, 40), (124, 224, 143), (70, 210, 250)
+SCOPE_BG = (14, 26, 18)
+
+
+def plate(color=METAL):
+    """A 16x16 metal plate with an outline and a bevel."""
+    px = [[color + (255,) for _ in range(16)] for _ in range(16)]
+    for i in range(1, 15):
+        px[1][i] = px[i][1] = HIGHLIGHT + (255,)
+        px[14][i] = px[i][14] = SHADOW + (255,)
     for i in range(16):
-        for j in (0, 15):
-            px[i][j] = edge + (255,)
-            px[j][i] = edge + (255,)
+        px[0][i] = px[15][i] = px[i][0] = px[i][15] = EDGE + (255,)
+    return px
+
+
+def put(px, x, y, color):
+    px[y][x] = color + (255,)
+
+
+def fill(px, x0, y0, x1, y1, color):
+    """Fills x0..x1, y0..y1, inclusive."""
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1):
+            put(px, x, y, color)
+
+
+def inset(px, x0, y0, x1, y1, color=PANEL):
+    """A sunken panel: shadow on its top and left edge, light on its bottom and right edge."""
+    fill(px, x0, y0, x1, y1, color)
+    for x in range(x0, x1 + 1):
+        put(px, x, y0, EDGE)
+        put(px, x, y1, HIGHLIGHT)
+    for y in range(y0, y1 + 1):
+        put(px, x0, y, EDGE)
+        put(px, x1, y, HIGHLIGHT)
+
+
+def stripes(px, x0, y0, x1, y1, width=2):
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1):
+            put(px, x, y, WARN if (x + y) // width % 2 == 0 else STRIPE)
+
+
+def bolts(px, *positions):
+    for x, y in positions:
+        put(px, x, y, SHINE)
+        put(px, x + 1, y + 1, SHADOW)
+
+
+CORNER_BOLTS = ((2, 2), (12, 2), (2, 12), (12, 12))
+
+
+def block_face(kind):
+    """The missile launcher: a hatch on top, warning stripes and vents on the sides."""
+    px = plate()
+    if kind == 'top':
+        stripes(px, 2, 2, 13, 13)
+        inset(px, 3, 3, 12, 12)
+        # Two doors that slide apart, with a seam and handles.
+        fill(px, 4, 4, 11, 11, (66, 72, 84))
+        for y in range(4, 12):
+            put(px, 7, y, HOLE)
+            put(px, 8, y, EDGE)
+        for y in (6, 9):
+            put(px, 5, y, SHINE)
+            put(px, 10, y, SHINE)
+    elif kind == 'side':
+        stripes(px, 2, 2, 13, 3)
+        inset(px, 3, 5, 12, 12)
+        for y in (7, 9, 11):
+            fill(px, 4, y, 11, y, HOLE)
+        put(px, 13, 6, RED)
+        bolts(px, (2, 12), (12, 12))
+    else:
+        inset(px, 4, 4, 11, 11)
+        bolts(px, *CORNER_BOLTS)
+    return px
+
+
+def silo_face(kind):
+    """The missile silo's blocks before the silo is complete (formed look: tools/silo_textures.py)."""
+    px = plate()
+    if kind == 'casing':
+        # Four heavy plates, each with its own bevel.
+        for i in range(1, 15):
+            put(px, i, 7, EDGE)
+            put(px, 7, i, EDGE)
+            put(px, i, 8, HIGHLIGHT)
+            put(px, 8, i, HIGHLIGHT)
+            put(px, i, 6, SHADOW)
+            put(px, 6, i, SHADOW)
+        bolts(px, (3, 3), (10, 3), (3, 10), (10, 10))
+    elif kind == 'hatch_top':
+        stripes(px, 2, 2, 13, 13)
+        inset(px, 3, 3, 12, 12, (66, 72, 84))
+        for y in range(4, 12):
+            put(px, 7, y, WARN if y // 2 % 2 == 0 else STRIPE)
+            put(px, 8, y, WARN if y // 2 % 2 == 1 else STRIPE)
+        bolts(px, (4, 4), (10, 4), (4, 10), (10, 10))
+    elif kind == 'hatch_top_open':
+        stripes(px, 2, 2, 13, 13)
+        inset(px, 3, 3, 12, 12, HOLE)
+        fill(px, 4, 4, 11, 4, (24, 26, 30))
+        fill(px, 4, 4, 4, 11, (24, 26, 30))
+    elif kind == 'controller':
+        # A control panel: a screen, three buttons and a warning light.
+        inset(px, 2, 2, 13, 8, SCOPE_BG)
+        fill(px, 4, 4, 10, 4, GREEN)
+        fill(px, 4, 6, 7, 6, (78, 138, 91))
+        for x, color in ((3, RED), (6, (240, 150, 30)), (9, (70, 120, 255))):
+            fill(px, x, 10, x + 1, 12, color)
+            put(px, x, 10, tuple(min(255, c + 40) for c in color))
+        put(px, 12, 11, WARN)
+    return px
+
+
+# The radar and the interceptor are 3D models (tools/machine_models.py). Their housings are lower than a block, so
+# their side textures only use the bottom rows: the radar's housing is 8 pixels high, the interceptor's 7.
+RADAR_HOUSING, INTERCEPTOR_HOUSING = 8, 7
+
+
+def housing_side(height):
+    """The bottom `height` rows of a side face, framed and bevelled like a plate; the rows above are unused."""
+    px = plate()
+    top = 16 - height
+    fill(px, 0, 0, 15, top - 1, METAL)
+    fill(px, 0, top, 15, top, EDGE)
+    fill(px, 1, top + 1, 14, top + 1, HIGHLIGHT)
+    fill(px, 1, top + 2, 1, 14, HIGHLIGHT)
+    return px
+
+
+def radar_side_frames():
+    """The radar housing's scope screen, with a sweep that runs across it and lights up a blip as it passes."""
+    frames = []
+    for frame in range(8):
+        px = housing_side(RADAR_HOUSING)
+        inset(px, 2, 10, 11, 13, SCOPE_BG)
+        sweep = 3 + frame
+        for x in range(3, 11):
+            behind = sweep - x
+            color = GREEN if behind == 0 else (60, 130, 75) if behind == 1 else (34, 70, 42) if behind == 2 else None
+            if color:
+                put(px, x, 11, color)
+                put(px, x, 12, color)
+        if 0 <= sweep - 8 <= 2:
+            put(px, 8, 11, RED)
+        put(px, 13, 11, GREEN if frame % 4 < 2 else (40, 80, 50))
+        put(px, 13, 12, WARN)
+        frames.append(px)
+    return frames
+
+
+def radar_face(kind):
+    px = plate()
     if kind == 'radar_top':
-        # A dish seen from above.
+        # Around the mast: a turntable ring and vent slots.
+        inset(px, 4, 4, 11, 11)
+        for x, y in ((2, 7), (13, 7)):
+            fill(px, x, y, x, y + 1, HOLE)
+        for x, y in ((7, 2), (7, 13)):
+            fill(px, x, y, x + 1, y, HOLE)
+        bolts(px, *CORNER_BOLTS)
+    elif kind == 'radar_dish':
+        # The dish's front: bright metal with rings around the feed, drawn over the whole texture; the model uses
+        # a 12x5 strip of it.
         for y in range(16):
             for x in range(16):
-                d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
-                if d < 6.5:
-                    px[y][x] = ((150, 158, 172) if d > 5.5 else (110, 118, 132) if d > 2 else dark) + (255,)
-        px[7][7] = px[7][8] = px[8][7] = px[8][8] = (230, 50, 40, 255)
-    elif kind == 'radar_side':
-        # A round scope screen with a sweep line.
-        for y in range(3, 13):
-            for x in range(3, 13):
-                d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
-                if d < 5:
-                    px[y][x] = (16, 26, 20, 255)
-        for i in range(5):
-            px[7 - i if i < 4 else 4][8 + i if i < 4 else 11] = green + (255,)
-        px[6][6] = (230, 170, 40, 255)
-    elif kind == 'interceptor_top':
-        # Four launch tubes.
-        for cx, cy in ((4, 4), (11, 4), (4, 11), (11, 11)):
-            for y in range(cy - 2, cy + 2):
-                for x in range(cx - 2, cx + 2):
-                    px[y][x] = (20, 22, 26, 255)
-            px[cy - 2][cx - 2] = (150, 158, 172, 255)
+                d = ((x - 7.5) ** 2 + ((y - 7.5) * 2.4) ** 2) ** 0.5
+                ring = int(d) % 3 == 0
+                put(px, x, y, SHINE if ring else HIGHLIGHT if d < 7 else METAL)
     elif kind == 'interceptor_side':
-        for y in range(2, 14):
-            for x in (3, 7, 11):
-                px[y][x] = dark + (255,)
-                px[y][x + 1] = dark + (255,)
-        for x in range(1, 15):
-            px[13][x] = (230, 170, 40, 255) if x % 4 < 2 else (30, 30, 30, 255)
+        px = housing_side(INTERCEPTOR_HOUSING)
+        stripes(px, 2, 11, 13, 13)
+    elif kind == 'interceptor_top':
+        stripes(px, 2, 2, 13, 3)
+        stripes(px, 2, 12, 13, 13)
+        inset(px, 4, 4, 11, 11)
+    elif kind == 'interceptor_pod':
+        # The launch pod's sides, 10x7 pixels at 3..12, 4..10.
+        fill(px, 0, 0, 15, 15, METAL)
+        fill(px, 3, 4, 12, 4, EDGE)
+        fill(px, 3, 10, 12, 10, EDGE)
+        fill(px, 3, 5, 12, 5, HIGHLIGHT)
+        stripes(px, 4, 6, 11, 6, 1)
+        inset(px, 5, 7, 10, 9)
+        put(px, 7, 8, HOLE)
+        put(px, 8, 8, HOLE)
+        fill(px, 3, 5, 3, 9, HIGHLIGHT)
+        fill(px, 12, 5, 12, 9, SHADOW)
+    elif kind == 'interceptor_pod_top':
+        # Four launch tubes in the 10x10 top at 3..12.
+        fill(px, 0, 0, 15, 15, METAL)
+        for i in range(3, 13):
+            put(px, i, 3, HIGHLIGHT)
+            put(px, 3, i, HIGHLIGHT)
+            put(px, i, 12, SHADOW)
+            put(px, 12, i, SHADOW)
+        for x0, y0 in ((4, 4), (8, 4), (4, 8), (8, 8)):
+            fill(px, x0, y0, x0 + 3, y0 + 3, SHINE)
+            fill(px, x0 + 1, y0 + 1, x0 + 2, y0 + 2, HOLE)
+            put(px, x0 + 3, y0 + 3, SHADOW)
     else:
-        for y in range(1, 15):
-            for x in range(1, 15):
-                if (x + y) % 4 == 0:
-                    px[y][x] = dark + (255,)
+        inset(px, 4, 4, 11, 11)
+        bolts(px, *CORNER_BOLTS)
     return px
 
 
@@ -328,8 +413,12 @@ def main():
     for kind in ('top', 'side', 'bottom'):
         write_png(ASSETS / f'block/missile_launcher_{kind}.png', 16, 16, block_face(kind))
     write_png(ASSETS / 'gui/container/radar.png', 256, 256, radar_gui())
-    for kind in ('radar_top', 'radar_side', 'interceptor_top', 'interceptor_side', 'radar_bottom', 'interceptor_bottom'):
+    for kind in ('radar_top', 'radar_bottom', 'radar_dish', 'interceptor_top', 'interceptor_side', 'interceptor_bottom', 'interceptor_pod',
+                 'interceptor_pod_top'):
         write_png(ASSETS / f'block/{kind}.png', 16, 16, radar_face(kind))
+    frames = radar_side_frames()
+    write_png(ASSETS / 'block/radar_side.png', 16, 16 * len(frames), [row for frame in frames for row in frame])
+    (ASSETS / 'block/radar_side.png.mcmeta').write_text(json.dumps({'animation': {'frametime': 3}}, indent=2) + '\n')
     for kind in ('casing', 'hatch_top', 'hatch_top_open', 'controller'):
         write_png(ASSETS / f'block/silo_{kind}.png', 16, 16, silo_face(kind))
     print('wrote missile textures')
