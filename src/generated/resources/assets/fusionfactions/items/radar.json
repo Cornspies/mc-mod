@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "fusionfactions:block/radar"
+    "model": "fusionfactions:block/radar_inventory"
   }
 }

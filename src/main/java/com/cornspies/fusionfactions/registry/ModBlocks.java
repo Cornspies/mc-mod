@@ -50,9 +50,11 @@ public final class ModBlocks {
     public static final DeferredBlock<SiloControllerBlock> SILO_CONTROLLER = BLOCKS.registerBlock("silo_controller", SiloControllerBlock::new,
             ModBlocks::siloProperties);
 
-    // Counterplay (D53, DESIGN.md §6.9), as hard as the launcher.
-    public static final DeferredBlock<RadarBlock> RADAR = BLOCKS.registerBlock("radar", RadarBlock::new, ModBlocks::siloProperties);
-    public static final DeferredBlock<InterceptorBlock> INTERCEPTOR = BLOCKS.registerBlock("interceptor", InterceptorBlock::new, ModBlocks::siloProperties);
+    // Counterplay (D53, DESIGN.md §6.9), as hard as the launcher. Their models are smaller than a block.
+    public static final DeferredBlock<RadarBlock> RADAR = BLOCKS.registerBlock("radar", RadarBlock::new,
+            properties -> siloProperties(properties).noOcclusion());
+    public static final DeferredBlock<InterceptorBlock> INTERCEPTOR = BLOCKS.registerBlock("interceptor", InterceptorBlock::new,
+            properties -> siloProperties(properties).noOcclusion());
 
     private static BlockBehaviour.Properties siloProperties(BlockBehaviour.Properties properties) {
         return properties.mapColor(MapColor.METAL).sound(SoundType.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F);

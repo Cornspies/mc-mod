@@ -58,6 +58,9 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider, EmpTa
     }
 
     private static final int SCAN_INTERVAL_TICKS = 20;
+    // Degrees per tick the dish turns: one turn in 4 s, twice as fast while it has contacts.
+    private static final float DISH_SPEED = 4.5F;
+    private static final float DISH_SPEED_CONTACT = 9.0F;
     private static final int ENERGY_CAPACITY = 100_000;
     private static final int ENERGY_MAX_INSERT = 10_000;
     // Contacts the menu shows; the alert covers every one.
@@ -78,6 +81,9 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider, EmpTa
     private List<Contact> contacts = List.of();
     // Missiles the owner's team has already been alerted about. Not saved: after a restart a radar alerts again.
     private final Set<Integer> alerted = new HashSet<>();
+    // Client only: the dish's angle in degrees (client.RadarDishRenderer). Radars start at different angles.
+    private float dishAngle;
+    private float previousDishAngle;
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -115,6 +121,7 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider, EmpTa
 
     public RadarBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.RADAR.get(), pos, state);
+        this.dishAngle = this.previousDishAngle = Math.floorMod(pos.hashCode(), 360);
     }
 
     public EnergyHandler energy() {
@@ -136,6 +143,21 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider, EmpTa
         if (level instanceof ServerLevel serverLevel && level.getGameTime() % SCAN_INTERVAL_TICKS == 0) {
             radar.scan(serverLevel);
         }
+    }
+
+    // Turns the dish while the radar is online (RadarBlock.ENABLED, set by the server).
+    public static void clientTick(Level level, BlockPos pos, BlockState state, RadarBlockEntity radar) {
+        if (radar.dishAngle >= 360.0F) {
+            radar.dishAngle -= 360.0F;
+        }
+        radar.previousDishAngle = radar.dishAngle;
+        if (state.getValue(RadarBlock.ENABLED)) {
+            radar.dishAngle += state.getValue(RadarBlock.POWERED) ? DISH_SPEED_CONTACT : DISH_SPEED;
+        }
+    }
+
+    public float dishAngle(float partialTicks) {
+        return Mth.lerp(partialTicks, this.previousDishAngle, this.dishAngle);
     }
 
     private void scan(ServerLevel level) {
@@ -181,8 +203,9 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider, EmpTa
         this.contacts = List.copyOf(contacts);
         BlockState state = this.getBlockState();
         boolean signal = !contacts.isEmpty();
-        if (state.hasProperty(RadarBlock.POWERED) && state.getValue(RadarBlock.POWERED) != signal) {
-            level.setBlockAndUpdate(this.worldPosition, state.setValue(RadarBlock.POWERED, signal));
+        boolean online = status == Status.ACTIVE;
+        if (state.hasProperty(RadarBlock.POWERED) && (state.getValue(RadarBlock.POWERED) != signal || state.getValue(RadarBlock.ENABLED) != online)) {
+            level.setBlockAndUpdate(this.worldPosition, state.setValue(RadarBlock.POWERED, signal).setValue(RadarBlock.ENABLED, online));
         }
     }
 

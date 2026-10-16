@@ -2,6 +2,7 @@ package com.cornspies.fusionfactions.client;
 
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.client.datagen.DataGenerators;
+import com.cornspies.fusionfactions.registry.ModBlockEntityTypes;
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
 import com.cornspies.fusionfactions.registry.ModMenuTypes;
 
@@ -14,8 +15,10 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.model.standalone.SimpleUnbakedStandaloneModel;
 import net.neoforged.neoforge.common.NeoForge;
 
 // Client entry point. This class is not loaded on dedicated servers, so client-only code is safe here.
@@ -27,6 +30,7 @@ public class FusionFactionsClient {
 
         modEventBus.addListener(DataGenerators::gatherData);
         modEventBus.addListener(FusionFactionsClient::registerRenderers);
+        modEventBus.addListener(FusionFactionsClient::registerStandaloneModels);
         modEventBus.addListener(WeaponKeys::register);
         modEventBus.addListener(FusionFactionsClient::registerGuiLayers);
         modEventBus.addListener(WeaponItemExtensions::register);
@@ -48,10 +52,16 @@ public class FusionFactionsClient {
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntityTypes.FALLING_CRATE.get(), FallingCrateRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.MISSILE.get(), MissileRenderer::new);
-        // Interceptor rockets are drawn as their smoke trail, sent by the server.
-        event.registerEntityRenderer(ModEntityTypes.INTERCEPTOR_ROCKET.get(), NoopRenderer::new);
+        event.registerEntityRenderer(ModEntityTypes.INTERCEPTOR_ROCKET.get(), InterceptorRocketRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntityTypes.RADAR.get(), RadarDishRenderer::new);
         // Bullets are drawn as a particle trail by the entity itself.
         event.registerEntityRenderer(ModEntityTypes.BULLET.get(), NoopRenderer::new);
+    }
+
+    // Models drawn by renderers rather than as a block or item (tools/machine_models.py).
+    private static void registerStandaloneModels(ModelEvent.RegisterStandalone event) {
+        event.register(RadarDishRenderer.DISH, SimpleUnbakedStandaloneModel.simpleModelWrapper(FusionFactions.id("block/radar_dish")));
+        event.register(InterceptorRocketRenderer.MODEL, SimpleUnbakedStandaloneModel.simpleModelWrapper(FusionFactions.id("entity/interceptor_rocket")));
     }
 
     private static void registerScreens(RegisterMenuScreensEvent event) {

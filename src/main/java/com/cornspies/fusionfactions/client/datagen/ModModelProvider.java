@@ -55,8 +55,15 @@ public class ModModelProvider extends ModelProvider {
 
         blockModels.createTrivialBlock(ModBlocks.WEAPON_WORKBENCH.get(), TexturedModel.CUBE_BOTTOM_TOP);
         blockModels.createTrivialBlock(ModBlocks.MISSILE_LAUNCHER.get(), TexturedModel.CUBE_BOTTOM_TOP);
-        blockModels.createTrivialBlock(ModBlocks.RADAR.get(), TexturedModel.CUBE_BOTTOM_TOP);
-        blockModels.createTrivialBlock(ModBlocks.INTERCEPTOR.get(), TexturedModel.CUBE_BOTTOM_TOP);
+        // Radar and interceptor: 3D models from tools/machine_models.py. The radar's dish is drawn by
+        // client.RadarDishRenderer, so its item shows a model that has the dish.
+        Identifier radar = FusionFactions.id("block/radar");
+        blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(ModBlocks.RADAR.get(), BlockModelGenerators.plainVariant(radar)));
+        blockModels.registerSimpleItemModel(ModBlocks.RADAR.get(), FusionFactions.id("block/radar_inventory"));
+        Identifier interceptor = FusionFactions.id("block/interceptor");
+        blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(ModBlocks.INTERCEPTOR.get(),
+                BlockModelGenerators.plainVariant(interceptor)));
+        blockModels.registerSimpleItemModel(ModBlocks.INTERCEPTOR.get(), interceptor);
 
         // Missile silo: casing on every side; the controller has a panel on its sides; the hatch's top opens. Once
         // the silo is complete, each block shows the model for its part of it (tools/silo_textures.py).

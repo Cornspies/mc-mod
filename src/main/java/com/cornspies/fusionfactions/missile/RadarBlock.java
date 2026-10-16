@@ -23,20 +23,31 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 // Radar (D54). The player who places it owns its alerts; anyone can open it (D58). Gives a redstone signal while
-// it has contacts.
+// it has contacts. Its dish turns while it is online (ENABLED): not without power or after an EMP.
 public class RadarBlock extends BaseEntityBlock {
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
+    // The housing and the space the dish turns in (tools/machine_models.py).
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(0, 0, 0, 16, 8, 16), Block.box(2, 8, 2, 14, 16, 14));
 
     public RadarBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, false).setValue(ENABLED, true));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(POWERED);
+        builder.add(POWERED, ENABLED);
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return SHAPE;
     }
 
     @Override
@@ -72,6 +83,6 @@ public class RadarBlock extends BaseEntityBlock {
 
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntityTypes.RADAR.get(), RadarBlockEntity::serverTick);
+        return createTickerHelper(type, ModBlockEntityTypes.RADAR.get(), level.isClientSide() ? RadarBlockEntity::clientTick : RadarBlockEntity::serverTick);
     }
 }

@@ -17,7 +17,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 // An interceptor's shot (DESIGN.md §6.9): a fast rocket that steers straight at its missile and damages it on
-// contact. Server only: clients see its smoke trail. Not saved.
+// contact. Moved by the server; clients draw it with its smoke trail. Not saved.
 public class InterceptorRocketEntity extends Projectile {
     // Blocks per tick.
     private static final double SPEED = 4.0;
