@@ -50,9 +50,9 @@ public final class MissileConfig {
                 .comment("Time zone for raidWindows, e.g. Europe/Berlin or America/New_York. Empty: the server's time zone.")
                 .define("raidTimeZone", "", RaidWindows::isValidZone);
         requirePower = builder
-                .comment("Whether launchers need FE (Forge Energy) from another mod's cables or generators.",
-                        "Off by default, because Minecraft itself has no power source.")
-                .define("requirePower", false);
+                .comment("Whether launchers, silos, radars and machines need FE (Forge Energy) from generators and cables,",
+                        "ours or another mod's. Interceptors always need FE. A config file from 0.2.0 or older keeps its old value (false).")
+                .define("requirePower", true);
         range = tiers(builder, "range", "Maximum distance to the target per missile tier, in blocks (horizontal).",
                 List.of(500, 1000, 2000), 64, 30_000_000);
         minRange = builder
@@ -116,7 +116,7 @@ public final class MissileConfig {
                 .comment("Damage of one interceptor hit. Compare with missileHealth.")
                 .defineInRange("damage", 20.0, 0.0, 10_000.0);
         interceptorEnergy = builder
-                .comment("FE an interceptor shot takes, if requirePower is on.")
+                .comment("FE an interceptor shot takes. Interceptors always need FE, whatever requirePower says.")
                 .defineInRange("energyPerShot", 10_000, 0, 10_000_000);
         builder.pop();
 

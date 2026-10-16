@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.config.MissileConfig;
+import com.cornspies.fusionfactions.missile.InterceptorBlockEntity;
 import com.cornspies.fusionfactions.missile.LaunchStatus;
 import com.cornspies.fusionfactions.missile.MissileData;
 import com.cornspies.fusionfactions.missile.MissileFlight;
@@ -53,6 +54,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 // Missiles (DESIGN.md §6): whole flights onto small targets for each missile type, the launcher's checks, the
@@ -172,7 +174,11 @@ public final class MissileGameTests {
         assertStatus(helper, launcher, LaunchStatus.Check.NEEDS_SILO);
         launcher.setItem(MissileLauncherBlockEntity.MISSILE_SLOT, new ItemStack(ModItems.missile(MissileType.EXPLOSIVE, 1).get(), 2));
 
-        if (RaidWindows.isOpen(RaidWindows.configured(), RaidWindows.now()) && !MissileConfig.requirePower()) {
+        if (MissileConfig.requirePower()) {
+            assertStatus(helper, launcher, LaunchStatus.Check.NO_POWER);
+            charge(launcher.energy(), MissileConfig.launchEnergy(1));
+        }
+        if (RaidWindows.isOpen(RaidWindows.configured(), RaidWindows.now())) {
             assertStatus(helper, launcher, LaunchStatus.Check.READY);
             int before = MissileData.get(level.getServer()).flights().size();
             helper.assertTrue(launcher.launch(level, null).isReady(), "the launch should go through");
@@ -321,7 +327,8 @@ public final class MissileGameTests {
         controller.setItem(MissileLauncherBlockEntity.DESIGNATOR_SLOT, designator);
         helper.assertValueEqual(controller.menuPos(), helper.absolutePos(hatch.below(SiloStructure.DEPTH)), "where silo missiles start");
 
-        if (RaidWindows.isOpen(RaidWindows.configured(), RaidWindows.now()) && !MissileConfig.requirePower()) {
+        charge(controller.energy(), MissileConfig.launchEnergy(3));
+        if (RaidWindows.isOpen(RaidWindows.configured(), RaidWindows.now())) {
             assertSiloStatus(helper, controller, LaunchStatus.Check.READY);
             helper.assertTrue(controller.launch(level, null).isReady(), "the silo should fire a tier III missile");
             List<MissileFlight> flights = MissileData.get(level.getServer()).flights();
@@ -405,6 +412,7 @@ public final class MissileGameTests {
     private static void interceptorStopsMissile(GameTestHelper helper) {
         BlockPos top = platform(helper, 6, 6);
         helper.setBlock(top.offset(0, 1, 3), ModBlocks.INTERCEPTOR.get());
+        charge(helper.getBlockEntity(top.offset(0, 1, 3), InterceptorBlockEntity.class).energy(), 50_000);
         MissileFlight flight = launchAt(helper, MissileType.EXPLOSIVE, 1, top);
         helper.startSequence()
                 .thenWaitUntil(() -> helper.assertTrue(landed(helper, flight), "the missile should be gone"))
@@ -422,6 +430,7 @@ public final class MissileGameTests {
         BlockPos radarPos = top.offset(-2, 1, -2);
         helper.setBlock(radarPos, ModBlocks.RADAR.get());
         RadarBlockEntity radar = (RadarBlockEntity) helper.getLevel().getBlockEntity(helper.absolutePos(radarPos));
+        charge(radar.energy(), 50_000);
         MissileFlight flight = launchAt(helper, MissileType.EXPLOSIVE, 1, top);
         helper.startSequence()
                 .thenWaitUntil(() -> {
@@ -449,5 +458,15 @@ public final class MissileGameTests {
     }
 
     private MissileGameTests() {
+    }
+
+    // Fills a block's FE buffer with at least amount FE, in steps as large as it takes.
+    static void charge(EnergyHandler energy, int amount) {
+        for (int i = 0; i < 1000 && energy.getAmountAsLong() < amount; i++) {
+            try (Transaction transaction = Transaction.openRoot()) {
+                energy.insert(amount, transaction);
+                transaction.commit();
+            }
+        }
     }
 }

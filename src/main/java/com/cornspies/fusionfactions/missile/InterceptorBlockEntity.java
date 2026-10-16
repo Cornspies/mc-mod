@@ -24,7 +24,8 @@ import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 
 // Interceptor (D53, DESIGN.md §6.9): fires a homing rocket at the closest missile coming down within its range
-// that it can see, one shot per cooldown, as long as the missile still needs one. Works for anyone (D58).
+// that it can see, one shot per cooldown, as long as the missile still needs one. Works for anyone (D58). It always
+// needs FE, whatever requirePower says (D66).
 public class InterceptorBlockEntity extends BlockEntity implements EmpTarget {
     private static final int SEARCH_INTERVAL_TICKS = 2;
     private static final int ENERGY_CAPACITY = 100_000;
@@ -56,7 +57,7 @@ public class InterceptorBlockEntity extends BlockEntity implements EmpTarget {
     private void tick(ServerLevel level) {
         long now = level.getGameTime();
         if (now < this.cooldownUntil || now < this.disabledUntil
-                || MissileConfig.requirePower() && this.energy.getAmountAsLong() < MissileConfig.interceptorEnergy()) {
+                || this.energy.getAmountAsLong() < MissileConfig.interceptorEnergy()) {
             return;
         }
         Vec3 muzzle = Vec3.atBottomCenterOf(this.worldPosition.above());
@@ -66,9 +67,7 @@ public class InterceptorBlockEntity extends BlockEntity implements EmpTarget {
         }
         level.addFreshEntity(new InterceptorRocketEntity(level, muzzle, target, MissileConfig.interceptorDamage()));
         level.playSound(null, this.worldPosition, ModSounds.INTERCEPTOR_LAUNCH.get(), SoundSource.BLOCKS, 4.0F, 1.0F);
-        if (MissileConfig.requirePower()) {
-            this.energy.set(this.energy.getAmountAsInt() - MissileConfig.interceptorEnergy());
-        }
+        this.energy.set(this.energy.getAmountAsInt() - MissileConfig.interceptorEnergy());
         this.cooldownUntil = now + MissileConfig.interceptorCooldownTicks();
         this.setChanged();
     }
@@ -97,7 +96,7 @@ public class InterceptorBlockEntity extends BlockEntity implements EmpTarget {
         if (now < this.disabledUntil) {
             return Component.translatable("fusionfactions.interceptor.disabled", (this.disabledUntil - now + 19) / 20);
         }
-        if (MissileConfig.requirePower() && this.energy.getAmountAsLong() < MissileConfig.interceptorEnergy()) {
+        if (this.energy.getAmountAsLong() < MissileConfig.interceptorEnergy()) {
             return Component.translatable("fusionfactions.interceptor.no_power", MissileConfig.interceptorEnergy());
         }
         if (now < this.cooldownUntil) {
