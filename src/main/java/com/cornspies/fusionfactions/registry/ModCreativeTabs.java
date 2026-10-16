@@ -47,6 +47,10 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.missile(type, tier).get());
                     }
                 }
+                output.accept(ModItems.COMBUSTION_GENERATOR.get());
+                output.accept(ModItems.SOLAR_PANEL.get());
+                output.accept(ModItems.FE_CABLE.get());
+                output.accept(ModItems.CHARGING_STATION.get());
                 ModItems.ORES.forEach(ore -> output.accept(ore.get()));
                 ModItems.MATERIALS.forEach(material -> output.accept(material.get()));
             })

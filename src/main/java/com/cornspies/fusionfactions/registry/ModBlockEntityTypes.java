@@ -1,5 +1,8 @@
 package com.cornspies.fusionfactions.registry;
 
+import com.cornspies.fusionfactions.power.ChargingStationBlockEntity;
+import com.cornspies.fusionfactions.power.CombustionGeneratorBlockEntity;
+import com.cornspies.fusionfactions.power.SolarPanelBlockEntity;
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.missile.InterceptorBlockEntity;
 import com.cornspies.fusionfactions.missile.MissileLauncherBlockEntity;
@@ -28,6 +31,14 @@ public final class ModBlockEntityTypes {
             "radar", () -> new BlockEntityType<>(RadarBlockEntity::new, ModBlocks.RADAR.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<InterceptorBlockEntity>> INTERCEPTOR = BLOCK_ENTITY_TYPES.register(
             "interceptor", () -> new BlockEntityType<>(InterceptorBlockEntity::new, ModBlocks.INTERCEPTOR.get()));
+
+    // Power (D67).
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CombustionGeneratorBlockEntity>> COMBUSTION_GENERATOR = BLOCK_ENTITY_TYPES.register(
+            "combustion_generator", () -> new BlockEntityType<>(CombustionGeneratorBlockEntity::new, ModBlocks.COMBUSTION_GENERATOR.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SolarPanelBlockEntity>> SOLAR_PANEL = BLOCK_ENTITY_TYPES.register(
+            "solar_panel", () -> new BlockEntityType<>(SolarPanelBlockEntity::new, ModBlocks.SOLAR_PANEL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChargingStationBlockEntity>> CHARGING_STATION = BLOCK_ENTITY_TYPES.register(
+            "charging_station", () -> new BlockEntityType<>(ChargingStationBlockEntity::new, ModBlocks.CHARGING_STATION.get()));
 
     private ModBlockEntityTypes() {
     }

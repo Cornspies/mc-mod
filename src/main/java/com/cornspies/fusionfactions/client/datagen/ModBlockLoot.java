@@ -32,6 +32,10 @@ public class ModBlockLoot extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.SILO_CONTROLLER.get());
         this.dropSelf(ModBlocks.RADAR.get());
         this.dropSelf(ModBlocks.INTERCEPTOR.get());
+        this.dropSelf(ModBlocks.COMBUSTION_GENERATOR.get());
+        this.dropSelf(ModBlocks.SOLAR_PANEL.get());
+        this.dropSelf(ModBlocks.FE_CABLE.get());
+        this.dropSelf(ModBlocks.CHARGING_STATION.get());
 
         // Ores drop their raw item, more with Fortune; niter drops 2-4 like redstone. Silk Touch drops the ore.
         this.add(ModBlocks.BAUXITE_ORE.get(), block -> this.createOreDrop(block, ModItems.RAW_BAUXITE.get()));

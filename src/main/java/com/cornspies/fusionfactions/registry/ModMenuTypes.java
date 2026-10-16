@@ -1,5 +1,8 @@
 package com.cornspies.fusionfactions.registry;
 
+import com.cornspies.fusionfactions.power.ChargingStationBlockEntity;
+import com.cornspies.fusionfactions.power.CombustionGeneratorBlockEntity;
+import com.cornspies.fusionfactions.power.MachineMenu;
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.missile.MissileLauncherMenu;
 import com.cornspies.fusionfactions.missile.RadarMenu;
@@ -24,6 +27,12 @@ public final class ModMenuTypes {
 
     public static final DeferredHolder<MenuType<?>, MenuType<RadarMenu>> RADAR = MENU_TYPES.register("radar",
             () -> IMenuTypeExtension.create(RadarMenu::new));
+
+    // Machines (D67, D70): generic machine menus, one type per machine.
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> COMBUSTION_GENERATOR = MENU_TYPES.register("combustion_generator",
+            () -> new MenuType<>(CombustionGeneratorBlockEntity::clientMenu, FeatureFlags.VANILLA_SET));
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> CHARGING_STATION = MENU_TYPES.register("charging_station",
+            () -> new MenuType<>(ChargingStationBlockEntity::clientMenu, FeatureFlags.VANILLA_SET));
 
     private ModMenuTypes() {
     }

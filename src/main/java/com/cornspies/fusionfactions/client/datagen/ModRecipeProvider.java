@@ -6,6 +6,7 @@ import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.crafting.HeavyWeaponRecipesCondition;
 import com.cornspies.fusionfactions.missile.MissileType;
 import com.cornspies.fusionfactions.registry.ModItems;
+import com.cornspies.fusionfactions.registry.ModTags;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.registries.Registries;
@@ -40,6 +41,46 @@ public class ModRecipeProvider extends RecipeProvider {
                 ModItems.ALUMINUM_DUST.get()), ModItems.ALUMINUM_INGOT.get(), 0.7F);
         this.smeltAndBlast(List.of(ModItems.RAW_LITHIUM.get(), ModItems.LITHIUM_ORE.get(), ModItems.DEEPSLATE_LITHIUM_ORE.get(),
                 ModItems.LITHIUM_DUST.get()), ModItems.LITHIUM_INGOT.get(), 1.0F);
+
+        // Power (D67, DESIGN.md §6b.3): crafted, because the machines need power before they can make anything.
+        this.shaped(RecipeCategory.REDSTONE, ModItems.COMBUSTION_GENERATOR.get())
+                .pattern("III")
+                .pattern("CFC")
+                .pattern("IRI")
+                .define('I', Tags.Items.INGOTS_IRON)
+                .define('C', Tags.Items.INGOTS_COPPER)
+                .define('F', Items.FURNACE)
+                .define('R', Tags.Items.DUSTS_REDSTONE)
+                .unlockedBy(getHasName(Items.FURNACE), this.has(Items.FURNACE))
+                .save(this.output);
+        this.shaped(RecipeCategory.REDSTONE, ModItems.SOLAR_PANEL.get())
+                .pattern("GGG")
+                .pattern("ADA")
+                .pattern("III")
+                .define('G', Tags.Items.GLASS_PANES)
+                .define('A', ModTags.INGOTS_ALUMINUM)
+                .define('D', Items.DAYLIGHT_DETECTOR)
+                .define('I', Tags.Items.INGOTS_IRON)
+                .unlockedBy(getHasName(ModItems.ALUMINUM_INGOT.get()), this.has(ModTags.INGOTS_ALUMINUM))
+                .save(this.output);
+        this.shaped(RecipeCategory.REDSTONE, ModItems.FE_CABLE.get(), 8)
+                .pattern("KKK")
+                .pattern("CCC")
+                .pattern("KKK")
+                .define('K', Items.DRIED_KELP)
+                .define('C', Tags.Items.INGOTS_COPPER)
+                .unlockedBy(getHasName(Items.COPPER_INGOT), this.has(Tags.Items.INGOTS_COPPER))
+                .save(this.output);
+        this.shaped(RecipeCategory.REDSTONE, ModItems.CHARGING_STATION.get())
+                .pattern("ICI")
+                .pattern("ARA")
+                .pattern("III")
+                .define('I', Tags.Items.INGOTS_IRON)
+                .define('C', Tags.Items.INGOTS_COPPER)
+                .define('A', ModTags.INGOTS_ALUMINUM)
+                .define('R', Tags.Items.STORAGE_BLOCKS_REDSTONE)
+                .unlockedBy(getHasName(ModItems.ALUMINUM_INGOT.get()), this.has(ModTags.INGOTS_ALUMINUM))
+                .save(this.output);
 
         this.shaped(RecipeCategory.MISC, ModItems.BARREL.get())
                 .pattern("ICI")

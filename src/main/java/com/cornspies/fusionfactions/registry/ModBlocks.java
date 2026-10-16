@@ -7,6 +7,10 @@ import com.cornspies.fusionfactions.missile.RadarBlock;
 import com.cornspies.fusionfactions.missile.SiloCasingBlock;
 import com.cornspies.fusionfactions.missile.SiloControllerBlock;
 import com.cornspies.fusionfactions.missile.SiloHatchBlock;
+import com.cornspies.fusionfactions.power.CableBlock;
+import com.cornspies.fusionfactions.power.ChargingStationBlock;
+import com.cornspies.fusionfactions.power.CombustionGeneratorBlock;
+import com.cornspies.fusionfactions.power.SolarPanelBlock;
 import com.cornspies.fusionfactions.supplydrop.SupplyCrateBlock;
 import com.cornspies.fusionfactions.workbench.WeaponWorkbenchBlock;
 
@@ -71,6 +75,17 @@ public final class ModBlocks {
     public static final DeferredBlock<DropExperienceBlock> DEEPSLATE_RARE_EARTH_ORE = ore("deepslate_rare_earth_ore", ConstantInt.of(0), true);
     public static final DeferredBlock<DropExperienceBlock> LITHIUM_ORE = ore("lithium_ore", ConstantInt.of(0), false);
     public static final DeferredBlock<DropExperienceBlock> DEEPSLATE_LITHIUM_ORE = ore("deepslate_lithium_ore", ConstantInt.of(0), true);
+
+    // Power (D67, DESIGN.md §6b.3). The generator glows while it burns.
+    public static final DeferredBlock<CombustionGeneratorBlock> COMBUSTION_GENERATOR = BLOCKS.registerBlock("combustion_generator",
+            CombustionGeneratorBlock::new, properties -> siloProperties(properties).strength(3.5F, 6.0F)
+                    .lightLevel(state -> state.getValue(CombustionGeneratorBlock.LIT) ? 13 : 0));
+    public static final DeferredBlock<SolarPanelBlock> SOLAR_PANEL = BLOCKS.registerBlock("solar_panel", SolarPanelBlock::new,
+            properties -> siloProperties(properties).strength(2.0F, 6.0F).noOcclusion());
+    public static final DeferredBlock<CableBlock> FE_CABLE = BLOCKS.registerBlock("fe_cable", CableBlock::new,
+            properties -> properties.mapColor(MapColor.COLOR_GRAY).sound(SoundType.METAL).strength(0.5F).noOcclusion());
+    public static final DeferredBlock<ChargingStationBlock> CHARGING_STATION = BLOCKS.registerBlock("charging_station", ChargingStationBlock::new,
+            properties -> siloProperties(properties).strength(3.5F, 6.0F));
 
     private static DeferredBlock<DropExperienceBlock> ore(String name, IntProvider experience, boolean deepslate) {
         return BLOCKS.registerBlock(name, properties -> new DropExperienceBlock(experience, properties), properties -> deepslate

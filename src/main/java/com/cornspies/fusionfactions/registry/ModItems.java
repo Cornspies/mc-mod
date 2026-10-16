@@ -69,6 +69,12 @@ public final class ModItems {
     public static final DeferredItem<Item> RARE_EARTH_DUST = ITEMS.registerSimpleItem("rare_earth_dust");
     public static final DeferredItem<Item> LITHIUM_DUST = ITEMS.registerSimpleItem("lithium_dust");
 
+    // Power (D67).
+    public static final DeferredItem<BlockItem> COMBUSTION_GENERATOR = ITEMS.registerSimpleBlockItem(ModBlocks.COMBUSTION_GENERATOR);
+    public static final DeferredItem<BlockItem> SOLAR_PANEL = ITEMS.registerSimpleBlockItem(ModBlocks.SOLAR_PANEL);
+    public static final DeferredItem<BlockItem> FE_CABLE = ITEMS.registerSimpleBlockItem(ModBlocks.FE_CABLE);
+    public static final DeferredItem<BlockItem> CHARGING_STATION = ITEMS.registerSimpleBlockItem(ModBlocks.CHARGING_STATION);
+
     public static final List<DeferredItem<BlockItem>> ORES = List.of(BAUXITE_ORE, DEEPSLATE_BAUXITE_ORE, NITER_ORE, DEEPSLATE_NITER_ORE, RARE_EARTH_ORE,
             DEEPSLATE_RARE_EARTH_ORE, LITHIUM_ORE, DEEPSLATE_LITHIUM_ORE);
     public static final List<DeferredItem<Item>> MATERIALS = List.of(RAW_BAUXITE, NITER, RAW_RARE_EARTH, RAW_LITHIUM, ALUMINUM_INGOT, LITHIUM_INGOT,

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "A": "#c:ingots/aluminum",
+    "D": "minecraft:daylight_detector",
+    "G": "#c:glass_panes",
+    "I": "#c:ingots/iron"
+  },
+  "pattern": [
+    "GGG",
+    "ADA",
+    "III"
+  ],
+  "result": {
+    "id": "fusionfactions:solar_panel"
+  }
+}
