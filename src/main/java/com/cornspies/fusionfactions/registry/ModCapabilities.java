@@ -1,5 +1,6 @@
 package com.cornspies.fusionfactions.registry;
 
+import com.cornspies.fusionfactions.industry.Machine;
 import com.cornspies.fusionfactions.power.CableNetworks;
 
 import net.minecraft.server.level.ServerLevel;
@@ -17,6 +18,9 @@ public final class ModCapabilities {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntityTypes.COMBUSTION_GENERATOR.get(), (generator, side) -> generator.energy());
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntityTypes.SOLAR_PANEL.get(), (panel, side) -> panel.energy());
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntityTypes.CHARGING_STATION.get(), (station, side) -> station.energy());
+        for (Machine machine : Machine.values()) {
+            event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntityTypes.machine(machine), (entity, side) -> entity.energy());
+        }
         event.registerBlock(Capabilities.Energy.BLOCK, (level, pos, state, blockEntity, side) -> level instanceof ServerLevel serverLevel && side != null
                 ? CableNetworks.handler(serverLevel, pos, side)
                 : null, ModBlocks.FE_CABLE.get());

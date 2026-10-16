@@ -1,13 +1,18 @@
 package com.cornspies.fusionfactions.registry;
 
-import com.cornspies.fusionfactions.power.ChargingStationBlockEntity;
-import com.cornspies.fusionfactions.power.CombustionGeneratorBlockEntity;
-import com.cornspies.fusionfactions.power.SolarPanelBlockEntity;
+import java.util.EnumMap;
+import java.util.Map;
+
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.industry.Machine;
+import com.cornspies.fusionfactions.industry.ProcessingMachineBlockEntity;
 import com.cornspies.fusionfactions.missile.InterceptorBlockEntity;
 import com.cornspies.fusionfactions.missile.MissileLauncherBlockEntity;
 import com.cornspies.fusionfactions.missile.RadarBlockEntity;
 import com.cornspies.fusionfactions.missile.SiloControllerBlockEntity;
+import com.cornspies.fusionfactions.power.ChargingStationBlockEntity;
+import com.cornspies.fusionfactions.power.CombustionGeneratorBlockEntity;
+import com.cornspies.fusionfactions.power.SolarPanelBlockEntity;
 import com.cornspies.fusionfactions.supplydrop.SupplyCrateBlockEntity;
 
 import net.minecraft.core.registries.Registries;
@@ -39,6 +44,20 @@ public final class ModBlockEntityTypes {
             "solar_panel", () -> new BlockEntityType<>(SolarPanelBlockEntity::new, ModBlocks.SOLAR_PANEL.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChargingStationBlockEntity>> CHARGING_STATION = BLOCK_ENTITY_TYPES.register(
             "charging_station", () -> new BlockEntityType<>(ChargingStationBlockEntity::new, ModBlocks.CHARGING_STATION.get()));
+
+    // Processing machines (D70): one type per machine, all the same class.
+    private static final Map<Machine, DeferredHolder<BlockEntityType<?>, BlockEntityType<ProcessingMachineBlockEntity>>> MACHINES = new EnumMap<>(Machine.class);
+
+    static {
+        for (Machine machine : Machine.values()) {
+            MACHINES.put(machine, BLOCK_ENTITY_TYPES.register(machine.id(),
+                    () -> new BlockEntityType<>((pos, state) -> new ProcessingMachineBlockEntity(machine, pos, state), ModBlocks.machine(machine))));
+        }
+    }
+
+    public static BlockEntityType<ProcessingMachineBlockEntity> machine(Machine machine) {
+        return MACHINES.get(machine).get();
+    }
 
     private ModBlockEntityTypes() {
     }

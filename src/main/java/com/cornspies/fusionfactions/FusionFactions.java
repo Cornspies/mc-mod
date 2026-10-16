@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import com.cornspies.fusionfactions.config.ServerConfig;
 import com.cornspies.fusionfactions.config.StartupConfig;
 import com.cornspies.fusionfactions.gametest.CrateLootGameTests;
+import com.cornspies.fusionfactions.gametest.MachineGameTests;
 import com.cornspies.fusionfactions.gametest.MissileGameTests;
 import com.cornspies.fusionfactions.gametest.PowerGameTests;
 import com.cornspies.fusionfactions.gametest.ResourceGameTests;
@@ -23,6 +24,7 @@ import com.cornspies.fusionfactions.registry.ModDataComponents;
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
 import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.registry.ModMenuTypes;
+import com.cornspies.fusionfactions.registry.ModRecipes;
 import com.cornspies.fusionfactions.registry.ModSounds;
 import com.cornspies.fusionfactions.supplydrop.SupplyDropCommands;
 import com.cornspies.fusionfactions.supplydrop.SupplyDropManager;
@@ -58,6 +60,9 @@ public class FusionFactions {
         ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         ModConditions.CONDITION_CODECS.register(modEventBus);
+        ModRecipes.TYPES.register(modEventBus);
+        ModRecipes.SERIALIZERS.register(modEventBus);
+        ModRecipes.BOOK_CATEGORIES.register(modEventBus);
         WeaponGameTests.TEST_FUNCTIONS.register(modEventBus);
         UpgradeGameTests.TEST_FUNCTIONS.register(modEventBus);
         TriggerGameTests.TEST_FUNCTIONS.register(modEventBus);
@@ -65,6 +70,7 @@ public class FusionFactions {
         MissileGameTests.TEST_FUNCTIONS.register(modEventBus);
         ResourceGameTests.TEST_FUNCTIONS.register(modEventBus);
         PowerGameTests.TEST_FUNCTIONS.register(modEventBus);
+        MachineGameTests.TEST_FUNCTIONS.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.SYNCED, ServerConfig.SPEC);
         modContainer.registerConfig(ModConfig.Type.STARTUP, StartupConfig.SPEC);

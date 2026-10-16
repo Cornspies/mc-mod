@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import com.cornspies.fusionfactions.config.PowerConfig;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-
-import com.cornspies.fusionfactions.config.PowerConfig;
 
 // The cable networks of each level, built when FE first flows through a cable and dropped whenever a cable or a block
 // next to one changes. Server thread only.

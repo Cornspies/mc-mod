@@ -1,6 +1,11 @@
 package com.cornspies.fusionfactions.registry;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.industry.Machine;
+import com.cornspies.fusionfactions.industry.ProcessingMachineBlock;
 import com.cornspies.fusionfactions.missile.InterceptorBlock;
 import com.cornspies.fusionfactions.missile.MissileLauncherBlock;
 import com.cornspies.fusionfactions.missile.RadarBlock;
@@ -86,6 +91,20 @@ public final class ModBlocks {
             properties -> properties.mapColor(MapColor.COLOR_GRAY).sound(SoundType.METAL).strength(0.5F).noOcclusion());
     public static final DeferredBlock<ChargingStationBlock> CHARGING_STATION = BLOCKS.registerBlock("charging_station", ChargingStationBlock::new,
             properties -> siloProperties(properties).strength(3.5F, 6.0F));
+
+    // Processing machines (D70, DESIGN.md §6b.4), as hard as the generator.
+    private static final Map<Machine, DeferredBlock<ProcessingMachineBlock>> MACHINES = new EnumMap<>(Machine.class);
+
+    static {
+        for (Machine machine : Machine.values()) {
+            MACHINES.put(machine, BLOCKS.registerBlock(machine.id(), properties -> new ProcessingMachineBlock(machine, properties),
+                    properties -> siloProperties(properties).strength(3.5F, 6.0F)));
+        }
+    }
+
+    public static ProcessingMachineBlock machine(Machine machine) {
+        return MACHINES.get(machine).get();
+    }
 
     private static DeferredBlock<DropExperienceBlock> ore(String name, IntProvider experience, boolean deepslate) {
         return BLOCKS.registerBlock(name, properties -> new DropExperienceBlock(experience, properties), properties -> deepslate

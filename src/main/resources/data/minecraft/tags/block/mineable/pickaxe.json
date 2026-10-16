@@ -18,6 +18,10 @@
     "fusionfactions:combustion_generator",
     "fusionfactions:solar_panel",
     "fusionfactions:fe_cable",
-    "fusionfactions:charging_station"
+    "fusionfactions:charging_station",
+    "fusionfactions:crusher",
+    "fusionfactions:chemical_mixer",
+    "fusionfactions:circuit_fabricator",
+    "fusionfactions:assembler"
   ]
 }

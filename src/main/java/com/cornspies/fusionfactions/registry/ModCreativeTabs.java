@@ -1,6 +1,7 @@
 package com.cornspies.fusionfactions.registry;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.industry.Machine;
 import com.cornspies.fusionfactions.missile.MissileType;
 import com.cornspies.fusionfactions.weapon.upgrade.UpgradeType;
 import com.cornspies.fusionfactions.weapon.upgrade.WeaponUpgrades;
@@ -51,6 +52,9 @@ public final class ModCreativeTabs {
                 output.accept(ModItems.SOLAR_PANEL.get());
                 output.accept(ModItems.FE_CABLE.get());
                 output.accept(ModItems.CHARGING_STATION.get());
+                for (Machine machine : Machine.values()) {
+                    output.accept(ModItems.machine(machine));
+                }
                 ModItems.ORES.forEach(ore -> output.accept(ore.get()));
                 ModItems.MATERIALS.forEach(material -> output.accept(material.get()));
             })

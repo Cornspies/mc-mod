@@ -1,11 +1,11 @@
 package com.cornspies.fusionfactions.registry;
 
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Item;
 import com.cornspies.fusionfactions.FusionFactions;
 
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 public final class ModTags {

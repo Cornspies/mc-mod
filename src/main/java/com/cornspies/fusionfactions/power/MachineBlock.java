@@ -50,7 +50,9 @@ public abstract class MachineBlock extends BaseEntityBlock {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
+    // As vanilla's furnace does it; NeoForge deprecates BlockState.rotate without a level for other callers.
     @Override
+    @SuppressWarnings("deprecation")
     protected BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }

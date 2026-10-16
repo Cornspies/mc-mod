@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.industry.Machine;
 import com.cornspies.fusionfactions.missile.MissileItem;
 import com.cornspies.fusionfactions.missile.MissileType;
 import com.cornspies.fusionfactions.missile.TargetDesignatorItem;
@@ -19,7 +20,11 @@ import com.cornspies.fusionfactions.weapon.upgrade.WeaponUpgrades;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.component.UseEffects;
+import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders;
+import net.minecraft.world.level.storage.loot.providers.number.floats.ResolvableFloat;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -75,10 +80,45 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> FE_CABLE = ITEMS.registerSimpleBlockItem(ModBlocks.FE_CABLE);
     public static final DeferredItem<BlockItem> CHARGING_STATION = ITEMS.registerSimpleBlockItem(ModBlocks.CHARGING_STATION);
 
+    // Machines (D70) and the materials they make (D71, D72, DESIGN.md §6b.5). Rocket fuel also burns in furnaces and
+    // generators, four times as long as coal.
+    private static final Map<Machine, DeferredItem<BlockItem>> MACHINES = new EnumMap<>(Machine.class);
+
+    static {
+        for (Machine machine : Machine.values()) {
+            MACHINES.put(machine, ITEMS.registerSimpleBlockItem(machine.id(), () -> ModBlocks.machine(machine)));
+        }
+    }
+
+    public static final DeferredItem<Item> SILICON_DUST = ITEMS.registerSimpleItem("silicon_dust");
+    public static final DeferredItem<Item> SILICON = ITEMS.registerSimpleItem("silicon");
+    public static final DeferredItem<Item> SILICON_WAFER = ITEMS.registerSimpleItem("silicon_wafer");
+    public static final DeferredItem<Item> BASIC_CHIP = ITEMS.registerSimpleItem("basic_chip");
+    public static final DeferredItem<Item> ADVANCED_CHIP = ITEMS.registerSimpleItem("advanced_chip");
+    public static final DeferredItem<Item> MILITARY_CHIP = ITEMS.registerSimpleItem("military_chip");
+    public static final DeferredItem<Item> ROCKET_FUEL = ITEMS.registerSimpleItem("rocket_fuel", properties -> properties.component(DataComponents.COOKING_FUEL,
+            new CookingFuel(new ResolvableInt.Constant(6400), ResolvableFloat.fromKey(ContextFloatProviders.COOKING_DEFAULT_SPEED_MULTIPLIER))));
+    public static final DeferredItem<Item> BATTERY = ITEMS.registerSimpleItem("battery");
+    public static final DeferredItem<Item> AIRFRAME = ITEMS.registerSimpleItem("airframe", properties -> properties.stacksTo(16));
+
+    public static BlockItem machine(Machine machine) {
+        return MACHINES.get(machine).get();
+    }
+
+    // Chips by missile tier (D71).
+    public static Item chip(int tier) {
+        return switch (tier) {
+            case 1 -> BASIC_CHIP.get();
+            case 2 -> ADVANCED_CHIP.get();
+            default -> MILITARY_CHIP.get();
+        };
+    }
+
     public static final List<DeferredItem<BlockItem>> ORES = List.of(BAUXITE_ORE, DEEPSLATE_BAUXITE_ORE, NITER_ORE, DEEPSLATE_NITER_ORE, RARE_EARTH_ORE,
             DEEPSLATE_RARE_EARTH_ORE, LITHIUM_ORE, DEEPSLATE_LITHIUM_ORE);
     public static final List<DeferredItem<Item>> MATERIALS = List.of(RAW_BAUXITE, NITER, RAW_RARE_EARTH, RAW_LITHIUM, ALUMINUM_INGOT, LITHIUM_INGOT,
-            ALUMINUM_DUST, RARE_EARTH_DUST, LITHIUM_DUST);
+            ALUMINUM_DUST, RARE_EARTH_DUST, LITHIUM_DUST, SILICON_DUST, SILICON, SILICON_WAFER, BASIC_CHIP, ADVANCED_CHIP, MILITARY_CHIP, ROCKET_FUEL,
+            BATTERY, AIRFRAME);
 
     // Movement speed while aiming down sights, as a share of walking speed.
     private static final float AIM_MOVE_SPEED = 0.8F;
