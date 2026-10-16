@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#fusionfactions:has_ore/lithium",
+  "features": "fusionfactions:ore_lithium",
+  "step": "underground_ores"
+}

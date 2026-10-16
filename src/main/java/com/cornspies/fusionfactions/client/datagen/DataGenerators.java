@@ -26,6 +26,8 @@ public final class DataGenerators {
                                 new LootTableProvider.SubProviderEntry(ModBlockLoot::new, LootContextParamSets.BLOCK))))
                 .add(RecipeProvider.asBootstrap(ModRecipeProvider::new));
         event.createReloadableRegistryObjects(reloadable, Set.of(FusionFactions.MODID));
+        // Ore generation: features, their placement and the biome modifiers that add them (world registries).
+        event.createWorldRegistryObjects(ModWorldGen.entries(), Set.of(FusionFactions.MODID));
     }
 
     private DataGenerators() {

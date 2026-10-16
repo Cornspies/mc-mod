@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#fusionfactions:has_ore/niter",
+  "features": "fusionfactions:ore_niter",
+  "step": "underground_ores"
+}
