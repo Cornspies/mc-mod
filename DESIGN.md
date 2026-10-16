@@ -1,7 +1,7 @@
 # Fusion Factions — Design Document
 
 > **Mod ID:** `fusionfactions` · **Package:** `com.cornspies.fusionfactions` · **License:** MIT
-> **Status:** Phase 1 released as v0.1.0; Phase 2 in development (M7 to M9 done, M10 in progress) · **Last updated:** 2026-10-16
+> **Status:** Phase 1 released as v0.1.0; Phase 2 released as v0.2.0 · **Last updated:** 2026-10-16
 > **Audience:** the project owner and the coding agent (Claude Code). Read together with `CLAUDE.md`.
 
 ---
@@ -502,7 +502,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | **M7 Missile core** ✅ *done 2026-10-09* | Designator, missile launcher block and menu, explosive missiles I–II, flight (launch, cruise in SavedData, descent, chunk tickets), block damage rules (§6.6), raid windows, cooldown, optional FE, `[missiles]` config, admin commands, game tests. |
 | **M8 Missile types and silo** ✅ *done 2026-10-09* | Breaching, EMP and incendiary missiles; tier III; missile silo multiblock; recipes; tier III missiles in legendary crates. |
 | **M9 Counterplay** ✅ *done 2026-10-16* | Radar block with team alerts and launch area, interceptor block, shooting missiles down. |
-| **M10 Integration & release** | Models and textures pass, `docs/SERVER.md`, two-player playtest on a dedicated server, release v0.2.0. |
+| **M10 Integration & release** ✅ *done 2026-10-16, released as v0.2.0* | Models and textures pass, `docs/SERVER.md`, two-player playtest on a dedicated server, release v0.2.0. |
 
 ---
 
@@ -684,6 +684,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-08 | M7 details | The launcher needs open sky above it. Blast model: rays lose 1.3 strength per block of air and a quarter of a block's blast resistance per block (vanilla loses about 3.3 times the resistance), so explosive missiles reach about 5 / 7 / 9 blocks in the open and dig a few blocks into stone. Entity damage uses vanilla's formula over twice the reach; the damage type is in `minecraft:is_explosion`, so Blast Protection counts. Hard blocks: blast resistance 600 and up. Blasts break at most 1024 blocks per tick. The flying missile is drawn 3 times the item's size (about 5.5 blocks long) with a continuous smoke trail. Missiles stack to 4. Recipes: designator from a spyglass, redstone, iron and a fusion core; launcher from barrels, obsidian, iron blocks, a fusion core and a dispenser; explosive missile I from TNT, iron, gunpowder and a fusion core; II from missile I, TNT, diamonds and a fusion core. *Provisional.* | Agent |
 | 2026-10-16 | M9 done | Owner tested the radar, interceptor and shooting missiles down, and approved the milestone. Merged into `main`. | Owner |
 | 2026-10-16 | M10 models and textures | The launcher, plain silo, radar and interceptor textures get the bevelled look of the crates and the workbench. The radar and the interceptor become 3D models (`tools/machine_models.py`), smaller than a block; the radar's dish turns while it is online. Interceptor rockets are drawn as small rockets instead of only their trail. Missile, weapon and crate models are unchanged. *Provisional.* | Agent |
+| 2026-10-16 | M10 done, v0.2.0 | Owner playtested Phase 2 and approved it, together with glowing night sights and accents on the weapons and redrawn upgrade icons. Phase 2 released as v0.2.0. | Owner |
 
 ---
 

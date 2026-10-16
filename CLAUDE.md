@@ -17,7 +17,7 @@ The full design, including what is decided and what is still open, is in **@DESI
 - **M7 (missile core): done** (owner approved 2026-10-09).
 - **M8 (missile types and silo): done** (owner approved 2026-10-09).
 - **M9 (counterplay): done** (owner approved 2026-10-16). M7 to M9 are merged into `main`.
-- **M10 (integration & release v0.2.0): in progress.**
+- **M10 (integration & release): done** (owner approved 2026-10-16). **Phase 2 is released as v0.2.0** (tag `v0.2.0`). M7 to M10 are merged into `main`.
 - Missile models come from `tools/missile_models.py`, missile icons, launcher textures and screen from `tools/missile_textures.py`, the formed silo's textures and models from `tools/silo_textures.py`, the radar, interceptor and interceptor rocket models from `tools/machine_models.py`.
 - Aim positions for first person come from `tools/weapon_models.py` too (`weapon_aim.json`).
 - Upgrade values and the fields per weapon are in the synced config (`[weaponUpgrades]`). Part models come from `tools/weapon_models.py`, part icons and workbench textures from `tools/workbench_textures.py`.
