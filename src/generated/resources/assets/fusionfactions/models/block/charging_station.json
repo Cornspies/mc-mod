@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "fusionfactions:block/charging_station_front",
+    "side": "fusionfactions:block/charging_station_side",
+    "top": "fusionfactions:block/charging_station_top"
+  }
+}

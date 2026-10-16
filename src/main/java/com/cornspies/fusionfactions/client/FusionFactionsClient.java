@@ -68,6 +68,8 @@ public class FusionFactionsClient {
         event.register(ModMenuTypes.WEAPON_WORKBENCH.get(), WeaponWorkbenchScreen::new);
         event.register(ModMenuTypes.MISSILE_LAUNCHER.get(), MissileLauncherScreen::new);
         event.register(ModMenuTypes.RADAR.get(), RadarScreen::new);
+        event.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
+        event.register(ModMenuTypes.CHARGING_STATION.get(), ChargingStationScreen::new);
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {

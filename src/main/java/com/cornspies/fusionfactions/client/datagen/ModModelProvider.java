@@ -23,7 +23,11 @@ import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.data.models.MultiVariant;
+import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.data.models.model.TexturedModel;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.client.renderer.item.EmptyModel;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.RangeSelectItemModel;
@@ -64,6 +68,26 @@ public class ModModelProvider extends ModelProvider {
         blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(ModBlocks.INTERCEPTOR.get(),
                 BlockModelGenerators.plainVariant(interceptor)));
         blockModels.registerSimpleItemModel(ModBlocks.INTERCEPTOR.get(), interceptor);
+
+        // Power (D67): generator and charging station face the player and light their front while they work; the solar
+        // panel and the cable use models from tools/machine_models.py, the cable one arm per connected side.
+        for (Block machine : List.of(ModBlocks.COMBUSTION_GENERATOR.get(), ModBlocks.CHARGING_STATION.get())) {
+            blockModels.createFurnace(machine, TexturedModel.ORIENTABLE_ONLY_TOP);
+            blockModels.registerSimpleItemModel(machine, ModelLocationUtils.getModelLocation(machine));
+        }
+        Identifier solarPanel = FusionFactions.id("block/solar_panel");
+        blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(ModBlocks.SOLAR_PANEL.get(), BlockModelGenerators.plainVariant(solarPanel)));
+        blockModels.registerSimpleItemModel(ModBlocks.SOLAR_PANEL.get(), solarPanel);
+        MultiVariant arm = BlockModelGenerators.plainVariant(FusionFactions.id("block/fe_cable_side"));
+        blockModels.blockStateOutput.accept(MultiPartGenerator.multiPart(ModBlocks.FE_CABLE.get())
+                .with(BlockModelGenerators.plainVariant(FusionFactions.id("block/fe_cable_core")))
+                .with(BlockModelGenerators.condition().term(BlockStateProperties.NORTH, true), arm)
+                .with(BlockModelGenerators.condition().term(BlockStateProperties.EAST, true), arm.with(BlockModelGenerators.Y_ROT_90))
+                .with(BlockModelGenerators.condition().term(BlockStateProperties.SOUTH, true), arm.with(BlockModelGenerators.Y_ROT_180))
+                .with(BlockModelGenerators.condition().term(BlockStateProperties.WEST, true), arm.with(BlockModelGenerators.Y_ROT_270))
+                .with(BlockModelGenerators.condition().term(BlockStateProperties.UP, true), arm.with(BlockModelGenerators.X_ROT_270))
+                .with(BlockModelGenerators.condition().term(BlockStateProperties.DOWN, true), arm.with(BlockModelGenerators.X_ROT_90)));
+        blockModels.registerSimpleItemModel(ModBlocks.FE_CABLE.get(), FusionFactions.id("block/fe_cable_inventory"));
 
         // Missile silo: casing on every side; the controller has a panel on its sides; the hatch's top opens. Once
         // the silo is complete, each block shows the model for its part of it (tools/silo_textures.py).

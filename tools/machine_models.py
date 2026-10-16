@@ -5,6 +5,8 @@
   online (client.RadarDishRenderer draws block/radar_dish on its own). block/radar_inventory has both, for the item.
 - interceptor: a housing with a launch pod of four tubes on top.
 - interceptor rocket: a small rocket, drawn by client.InterceptorRocketRenderer.
+- solar panel: a 6 pixel high panel; FE cable: a core and one arm per connected side (multipart, see
+  client.datagen.ModModelProvider), and an inventory model with two arms.
 
 Block models can only use textures from the block atlas, so the parts are drawn with a copy of the weapon palette
 (tools/weapon_models.py) at textures/block/machine_palette.png. The textured faces come from
@@ -100,6 +102,27 @@ def rocket():
             *fins]
 
 
+def solar_panel():
+    side = ('side', (0, 10, 16, 16))
+    return [textured((0, 0, 0), (16, 6, 16), {**{s: side for s in SIDES}, 'up': ('top', (0, 0, 16, 16)), 'down': ('bottom', (0, 0, 16, 16))},
+                     cull=(*SIDES, 'down'))]
+
+
+# The cable's texture has a copper stripe in rows 7-8; long faces use rows 6-10 so the stripe runs along the cable.
+def cable_core():
+    return [textured((6, 6, 6), (10, 10, 10), {face: ('cable', (6, 6, 10, 10)) for face in FACES})]
+
+
+def cable_arm():
+    """The arm towards north (-z); the blockstate turns it for the other sides."""
+    element = textured((6, 6, 0), (10, 10, 6), {'north': ('cable', (6, 6, 10, 10)), 'south': ('cable', (6, 6, 10, 10)),
+                                                 'east': ('cable', (0, 6, 6, 10)), 'west': ('cable', (0, 6, 6, 10)),
+                                                 'up': ('cable', (0, 6, 6, 10)), 'down': ('cable', (0, 6, 6, 10))}, cull=('north',))
+    element['faces']['up']['rotation'] = 90
+    element['faces']['down']['rotation'] = 90
+    return [element]
+
+
 def write(path, elements, textures, parent=None):
     model = {'textures': {'palette': tex('machine_palette'), **textures}, 'elements': glowing(elements)}
     if parent:
@@ -120,7 +143,18 @@ def main():
           {'side': tex('interceptor_side'), 'top': tex('interceptor_top'), 'bottom': tex('interceptor_bottom'), 'pod': tex('interceptor_pod'),
            'pod_top': tex('interceptor_pod_top'), 'particle': tex('interceptor_top')}, 'minecraft:block/block')
     write(models / 'entity/interceptor_rocket.json', rocket(), {'particle': tex('machine_palette')})
-    print('wrote radar, interceptor and rocket models')
+    write(models / 'block/solar_panel.json', solar_panel(), {'side': tex('solar_panel_side'), 'top': tex('solar_panel_top'),
+                                                            'bottom': tex('solar_panel_bottom'), 'particle': tex('solar_panel_top')}, 'minecraft:block/block')
+    cable = {'cable': tex('fe_cable'), 'particle': tex('fe_cable')}
+    write(models / 'block/fe_cable_core.json', cable_core(), cable)
+    write(models / 'block/fe_cable_side.json', cable_arm(), cable)
+    south = cable_arm()
+    for element in south:
+        element['from'], element['to'] = [6, 6, 10], [10, 10, 16]
+        element['faces']['south']['cullface'] = 'south'
+        del element['faces']['north']['cullface']
+    write(models / 'block/fe_cable_inventory.json', cable_core() + cable_arm() + south, cable, 'minecraft:block/block')
+    print('wrote radar, interceptor, rocket, solar panel and cable models')
 
 
 if __name__ == '__main__':
