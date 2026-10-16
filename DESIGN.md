@@ -427,12 +427,14 @@ Anyone can use the blocks (D58). Anyone can also break them; they are as hard as
 - Its menu shows a scope (north up) with a blip per contact and a list: distance, direction and the seconds to impact for missiles coming down in range (red), or "passing". While it has contacts it gives a redstone signal (for alarms).
 - A radar placed without a player (e.g. by a command) has no owner and alerts nobody; its menu still works. The launch area is the same for every radar, so two radars can't narrow it down.
 - An EMP shuts it down like a launcher.
+- Look: a low housing with a scope screen and a dish on a mast. The dish turns while the radar is online (faster while it sees missiles) and stops without power or after an EMP, so attackers can see that an EMP worked.
 
 **Interceptor:**
 
 - Fires at descending missiles within 96 blocks with a clear line of sight, one shot every 2 s.
 - A shot is a fast homing projectile that deals 20 damage, so tier I–II missiles take one hit and tier III two. Interceptors skip a missile that rockets already on their way will bring down, so several interceptors share the work.
 - It works on its own; right click shows its state (ready, reloading, no power, shut down by an EMP).
+- Look: a low housing with a pod of four launch tubes. Its rockets are small white rockets with a red nose and a smoke trail.
 
 **Shooting down:** weapon bullets damage a descending missile like any entity (sniper 18, pistol 6 …). Its hitbox is the drawn missile, about 5.5 blocks long. A missile destroyed in the air bursts harmlessly and its flight ends; the player who brought it down sees "Missile shot down!".
 
@@ -591,6 +593,13 @@ The supply crate comes first because it is self-contained and proves out the sha
 - **Config:** `defineListAllowEmpty` for lists that may be empty. Two config options with the same leaf name share one translation key (`fusionfactions.configuration.<name>`).
 - **GameTests:** the framework's own test block sits at the test's origin; keep things that fall from the sky off that column.
 
+### Learned while building M10 (verified against 26.3 sources)
+
+- **Block models can only use block-atlas textures** (`textures/block/…`); a block model part with an item texture is rejected (`SimpleModelWrapper.findNonBlockSprites`). The block and item atlases are separate since 1.21.11.
+- **Models drawn by a renderer:** register them with `ModelEvent.RegisterStandalone` (`StandaloneModelKey` plus `SimpleUnbakedStandaloneModel.simpleModelWrapper(id)` for a `BlockStateModelPart`), get them with `ModelManager.getStandaloneModel(key)`, and draw them with `SubmitNodeCollector.submitBlockModel(pose, Sheets.cutoutBlockItemSheet(), parts, tints, light, overlay, outline)`. This works in entity and block entity renderers.
+- **Block entity renderers** have the same extract/submit split as entity renderers (`createRenderState`, `extractRenderState`, `submit`), register with `EntityRenderersEvent.RegisterRenderers.registerBlockEntityRenderer`. Animation state that the server doesn't need (the radar dish's angle) can live in a field of the block entity, updated by a client ticker.
+- **Blocks smaller than a cube** need `Properties.noOcclusion()` and a `getShape` override.
+
 ### Reference code
 
 - **Mekanism `26.3` branch** (MIT): <https://github.com/mekanism/Mekanism/tree/26.3>. Real-world code for block entities, menus and screens, energy, models and data generation on this exact version.
@@ -674,6 +683,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-09 | M8 details | Incendiary missiles: entities within the fire radius burn for 8 s; fire lands on about a third of the spots in the radius where it can stay, after the blast, and those spots go through the explosion event too. EMP missiles drain every FE handler in the radius from every side and break nothing; missile blocks hit by one show "shut down" with the seconds left. The silo is checked whenever its menu is open and before each launch, not on every block change. Recipes: each type's tier I is the explosive recipe with its payload (diamond, lightning rod, blaze powder), tier II adds a richer payload (netherite scrap, redstone blocks, blaze rods); silo casing (4) from iron and obsidian, hatch from casing, an iron trapdoor, iron and redstone, controller from casing, a missile launcher, barrels, a fusion core and a redstone block. A quarter of the legendary crates hold one tier III missile. Missile types are told apart by the band on the model and icon: dark, violet, cyan, orange. *Provisional.* | Agent |
 | 2026-10-08 | M7 details | The launcher needs open sky above it. Blast model: rays lose 1.3 strength per block of air and a quarter of a block's blast resistance per block (vanilla loses about 3.3 times the resistance), so explosive missiles reach about 5 / 7 / 9 blocks in the open and dig a few blocks into stone. Entity damage uses vanilla's formula over twice the reach; the damage type is in `minecraft:is_explosion`, so Blast Protection counts. Hard blocks: blast resistance 600 and up. Blasts break at most 1024 blocks per tick. The flying missile is drawn 3 times the item's size (about 5.5 blocks long) with a continuous smoke trail. Missiles stack to 4. Recipes: designator from a spyglass, redstone, iron and a fusion core; launcher from barrels, obsidian, iron blocks, a fusion core and a dispenser; explosive missile I from TNT, iron, gunpowder and a fusion core; II from missile I, TNT, diamonds and a fusion core. *Provisional.* | Agent |
 | 2026-10-16 | M9 done | Owner tested the radar, interceptor and shooting missiles down, and approved the milestone. Merged into `main`. | Owner |
+| 2026-10-16 | M10 models and textures | The launcher, plain silo, radar and interceptor textures get the bevelled look of the crates and the workbench. The radar and the interceptor become 3D models (`tools/machine_models.py`), smaller than a block; the radar's dish turns while it is online. Interceptor rockets are drawn as small rockets instead of only their trail. Missile, weapon and crate models are unchanged. *Provisional.* | Agent |
 
 ---
 
