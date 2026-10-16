@@ -75,14 +75,14 @@
     },
     {
       "from": [
-        6.9,
-        10.3,
+        6.88,
+        10.280000000000001,
         -10.42
       ],
       "to": [
-        9.1,
-        12.5,
-        -9.92
+        9.12,
+        12.52,
+        -9.82
       ],
       "faces": {
         "north": {
@@ -92,7 +92,8 @@
             3,
             15
           ],
-          "texture": "#palette"
+          "texture": "#palette",
+          "shade": false
         },
         "east": {
           "uv": [
@@ -101,7 +102,8 @@
             3,
             15
           ],
-          "texture": "#palette"
+          "texture": "#palette",
+          "shade": false
         },
         "south": {
           "uv": [
@@ -110,7 +112,8 @@
             3,
             15
           ],
-          "texture": "#palette"
+          "texture": "#palette",
+          "shade": false
         },
         "west": {
           "uv": [
@@ -119,7 +122,8 @@
             3,
             15
           ],
-          "texture": "#palette"
+          "texture": "#palette",
+          "shade": false
         },
         "up": {
           "uv": [
@@ -128,7 +132,8 @@
             3,
             15
           ],
-          "texture": "#palette"
+          "texture": "#palette",
+          "shade": false
         },
         "down": {
           "uv": [
@@ -137,20 +142,21 @@
             3,
             15
           ],
-          "texture": "#palette"
+          "texture": "#palette",
+          "shade": false
         }
       },
       "light_emission": 15
     },
     {
       "from": [
-        6.9,
-        10.3,
-        -8.32
+        6.88,
+        10.280000000000001,
+        -8.42
       ],
       "to": [
-        9.1,
-        12.5,
+        9.12,
+        12.52,
         -7.82
       ],
       "faces": {
@@ -161,7 +167,8 @@
             3,
             15
           ],
-          "texture": "#palette"
+          "texture": "#palette",
+          "shade": false
         },
         "east": {
           "uv": [
@@ -170,7 +177,8 @@
             3,
             15
           ],
-          "texture": "#palette"
+          "texture": "#palette",
+          "shade": false
         },
         "south": {
           "uv": [
@@ -179,7 +187,8 @@
             3,
             15
           ],
-          "texture": "#palette"
+          "texture": "#palette",
+          "shade": false
         },
         "west": {
           "uv": [
@@ -188,7 +197,8 @@
             3,
             15
           ],
-          "texture": "#palette"
+          "texture": "#palette",
+          "shade": false
         },
         "up": {
           "uv": [
@@ -197,7 +207,8 @@
             3,
             15
           ],
-          "texture": "#palette"
+          "texture": "#palette",
+          "shade": false
         },
         "down": {
           "uv": [
@@ -206,7 +217,8 @@
             3,
             15
           ],
-          "texture": "#palette"
+          "texture": "#palette",
+          "shade": false
         }
       },
       "light_emission": 15
@@ -278,6 +290,81 @@
           "texture": "#palette"
         }
       }
+    },
+    {
+      "from": [
+        7.666666666666667,
+        11.066666666666666,
+        -11.07
+      ],
+      "to": [
+        8.333333333333334,
+        11.733333333333334,
+        -11.02
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            13,
+            3,
+            15
+          ],
+          "texture": "#palette",
+          "shade": false
+        },
+        "east": {
+          "uv": [
+            1,
+            13,
+            3,
+            15
+          ],
+          "texture": "#palette",
+          "shade": false
+        },
+        "south": {
+          "uv": [
+            1,
+            13,
+            3,
+            15
+          ],
+          "texture": "#palette",
+          "shade": false
+        },
+        "west": {
+          "uv": [
+            1,
+            13,
+            3,
+            15
+          ],
+          "texture": "#palette",
+          "shade": false
+        },
+        "up": {
+          "uv": [
+            1,
+            13,
+            3,
+            15
+          ],
+          "texture": "#palette",
+          "shade": false
+        },
+        "down": {
+          "uv": [
+            1,
+            13,
+            3,
+            15
+          ],
+          "texture": "#palette",
+          "shade": false
+        }
+      },
+      "light_emission": 15
     }
   ],
   "display": {

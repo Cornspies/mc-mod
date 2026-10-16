@@ -55,6 +55,9 @@ def swatch_uv(index):
 def box(frm, to, color, glow=False, rotation=None):
     faces = {face: {'uv': swatch_uv(color), 'texture': '#palette'}
              for face in ('north', 'east', 'south', 'west', 'up', 'down')}
+    if glow:
+        for face in faces.values():
+            face['shade'] = False
     element = {'from': list(frm), 'to': list(to), 'faces': faces}
     if glow:
         element['light_emission'] = 15
@@ -85,22 +88,28 @@ def trigger(z):
             box((7.8, 7.5, z), (8.2, 8.6, z + 0.4), BLACK)]
 
 
-def iron_sights(y, z_front, z_rear, front_base=None):
-    """A front post and a rear notch, both topping out at y. Aiming lines the notch up with the post."""
+def iron_sights(y, z_front, z_rear, front_base=None, sight_color=CYAN):
+    """A front post and a rear notch, both topping out at y, with glowing night-sight dots."""
     base = y - 0.6 if front_base is None else front_base
     return [box((7.85, base, z_front), (8.15, y, z_front + 0.5), BLACK),
+            box((7.85, y - 0.25, z_front + 0.1), (8.15, y, z_front + 0.4), BRIGHT, glow=True),
             box((7.4, y - 0.6, z_rear), (7.8, y, z_rear + 0.6), BLACK),
             box((8.2, y - 0.6, z_rear), (8.6, y, z_rear + 0.6), BLACK),
-            box((7.8, y - 0.6, z_rear), (8.2, y - 0.3, z_rear + 0.6), BLACK)]
+            box((7.8, y - 0.6, z_rear), (8.2, y - 0.3, z_rear + 0.6), BLACK),
+            box((7.45, y - 0.35, z_rear + 0.35), (7.75, y - 0.05, z_rear + 0.55), sight_color, glow=True),
+            box((8.25, y - 0.35, z_rear + 0.35), (8.55, y - 0.05, z_rear + 0.55), sight_color, glow=True)]
 
 
 def pistol():
     return [box((7, 9.5, 2), (9, 12, 12), METAL),
             *iron_sights(13.0, 3, 10.2),
             box((7.25, 12, 3), (8.75, 12.4, 11), DARK),
+            box((7.85, 12.35, 4.5), (8.15, 12.45, 9.5), CYAN, glow=True),
             box((7.5, 10, 1), (8.5, 11, 2), BLACK),
+            box((7.4, 9.9, 1.1), (8.6, 11.1, 1.3), CYAN, glow=True),
             *side_strips(10.4, 11, 4, 10, 7, 9),
             box((7.2, 8.5, 3.5), (8.8, 9.5, 12), DARK),
+            box((7.1, 8.8, 5.5), (8.9, 9.2, 7.5), CYAN, glow=True),
             *grip(9.5, 12),
             *trigger(8)]
 
@@ -108,14 +117,17 @@ def pistol():
 def auto_pistol():
     rot = tilt(12, (8, 8.5, 12))
     return [box((7, 9.5, 2), (9, 12, 12), BLUE),
-            *iron_sights(13.0, 3, 10.2),
+            *iron_sights(13.0, 3, 10.2, sight_color=ORANGE),
             box((7.25, 12, 3), (8.75, 12.4, 11), DARK),
+            box((7.85, 12.35, 4.5), (8.15, 12.45, 9.5), ORANGE, glow=True),
             box((7.25, 9.75, 0), (8.75, 11.75, 2), DARK),
             box((7.15, 10.25, 0.6), (8.85, 11.25, 1.2), CYAN, glow=True),
-            *side_strips(10.4, 11, 4, 10, 7, 9, ORANGE, glow=False),
+            box((7.2, 11.65, 0.4), (8.8, 11.8, 1.2), ORANGE, glow=True),
+            *side_strips(10.4, 11, 4, 10, 7, 9, ORANGE, glow=True),
             box((7.2, 8.5, 3.5), (8.8, 9.5, 12), DARK),
             *grip(9.5, 12, color=DARK),
             box((7.35, 0.5, 9.8), (8.65, 3.6, 11.8), DARK, rotation=rot),
+            box((7.85, 0.8, 11.7), (8.15, 3.3, 11.85), ORANGE, glow=True, rotation=rot),
             *trigger(8)]
 
 
@@ -123,10 +135,14 @@ def smg():
     return [box((6.75, 8.5, 2), (9.25, 12, 14), METAL),
             *iron_sights(13.2, -2.5, 11.5, front_base=11.5),
             box((7, 12, 3), (9, 12.6, 13), DARK),
+            box((7.85, 12.55, 4.5), (8.15, 12.65, 11.5), CYAN, glow=True),
             box((7.25, 9, -3), (8.75, 11.5, 2), DARK),
+            box((7.2, 9.6, -1.8), (8.8, 10.9, -1.1), CYAN, glow=True),
+            box((7.2, 9.6, 0.2), (8.8, 10.9, 0.9), CYAN, glow=True),
             box((7.5, 9.5, -4), (8.5, 11, -3), BLACK),
             *side_strips(10, 11, 4, 12, 6.75, 9.25),
             box((7.3, 2.5, 4.5), (8.7, 8.5, 6.5), DARK, rotation=tilt(-8, (8, 8.5, 5.5))),
+            box((7.85, 3.2, 4.4), (8.15, 7.8, 4.55), CYAN, glow=True, rotation=tilt(-8, (8, 8.5, 5.5))),
             *grip(10, 12.2),
             *trigger(8.5),
             box((7.5, 9, 14), (8.5, 10.3, 19), DARK),
@@ -137,11 +153,15 @@ def shotgun():
     return [box((7.1, 10.5, -8), (8.9, 12.3, 8), DARK),
             *iron_sights(12.9, -7.4, 12.6, front_base=12.3),
             box((6.9, 10.3, -8.6), (9.1, 12.5, -7.6), BLACK),
+            box((7.0, 10.4, -8.6), (9.0, 12.4, -8.4), CYAN, glow=True),
             box((7.4, 9.0, -6), (8.6, 10.5, 8), METAL),
+            box((7.85, 8.95, -5.5), (8.15, 9.15, 7.5), CYAN, glow=True),
             box((6.9, 8.6, -4), (9.1, 10.6, 3), LEATHER),
             box((6.8, 8.8, -3), (9.2, 10.4, -2.4), CYAN, glow=True),
             box((6.8, 8.8, 1.4), (9.2, 10.4, 2.0), CYAN, glow=True),
             box((6.8, 8, 8), (9.2, 12.5, 14), METAL),
+            box((6.75, 9.8, 9.5), (6.85, 11.5, 12.5), CYAN, glow=True),
+            box((9.15, 9.8, 9.5), (9.25, 11.5, 12.5), CYAN, glow=True),
             *side_strips(9.5, 11.5, 9, 13, 6.8, 9.2),
             *trigger(11.5),
             box((7.2, 6.5, 14), (8.8, 10.5, 17), LEATHER, rotation=tilt(-8, (8, 10.5, 14))),
@@ -152,6 +172,8 @@ def shotgun():
 def sniper_rifle():
     parts = [box((7.5, 10.2, -16), (8.5, 11.2, 4), DARK),
              box((7.2, 9.9, -17.5), (8.8, 11.5, -15.5), BLACK),
+             box((7.15, 10.3, -17.2), (8.85, 11.1, -16.5), CYAN, glow=True),
+             box((7.85, 11.2, -15.5), (8.15, 11.4, 3.5), CYAN, glow=True),
              box((7.1, 9.5, -2), (8.9, 11.9, 5), METAL),
              box((6.9, 9, 5), (9.1, 12, 14), METAL),
              *side_strips(10, 11, 6, 13, 6.9, 9.1),
@@ -159,9 +181,11 @@ def sniper_rifle():
              box((7.1, 12.5, 1), (8.9, 14.3, 3), DARK),
              box((7.2, 12.6, 11), (8.8, 14.2, 13), DARK),
              box((7.3, 12.7, 0.9), (8.7, 14.1, 1), BRIGHT, glow=True),
+             box((7.3, 12.7, 12.95), (8.7, 14.1, 13.05), CYAN, glow=True),
              box((7.6, 12, 4), (8.4, 12.8, 5), DARK),
              box((7.6, 12, 9), (8.4, 12.8, 10), DARK),
              box((7.3, 6.5, 8), (8.7, 9, 11), DARK),
+             box((7.1, 6.8, 8.5), (8.9, 8.7, 10.5), CYAN, glow=True),
              *trigger(12),
              *grip(13, 15),
              box((7.2, 8, 14), (8.8, 11.8, 24), METAL),
@@ -180,8 +204,11 @@ def gatling_gun():
         dx, dy = 1.5 * math.cos(angle), 1.5 * math.sin(angle)
         parts.append(box((8 + dx - 0.4, 10 + dy - 0.4, -12), (8 + dx + 0.4, 10 + dy + 0.4, 6), DARK))
     parts += [box((7.3, 9.3, -12), (8.7, 10.7, 6), CYAN, glow=True),
+              box((7.5, 9.5, -12.0), (8.5, 10.5, -11.6), BRIGHT, glow=True),
               box((6, 8, -11), (10, 12, -10), METAL),
+              box((5.9, 7.9, -10.7), (10.1, 12.1, -10.3), CYAN, glow=True),
               box((6, 8, -4), (10, 12, -3), METAL),
+              box((5.9, 7.9, -3.7), (10.1, 12.1, -3.3), CYAN, glow=True),
               box((5.5, 7, 6), (10.5, 13, 15), METAL),
               *side_strips(9, 11, 8, 13, 5.5, 10.5),
               box((7.25, 13, 7), (8.75, 15.5, 8), BLACK),
@@ -190,6 +217,7 @@ def gatling_gun():
               *iron_sights(16.2, 7, 12),
               box((10.5, 5, 8), (13, 9, 13), DARK),
               box((10.5, 8.5, 8), (13, 9, 13), ORANGE),
+              box((10.4, 6.2, 8.2), (13.1, 7.2, 12.8), ORANGE, glow=True),
               box((6, 8, 15), (10, 12, 18), DARK),
               *grip(14, 16, top=7, bottom=2.5)]
     return parts
@@ -202,21 +230,23 @@ def suppressor(y, z_front, r, length, c):
     """Noise: a tube in front of the muzzle with two tier-colored rings."""
     z0 = z_front - length
     return [box((8 - r, y - r, z0), (8 + r, y + r, z_front), DARK),
-            box((8 - r - 0.1, y - r - 0.1, z0 + 0.6), (8 + r + 0.1, y + r + 0.1, z0 + 1.1), c, glow=True),
-            box((8 - r - 0.1, y - r - 0.1, z_front - 1.3), (8 + r + 0.1, y + r + 0.1, z_front - 0.8), c, glow=True),
-            box((8 - r / 2, y - r / 2, z0 - 0.05), (8 + r / 2, y + r / 2, z0), BLACK)]
+            box((8 - r - 0.12, y - r - 0.12, z0 + 0.6), (8 + r + 0.12, y + r + 0.12, z0 + 1.2), c, glow=True),
+            box((8 - r - 0.12, y - r - 0.12, z_front - 1.4), (8 + r + 0.12, y + r + 0.12, z_front - 0.8), c, glow=True),
+            box((8 - r / 2, y - r / 2, z0 - 0.05), (8 + r / 2, y + r / 2, z0), BLACK),
+            box((8 - r / 3, y - r / 3, z0 - 0.05), (8 + r / 3, y + r / 3, z0), c, glow=True)]
 
 
 def coils(x0, x1, y0, y1, zs, c):
     """Range: accelerator rings around a barrel section."""
-    return [box((x0 - 0.2, y0 - 0.2, z), (x1 + 0.2, y1 + 0.2, z + 0.5), c, glow=True) for z in zs]
+    return [box((x0 - 0.25, y0 - 0.25, z), (x1 + 0.25, y1 + 0.25, z + 0.6), c, glow=True) for z in zs]
 
 
 def stabilizer(y_bottom, z0, z1, c):
-    """Accuracy: a stabilizer under the barrel, with a laser lens at the front."""
+    """Accuracy: a stabilizer under the barrel, with a glowing laser lens at the front."""
     return [box((7.4, y_bottom - 1.2, z0), (8.6, y_bottom, z1), DARK),
             box((7.35, y_bottom - 0.9, z0 + 0.3), (8.65, y_bottom - 0.5, z1 - 0.3), c, glow=True),
-            box((7.7, y_bottom - 1.0, z0 - 0.05), (8.3, y_bottom - 0.4, z0), LENS)]
+            box((7.65, y_bottom - 1.05, z0 - 0.05), (8.35, y_bottom - 0.35, z0), c, glow=True),
+            box((7.85, y_bottom - 0.85, z0 - 0.05), (8.15, y_bottom - 0.55, z0), BRIGHT, glow=True)]
 
 
 # Sights (D40), mounted on the top rail at height y, centred at z. Each is a hollow frame you look
@@ -227,23 +257,27 @@ SIGHT_EYE = {1: 1.15, 2: 1.45, 3: 1.4}
 
 def sight(tier, y, z, c):
     if tier == 1:
-        # Red dot: a small open window on a low base.
+        # Red dot: a small open window on a low base with illuminated dot.
         return [box((7.4, y, z - 1.0), (8.6, y + 0.4, z + 1.0), BLACK),
                 box((7.25, y + 0.4, z - 0.3), (7.5, y + 2.0, z + 0.3), DARK),
                 box((8.5, y + 0.4, z - 0.3), (8.75, y + 2.0, z + 0.3), DARK),
                 box((7.25, y + 1.8, z - 0.3), (8.75, y + 2.05, z + 0.3), DARK),
                 box((7.2, y + 0.1, z - 0.8), (7.4, y + 0.35, z + 0.8), c, glow=True),
-                box((8.6, y + 0.1, z - 0.8), (8.8, y + 0.35, z + 0.8), c, glow=True)]
+                box((8.6, y + 0.1, z - 0.8), (8.8, y + 0.35, z + 0.8), c, glow=True),
+                box((7.85, y + 1.0, z - 0.15), (8.15, y + 1.3, z + 0.15), c, glow=True),
+                box((7.9, y + 1.05, z - 0.1), (8.1, y + 1.25, z + 0.1), BRIGHT, glow=True)]
     if tier == 2:
-        # Holographic: a wider box with a hood over a big window.
+        # Holographic: a wider box with a hood over a big window and glowing projector.
         return [box((7.2, y, z - 1.6), (8.8, y + 0.5, z + 1.6), BLACK),
                 box((7.05, y + 0.5, z - 1.4), (7.3, y + 2.4, z + 0.6), DARK),
                 box((8.7, y + 0.5, z - 1.4), (8.95, y + 2.4, z + 0.6), DARK),
                 box((7.05, y + 2.2, z - 1.5), (8.95, y + 2.45, z + 0.6), DARK),
                 box((7.3, y + 0.5, z + 0.6), (8.7, y + 0.9, z + 1.6), DARK),
                 box((7.0, y + 0.15, z - 1.4), (7.2, y + 0.4, z + 1.4), c, glow=True),
-                box((8.8, y + 0.15, z - 1.4), (9.0, y + 0.4, z + 1.4), c, glow=True)]
-    # 2x optic: a short square tube on two mounts.
+                box((8.8, y + 0.15, z - 1.4), (9.0, y + 0.4, z + 1.4), c, glow=True),
+                box((7.6, y + 0.5, z + 0.4), (8.4, y + 0.75, z + 1.4), c, glow=True),
+                box((7.8, y + 1.25, z - 0.4), (8.2, y + 1.65, z), c, glow=True)]
+    # 2x optic: a short square tube on two mounts with glowing optical lenses.
     return [box((7.45, y, z - 1.4), (8.55, y + 0.5, z - 0.8), BLACK),
             box((7.45, y, z + 0.8), (8.55, y + 0.5, z + 1.4), BLACK),
             box((7.15, y + 0.5, z - 2.0), (8.85, y + 0.75, z + 2.0), DARK),
@@ -251,14 +285,16 @@ def sight(tier, y, z, c):
             box((7.15, y + 0.75, z - 2.0), (7.4, y + 2.05, z + 2.0), DARK),
             box((8.6, y + 0.75, z - 2.0), (8.85, y + 2.05, z + 2.0), DARK),
             box((7.1, y + 1.2, z - 1.0), (7.15, y + 1.6, z + 1.0), c, glow=True),
-            box((8.85, y + 1.2, z - 1.0), (8.9, y + 1.6, z + 1.0), c, glow=True)]
+            box((8.85, y + 1.2, z - 1.0), (8.9, y + 1.6, z + 1.0), c, glow=True),
+            box((7.25, y + 0.85, z - 2.0), (8.75, y + 1.95, z - 1.9), c, glow=True),
+            box((7.25, y + 0.85, z + 1.9), (8.75, y + 1.95, z + 2.0), c, glow=True)]
 
 
 def pad(x0, x1, y0, y1, z, c, rotation=None):
     """Recoil: a rubber pad behind the stock."""
-    mid0, mid1 = y0 + (y1 - y0) * 0.4, y0 + (y1 - y0) * 0.6
+    mid0, mid1 = y0 + (y1 - y0) * 0.35, y0 + (y1 - y0) * 0.65
     return [box((x0, y0, z), (x1, y1, z + 1.0), LEATHER_DARK, rotation=rotation),
-            box((x0 - 0.05, mid0, z + 0.2), (x1 + 0.05, mid1, z + 0.8), c, glow=True, rotation=rotation)]
+            box((x0 - 0.08, mid0, z + 0.15), (x1 + 0.08, mid1, z + 0.85), c, glow=True, rotation=rotation)]
 
 
 def brace(c):
@@ -270,23 +306,23 @@ def magazine(x0, x1, y_bottom, depth, z0, z1, c, rotation=None):
     """Magazine: an extension below the magazine, ending in a black base plate."""
     y0 = y_bottom - depth
     return [box((x0, y0, z0), (x1, y_bottom, z1), DARK, rotation=rotation),
-            box((x0 - 0.05, y0 + depth / 2 - 0.25, z0 - 0.05), (x1 + 0.05, y0 + depth / 2 + 0.25, z1 + 0.05), c, glow=True, rotation=rotation),
+            box((x0 - 0.08, y0 + depth / 2 - 0.35, z0 - 0.08), (x1 + 0.08, y0 + depth / 2 + 0.35, z1 + 0.08), c, glow=True, rotation=rotation),
             box((x0 - 0.05, y0 - 0.3, z0 - 0.05), (x1 + 0.05, y0, z1 + 0.05), BLACK, rotation=rotation)]
 
 
 def coupler(x0, x1, y0, y1, z0, z1, c, rotation=None):
     """Reload: quick-release clips on both sides of the magazine."""
-    m0, m1 = y0 + (y1 - y0) * 0.35, y0 + (y1 - y0) * 0.65
+    m0, m1 = y0 + (y1 - y0) * 0.3, y0 + (y1 - y0) * 0.7
     return [box((x0 - 0.35, y0, z0), (x0, y1, z1), METAL, rotation=rotation),
             box((x1, y0, z0), (x1 + 0.35, y1, z1), METAL, rotation=rotation),
-            box((x0 - 0.45, m0, z0 + 0.2), (x0 - 0.35, m1, z1 - 0.2), c, glow=True, rotation=rotation),
-            box((x1 + 0.35, m0, z0 + 0.2), (x1 + 0.45, m1, z1 - 0.2), c, glow=True, rotation=rotation)]
+            box((x0 - 0.48, m0, z0 + 0.15), (x0 - 0.32, m1, z1 - 0.15), c, glow=True, rotation=rotation),
+            box((x1 + 0.32, m0, z0 + 0.15), (x1 + 0.48, m1, z1 - 0.15), c, glow=True, rotation=rotation)]
 
 
 def core(y0, y1, z0, z1, x0, x1, c):
     """Penetration: tier-colored core strips over the gun's cyan side strips."""
-    return [box((x0 - 0.25, y0 - 0.1, z0 - 0.2), (x0 - 0.1, y1 + 0.1, z1 + 0.2), c, glow=True),
-            box((x1 + 0.1, y0 - 0.1, z0 - 0.2), (x1 + 0.25, y1 + 0.1, z1 + 0.2), c, glow=True)]
+    return [box((x0 - 0.28, y0 - 0.15, z0 - 0.2), (x0 - 0.08, y1 + 0.15, z1 + 0.2), c, glow=True),
+            box((x1 + 0.08, y0 - 0.15, z0 - 0.2), (x1 + 0.28, y1 + 0.15, z1 + 0.2), c, glow=True)]
 
 
 PISTOL_GRIP = tilt(12, (8, 8.5, 12))
