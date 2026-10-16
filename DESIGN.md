@@ -504,14 +504,16 @@ Silicon comes from vanilla materials: the crusher grinds nether quartz into 2 si
 
 ### 6b.4 Machines (D70)
 
-Every machine is a block with a menu: input slots, an output slot, a progress arrow and an energy bar. It works only while powered. Hoppers and pipes insert from the top and sides and extract from the bottom. Machine recipes are datapack recipes (own recipe types, generated with `runData`), so servers can change them.
+Every machine is a block with a menu: input slots, an output slot, a progress arrow and an energy bar (50k FE buffer). It works only while powered (if `requirePower`), pausing without power. Hoppers and pipes insert from the top and sides and extract from the bottom; each input slot holds one kind of item, so a hopper can't fill every slot with the same thing. Machine recipes are datapack recipes (types `fusionfactions:crushing`, `mixing`, `fabricating`, `assembling`, generated with `runData`), so servers can change them.
+
+A recipe is shapeless: its inputs (with counts) can be in any input slots, and **nothing else may be in them**. So recipes differ in the kinds of items they take, not only in amounts (the barrel takes copper, the airframe doesn't). Changing the inputs to another recipe restarts the progress. The crusher, mixer and fabricator show their state in a readout; the assembler's 3×3 grid leaves no room, so its arrow's tooltip shows it.
 
 | Machine | Does | FE/t, ticks |
 |---|---|---|
-| Crusher | ore or raw item → 2 dusts; quartz → 2 silicon dust; sand → 1 silicon dust; aluminum ingot → aluminum dust | 20, 100 |
+| Crusher | raw bauxite, rare earth, lithium or their ore → 2 dusts; niter ore → 5 niter; quartz → 2 silicon dust; sand → 1 silicon dust (200 ticks); aluminum ingot → aluminum dust | 20, 100 |
 | Chemical mixer | 1 aluminum dust + 2 niter + 1 binder (slime ball or resin clump) → 2 rocket fuel | 40, 200 |
-| Circuit fabricator | silicon → 2 wafers; wafer + inputs → chip (below) | 60, 200 (wafers 100) |
-| Assembler | builds missiles, rockets, interceptor rockets, the missile blocks and the weapons' parts from 3×3 inputs, like a powered crafting table with its own recipes | 40, 100 |
+| Circuit fabricator | silicon → 2 wafers; wafer + inputs → chip (below) | 60, 200 (wafers 100, advanced chip 300, military chip 400 at 100 FE/t) |
+| Assembler | builds missiles, rockets, interceptor rockets, the missile blocks and the weapons' parts from 3×3 inputs, like a powered crafting table with its own recipes | 40, 100 (missile blocks 200–300; missiles 80 FE/t, 200 / 400 ticks by tier) |
 
 ### 6b.5 Materials (D71, D72)
 
@@ -519,6 +521,7 @@ Every machine is a block with a menu: input slots, an output slot, a progress ar
 |---|---|---|
 | Aluminum ingot / dust | bauxite, see 6b.2 | airframes, weapon barrels and grips, fuel |
 | Rocket fuel | chemical mixer | missiles, rockets, interceptor rockets; also generator fuel |
+| Silicon | silicon dust, smelted (`c:silicon`) | wafers |
 | Silicon wafer | circuit fabricator | chips |
 | Basic chip | fabricator: wafer + copper ingot + 2 redstone | tier I missiles, interceptor rockets, guided rockets, fusion core, designator |
 | Advanced chip | fabricator: basic chip + wafer + gold ingot + rare earth dust | tier II missiles, radar, launcher, handheld radar, implant |
@@ -528,9 +531,10 @@ Every machine is a block with a menu: input slots, an output slot, a progress ar
 
 **Recipe changes (D72):**
 
-- **Missiles:** built in the assembler from airframes, rocket fuel, the tier's chip and the type's payload (TNT, diamond, lightning rod, blaze powder as now). Tier III stays crate-only (D57) unless the owner decides otherwise.
-- **Missile blocks:** launcher, silo casing / hatch / controller, radar, interceptor and designator need aluminum and chips instead of the fusion core.
-- **Weapons, every part:** barrel = aluminum + iron; grip = aluminum + leather; fusion core = basic chip + amethyst + aluminum; ammo (8) = copper ingot + niter + redstone, shapeless (niter replaces the gunpowder). Weapon recipes themselves stay as they are (built from the parts).
+- **Missiles:** built in the assembler. Tier I: an airframe, 2 rocket fuel, a basic chip and the payload; tier II: 2 airframes, 4 rocket fuel, an advanced chip and a richer payload. Payloads I / II: explosive 2 / 4 TNT; breaching a diamond and TNT / 2 netherite scrap and 2 TNT; EMP 2 lightning rods / 2 lightning rods and 2 redstone blocks; incendiary 4 blaze powder and TNT / 4 blaze rods and 2 TNT. Tier III stays crate-only (D57) unless the owner decides otherwise.
+- **Missile blocks** (assembler): designator = spyglass, basic chip, 2 aluminum, redstone; launcher = 4 aluminum, 2 obsidian, an iron block, an advanced chip, a dispenser; 8 silo casing = 4 obsidian, 4 aluminum, an iron block; silo hatch = 2 casing, an iron trapdoor, 2 aluminum, redstone; silo controller = 2 casing, a launcher, a military chip, a redstone block; radar = 4 aluminum, a compass, 2 amethyst, an advanced chip, a redstone block; interceptor = 4 aluminum, 2 firework rockets, a dispenser, an advanced chip.
+- **Machines** (crafting table): crusher from iron, a grindstone, copper and a piston (no aluminum, so it can come first); chemical mixer from aluminum, glass, a cauldron, iron and a piston; circuit fabricator from aluminum, redstone, comparators, a diamond and iron; assembler from aluminum, pistons, a crafting table, iron and a redstone block.
+- **Weapons, every part** (assembler): barrel = 2 aluminum + iron + copper; grip = 2 leather + aluminum; fusion core = basic chip + amethyst + aluminum; ammo (8) = copper ingot + niter + redstone, shapeless (niter replaces the gunpowder). Weapon recipes themselves stay as they are (built from the parts).
 
 ### 6b.6 Rocket launcher (D61–D65)
 
@@ -625,7 +629,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 |---|---|
 | **M11 Resources** ✅ *done 2026-10-16* | Bauxite, niter, rare earth and lithium ores (stone and deepslate), raw items, dusts, ingots, world generation with biome limits, `c:` tags, smelting, ore textures, game tests. |
 | **M12 Power** ✅ *done 2026-10-16* | Combustion generator, solar panel, FE cable network, charging station, `requirePower` default true, game tests. |
-| **M13 Machines and materials** | Crusher, chemical mixer, circuit fabricator, assembler with their recipe types; silicon, wafers, chips I–III, rocket fuel, battery, airframe; new recipes for missiles, missile blocks and weapon parts and ammo (D72). |
+| **M13 Machines and materials** ✅ *implemented, waiting for the owner's test* | Crusher, chemical mixer, circuit fabricator, assembler with their recipe types; silicon, wafers, chips I–III, rocket fuel, battery, airframe; new recipes for missiles, missile blocks and weapon parts and ammo (D72). |
 | **M14 Rocket launcher** | Rocket launcher weapon and model, rockets, lock-on, guided rocket, tactical helmet with implant, handheld radar, lock warning HUD and sounds. |
 | **M15 Integration & release** | Interceptor ammo and menu, 64×64 missile icons, crate loot, `docs/SERVER.md`, two-player playtest, release v0.3.0. |
 
@@ -743,6 +747,12 @@ The supply crate comes first because it is self-contained and proves out the sha
 
 
 
+### Learned while building M13 (verified against 26.3 sources)
+
+- **Recipes:** `RecipeSerializer` is a record of a `MapCodec` and a `StreamCodec`; `RecipeType.simple(id)` makes a type (register both with `DeferredRegister`). A recipe returns an `ItemStackTemplate` result (`create()` makes the stack), a `PlacementInfo` (`NOT_PLACEABLE`) and a `RecipeBookCategory`, which is a registry entry (`Registries.RECIPE_BOOK_CATEGORY`). Machines look recipes up with `RecipeManager.createCheck(type)`; `ServerLevel.recipeAccess()` is the recipe manager.
+- NeoForge's `SizedIngredient` (`NESTED_CODEC`: `{"ingredient": …, "count": n}`) is an ingredient with a count. `RecipeOutput.accept(key, recipe, null)` saves a recipe without an unlock advancement.
+- The data run deletes generated files it no longer writes (old crafting recipes vanish when they move to a machine).
+
 ### Reference code
 
 - **Mekanism `26.3` branch** (MIT): <https://github.com/mekanism/Mekanism/tree/26.3>. Real-world code for block entities, menus and screens, energy, models and data generation on this exact version.
@@ -834,6 +844,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-16 | M11 done | Owner tested the ores, drops and amounts and approved them. | Owner |
 | 2026-10-16 | M12 details | Generator buffer 100k FE, pauses when full, pushes 2000 FE/t; solar panel 6 px high, half output in rain; cable networks split FE evenly and never send it back; charging station buffer 50k; recipes as in §6b.3; the power blocks share a machine base (menu, readout, energy gauge) that M13's machines will use. Game tests run with the dev config, so they now charge the blocks they fire and pass with `requirePower` on or off. *Provisional.* | Agent |
 | 2026-10-16 | M12 done | Owner tested generators, cables, the solar panel and power requirements, and approved them. | Owner |
+| 2026-10-16 | M13 details | Recipes and times as in §6b.4–§6b.5. A machine recipe must use every item in the input slots, so recipes are told apart by item kinds (the barrel gained a copper ingot to differ from the airframe). Rocket fuel burns 6400 ticks in furnaces and generators. Machines have a 50k FE buffer and pause without power. All four machines share one block entity and one screen, laid out per machine. *Provisional.* | Agent |
 
 ---
 

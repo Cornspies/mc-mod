@@ -104,6 +104,22 @@ New in the upcoming 0.3.0. Generators, cables and the charging station.
 | `cableThroughput` | `2000` | FE per tick one network of connected cables carries in total. |
 | `chargingRate` | `500` | FE per tick the charging station puts into the item in its slot. |
 
+### Machines and recipes
+
+New in the upcoming 0.3.0. Missiles, the missile blocks and the weapons' parts (barrel, grip, fusion core) are no longer crafted: they come out of four machines that need power (crusher, chemical mixer, circuit fabricator, assembler). Their recipes are datapack recipes of the types `fusionfactions:crushing`, `mixing`, `fabricating` and `assembling`; replace or add them with a datapack in `data/<namespace>/recipe/`, for example:
+
+```json
+{
+  "type": "fusionfactions:crushing",
+  "inputs": [{ "ingredient": "fusionfactions:raw_bauxite", "count": 1 }],
+  "result": { "id": "fusionfactions:aluminum_dust", "count": 2 },
+  "ticks": 100,
+  "energy_per_tick": 20
+}
+```
+
+A recipe matches when the machine's input slots hold at least its inputs and nothing else. `ticks` and `energy_per_tick` are optional (each machine has a default).
+
 ### Ores
 
 New in the upcoming 0.3.0 (Phase 3, in development). Four ores generate in the overworld:
@@ -159,4 +175,5 @@ Permission level 2 (operators).
 - Weapon damage counts as the shooter's attack, so vanilla team friendly-fire settings and PvP-protection mods apply.
 - Missiles: mark a target with the target designator (right click a block, up to 256 blocks away), put it and a missile into a missile launcher under open sky, and press Launch. Anyone can use any launcher. Explosive missiles blow craters, breaching missiles also break obsidian, EMP missiles drain power and shut down launchers, radars and interceptors, incendiary missiles set fires.
 - Power: combustion generators burn anything a furnace burns, solar panels work by day. FE cables carry the power to launchers, radars, interceptors and machines, split evenly between them. Any mod's FE cables work too.
+- Production: ores go through the crusher (two dusts each), quartz becomes silicon, the circuit fabricator makes wafers and the three chips, the chemical mixer makes rocket fuel (which also burns well in generators), and the assembler builds airframes, batteries, weapon parts, missile blocks and missiles. Ammo is copper, niter and redstone at a crafting table.
 - Defense: a radar alerts your `/team` in chat when a missile comes into its range, with the area it was launched from; its dish stops turning while it is shut down. Interceptors shoot down missiles coming down near them (right click one to see whether it's ready), and a missile on its way down can be shot with any weapon.
