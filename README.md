@@ -1,6 +1,6 @@
 # Fusion Factions
 
-A NeoForge mod for Minecraft 26.3 that adds sci-fi weapons, weapon upgrades and falling supply crates for faction PvP servers.
+A NeoForge mod for Minecraft 26.3 that adds sci-fi weapons, weapon upgrades, falling supply crates and missiles for faction PvP servers.
 
 ## Features
 
@@ -8,6 +8,9 @@ A NeoForge mod for Minecraft 26.3 that adds sci-fi weapons, weapon upgrades and 
 - **Aim down sights** on every weapon. The sniper has a 3× / 6× scope.
 - **Weapon workbench:** install upgrade parts in three tiers: penetration, magazine, suppressor, recoil, reload speed, accuracy, range and sights (red dot, holographic, 2× optic). Installed parts show on the gun.
 - **Supply crates** fall from the sky on a timer, announced to the whole server, in three rarities. They hold ammo, weapon parts, upgrade parts and weapons; the sniper rifle and gatling gun only come from crates.
+- **Missiles** for raiding other teams' bases: explosive, breaching (breaks obsidian), EMP and incendiary, in three tiers. Mark the target with a designator and fire from a missile launcher (tiers I–II) or a missile silo you build (tier III, from legendary crates). Launches can be limited to raid windows.
+- **Counterplay:** a radar alerts your team about incoming missiles and where they were launched from, interceptors shoot them down, and players can shoot them out of the sky.
+- Missile blocks can run on FE from Mekanism or other tech mods (off by default).
 
 ## Controls
 

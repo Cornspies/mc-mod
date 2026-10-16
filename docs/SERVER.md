@@ -1,6 +1,6 @@
 # Fusion Factions: server guide
 
-For server admins running Fusion Factions 0.1.0 on Minecraft 26.3 with NeoForge 26.3.0.52-beta.
+For server admins running Fusion Factions 0.2.0 on Minecraft 26.3 with NeoForge 26.3.0.52-beta.
 
 Install the mod jar on the server **and** on every client. It has no other mod dependencies.
 
@@ -55,13 +55,13 @@ Reductions are capped at 95%.
 
 ### Missiles: `[missiles]`
 
-New in the upcoming 0.2.0 (Phase 2, in development).
+New in 0.2.0. A config file from 0.1.0 gets this section with its defaults when the server first starts with 0.2.0.
 
 | Option | Default | Meaning |
 |---|---|---|
 | `raidWindows` | `[]` | When missiles can be launched. Entries like `"SAT 18:00-23:00"`, `"MON-FRI 20:00-22:00"`, `"SAT,SUN 14:00-02:00"` or `"DAILY 20:00-22:00"`. An end before the start runs past midnight. Empty: any time. Missiles already in the air still land. |
 | `raidTimeZone` | `""` | Time zone for the raid windows, e.g. `Europe/Berlin`. Empty: the server's time zone. |
-| `requirePower` | `false` | Whether launchers need FE from another mod (Mekanism or any mod with FE cables). Minecraft itself has no power source, so leave it off without such a mod. |
+| `requirePower` | `false` | Whether launchers, silos, radars and interceptors need FE from another mod (Mekanism or any mod with FE cables). Minecraft itself has no power source, so leave it off without such a mod. |
 | `range` | `[500, 1000, 2000]` | Maximum distance to the target for missile tiers I, II and III, in blocks. |
 | `minRange` | `64` | Minimum distance to the target, in blocks. |
 | `flightSpeed` | `25.0` | Blocks per second on the way to the target. Flight time is this plus a 3 s climb and a 4 s descent. |
@@ -73,7 +73,7 @@ New in the upcoming 0.2.0 (Phase 2, in development).
 | `siloCooldownSeconds` | `120` | Time a missile silo needs between launches. |
 | `breachingPower` | `[4, 5, 6]` | Blast power of breaching missiles by tier. They also break hard blocks like obsidian. |
 | `empRadius` | `[8, 12, 16]` | Radius in which EMP missiles drain all FE, by tier. |
-| `empDisableSeconds` | `[30, 60, 90]` | How long EMP missiles shut down missile launchers and silos in their radius, by tier. |
+| `empDisableSeconds` | `[30, 60, 90]` | How long EMP missiles shut down missile launchers, silos, radars and interceptors in their radius, by tier. |
 | `incendiaryPower` | `[2, 3, 4]` | Blast power of incendiary missiles by tier. |
 | `incendiaryFireRadius` | `[6, 8, 10]` | Radius incendiary missiles set on fire, by tier. |
 | `missileHealth` | `[10, 20, 40]` | Health of a missile on its way down, by tier. Bullets and interceptors damage it. |
@@ -131,4 +131,5 @@ Permission level 2 (operators).
 - **Left click** fires, **right click** (hold) aims down sights, **R** reloads, **Z** or the mouse wheel switches the sniper's zoom while scoped. Keys can be changed under Controls → Fusion Factions.
 - With a gun in hand, left click doesn't hit or break blocks.
 - Weapon damage counts as the shooter's attack, so vanilla team friendly-fire settings and PvP-protection mods apply.
-- Missiles: mark a target with the target designator (right click a block, up to 256 blocks away), put it and a missile into a missile launcher under open sky, and press Launch. Anyone can use any launcher. Explosive missiles blow craters, breaching missiles also break obsidian, EMP missiles drain power and shut down launchers, incendiary missiles set fires.
+- Missiles: mark a target with the target designator (right click a block, up to 256 blocks away), put it and a missile into a missile launcher under open sky, and press Launch. Anyone can use any launcher. Explosive missiles blow craters, breaching missiles also break obsidian, EMP missiles drain power and shut down launchers, radars and interceptors, incendiary missiles set fires.
+- Defense: a radar alerts your `/team` in chat when a missile comes into its range, with the area it was launched from; its dish stops turning while it is shut down. Interceptors shoot down missiles coming down near them (right click one to see whether it's ready), and a missile on its way down can be shot with any weapon.
