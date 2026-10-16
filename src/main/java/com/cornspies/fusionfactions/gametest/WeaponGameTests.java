@@ -29,9 +29,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.PositionPath;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PositionPath;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.pig.Pig;
 import net.minecraft.world.entity.monster.zombie.Husk;
@@ -98,6 +98,7 @@ public final class WeaponGameTests {
             event.registerTest(function.getId(), new FunctionGameTestInstance(function.key(), data));
         }
         MissileGameTests.register(event, environment);
+        MachineGameTests.register(event, environment);
     }
 
     // One shot from the pistol hurts a pig 5.5 blocks away, with the right damage attribution.
@@ -361,7 +362,7 @@ public final class WeaponGameTests {
     // config allows it (D26; off by default).
     private static void weaponRecipes(GameTestHelper helper) {
         RecipeManager recipes = helper.getLevel().getServer().getRecipeManager();
-        for (String name : List.of("barrel", "fusion_core", "grip", "ammo", "pistol", "auto_pistol", "smg", "shotgun")) {
+        for (String name : List.of("assembling/barrel", "assembling/fusion_core", "assembling/grip", "ammo", "pistol", "auto_pistol", "smg", "shotgun")) {
             helper.assertTrue(recipes.byKey(ResourceKey.create(Registries.RECIPE, FusionFactions.id(name))).isPresent(), "missing recipe " + name);
         }
         boolean heavyAllowed = StartupConfig.HEAVY_WEAPON_RECIPES.getAsBoolean();
