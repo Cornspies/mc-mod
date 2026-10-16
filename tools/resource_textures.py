@@ -3,7 +3,8 @@
 
 - an overlay per ore (bauxite, niter, rare earth, lithium), drawn over vanilla's stone or deepslate texture: the ore
   models reference those textures, they are not copied
-- the material icons: raw items, niter, ingots and dusts
+- the material icons: raw items, niter, ingots and dusts, and what the machines make (DESIGN.md §6b.5): silicon,
+  wafers, the three chips, rocket fuel, the battery and the airframe
 
 Run from the repository root:  python3 tools/resource_textures.py
 """
@@ -20,6 +21,13 @@ PALETTES = {
     'niter': {'o': (70, 70, 68), 'd': (168, 168, 162), 'm': (204, 204, 198), 'l': (234, 234, 228), 'h': (255, 255, 250), 'p': (190, 200, 210)},
     'rare_earth': {'o': (90, 62, 20), 'd': (160, 115, 35), 'm': (205, 155, 45), 'l': (235, 195, 80), 'h': (255, 230, 140), 'p': (150, 80, 190)},
     'lithium': {'o': (105, 76, 100), 'd': (175, 130, 165), 'm': (210, 165, 200), 'l': (235, 200, 228), 'h': (252, 232, 248), 'p': (160, 210, 230)},
+    'silicon': {'o': (35, 38, 48), 'd': (70, 76, 92), 'm': (100, 108, 128), 'l': (140, 150, 172), 'h': (190, 200, 220), 'p': (120, 130, 200)},
+    'wafer': {'o': (30, 34, 48), 'd': (50, 60, 90), 'm': (70, 85, 130), 'l': (110, 130, 190), 'h': (180, 200, 240)},
+    'fuel': {'o': (40, 32, 28), 'h': (200, 200, 205), 'l': (170, 170, 175), 'm': (110, 110, 118), 'd': (70, 70, 78), 'x': (150, 150, 158),
+             'y': (230, 140, 40)},
+    'battery': {'o': (30, 30, 34), 'h': (200, 200, 205), 'l': (150, 150, 158), 'm': (90, 90, 98), 'd': (55, 55, 62), 'x': (175, 175, 180),
+                'y': (230, 160, 210)},
+    'airframe': {'o': (60, 66, 78), 'd': (130, 140, 155), 'm': (170, 180, 195), 'l': (205, 212, 224), 'h': (240, 244, 250), 'x': (110, 118, 132)},
     'aluminum': {'o': (60, 66, 78), 'd': (130, 140, 155), 'm': (170, 180, 195), 'l': (205, 212, 224), 'h': (240, 244, 250), 'p': (150, 160, 175)},
 }
 
@@ -179,7 +187,113 @@ CRYSTALS = [
     '................',
 ]
 
+# A chip: a black die on a green board with gold pins, marked in its tier's color (blue, orange, red).
+CHIP = [
+    '................',
+    '................',
+    '...p.p.p.p.p....',
+    '..oooooooooooo..',
+    '..otttttttttto..',
+    '.pobkkkkkkkkbop.',
+    '..obkhkkkkkkbo..',
+    '.pobkkkkkkkkbop.',
+    '..obkkkkkkkkbo..',
+    '.pobkkkkkkkkbop.',
+    '..obbbbbbbttbo..',
+    '..oooooooooooo..',
+    '...p.p.p.p.p....',
+    '................',
+    '................',
+    '................',
+]
+
+CHIP_TIERS = {'basic_chip': (70, 120, 255), 'advanced_chip': (240, 150, 30), 'military_chip': (230, 50, 40)}
+
+WAFER = [
+    '................',
+    '................',
+    '.....oooooo.....',
+    '....ohhllllo....',
+    '...ohlmmmmllo...',
+    '..ohlmlmlmlmlo..',
+    '..olmmmmmmmmmo..',
+    '..olmlmlmlmlmo..',
+    '..ommmmmmmmmmo..',
+    '..olmlmlmlmlmo..',
+    '..ommmmmmmmmdo..',
+    '...odmmmmmmdo...',
+    '....oddddddo....',
+    '.....oooooo.....',
+    '................',
+    '................',
+]
+
+# A canister of solid propellant with a hazard label.
+FUEL = [
+    '................',
+    '................',
+    '.....oooooo.....',
+    '....ohhhhllo....',
+    '....oxxxxxxo....',
+    '....ommmmmdo....',
+    '....ommmmmdo....',
+    '....oyyyyyyo....',
+    '....oyyyyyyo....',
+    '....ommmmmdo....',
+    '....ommmmmdo....',
+    '....ommmmmdo....',
+    '....oxxxxxxo....',
+    '....oddddddo....',
+    '.....oooooo.....',
+    '................',
+]
+
+BATTERY = [
+    '................',
+    '.......oo.......',
+    '......oxxo......',
+    '.....oooooo.....',
+    '.....ohllmo.....',
+    '.....oyyyyo.....',
+    '.....oyyyyo.....',
+    '.....ohllmo.....',
+    '.....olmmdo.....',
+    '.....olmmdo.....',
+    '.....olmmdo.....',
+    '.....olmmdo.....',
+    '.....oddddo.....',
+    '......oooo......',
+    '................',
+    '................',
+]
+
+# A ribbed section of fuselage.
+AIRFRAME = [
+    '................',
+    '................',
+    '................',
+    '................',
+    '..oooooooooooo..',
+    '.ohhhhhhhhhhhho.',
+    '.olxllxllxllxlo.',
+    '.olxllxllxllxlo.',
+    '.omxmmxmmxmmxmo.',
+    '.odxddxddxddxdo.',
+    '..oooooooooooo..',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+]
+
 ITEMS = {
+    'silicon_dust': (DUST, 'silicon'),
+    'silicon': (RAW, 'silicon'),
+    'silicon_wafer': (WAFER, 'wafer'),
+    'rocket_fuel': (FUEL, 'fuel'),
+    'battery': (BATTERY, 'battery'),
+    'airframe': (AIRFRAME, 'airframe'),
     'raw_bauxite': (RAW, 'bauxite'),
     'raw_rare_earth': (RAW, 'rare_earth'),
     'raw_lithium': (RAW, 'lithium'),
@@ -219,6 +333,9 @@ def main():
             path.write_text(json.dumps(ore_model(base, overlay), indent=2) + '\n')
     for name, (rows, palette) in ITEMS.items():
         write_png(ASSETS / f'textures/item/{name}.png', 16, 16, pixels(rows, PALETTES[palette]))
+    for name, tier_color in CHIP_TIERS.items():
+        chip = {'o': (20, 40, 24), 'b': (40, 110, 60), 'k': (28, 28, 32), 'h': (80, 80, 90), 'p': (220, 180, 70), 't': tier_color}
+        write_png(ASSETS / f'textures/item/{name}.png', 16, 16, pixels(CHIP, chip))
     print('wrote resource textures and ore models')
 
 

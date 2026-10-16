@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "fusionfactions:block/chemical_mixer"
+  }
+}

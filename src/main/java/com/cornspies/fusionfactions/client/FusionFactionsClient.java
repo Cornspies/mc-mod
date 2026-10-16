@@ -2,22 +2,26 @@ package com.cornspies.fusionfactions.client;
 
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.client.datagen.DataGenerators;
+import com.cornspies.fusionfactions.industry.Machine;
+import com.cornspies.fusionfactions.power.MachineMenu;
 import com.cornspies.fusionfactions.registry.ModBlockEntityTypes;
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
 import com.cornspies.fusionfactions.registry.ModMenuTypes;
 
 import net.minecraft.client.renderer.entity.NoopRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
-import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.model.standalone.SimpleUnbakedStandaloneModel;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -70,6 +74,10 @@ public class FusionFactionsClient {
         event.register(ModMenuTypes.RADAR.get(), RadarScreen::new);
         event.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         event.register(ModMenuTypes.CHARGING_STATION.get(), ChargingStationScreen::new);
+        for (Machine machine : Machine.values()) {
+            event.register(ModMenuTypes.machine(machine),
+                    (MachineMenu menu, Inventory inventory, Component title) -> new ProcessingMachineScreen(machine, menu, inventory, title));
+        }
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {

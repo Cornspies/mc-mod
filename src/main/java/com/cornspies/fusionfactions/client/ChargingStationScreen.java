@@ -12,8 +12,8 @@ import net.minecraft.world.entity.player.Inventory;
 // Charging station screen: the bar under the slot shows the item's charge.
 public class ChargingStationScreen extends MachineScreen {
     // Inside of the charge bar (CHARGE_BAR in tools/power_textures.py).
-    private static final int BAR_X0 = 63;
-    private static final int BAR_X1 = 115;
+    private static final int BAR_X0 = 72;
+    private static final int BAR_X1 = 125;
     private static final int BAR_Y0 = 58;
     private static final int BAR_Y1 = 62;
     private static final int CAPACITY = 50_000;
@@ -60,7 +60,6 @@ public class ChargingStationScreen extends MachineScreen {
         if (charge >= 0) {
             lines.add(new Line(Component.translatable("fusionfactions.charging.item", charge / 10), TEXT));
         }
-        lines.add(new Line(Component.translatable("fusionfactions.machine.energy", this.energyPerMille() / 10), TEXT));
         return lines;
     }
 }

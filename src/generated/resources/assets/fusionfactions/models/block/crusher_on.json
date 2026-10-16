@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "fusionfactions:block/crusher_front_on",
+    "side": "fusionfactions:block/crusher_side",
+    "top": "fusionfactions:block/crusher_top"
+  }
+}

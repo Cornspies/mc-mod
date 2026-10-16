@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.client.UpgradeTierProperty;
+import com.cornspies.fusionfactions.industry.Machine;
 import com.cornspies.fusionfactions.missile.MissileType;
 import com.cornspies.fusionfactions.missile.SiloHatchBlock;
 import com.cornspies.fusionfactions.missile.SiloStructure;
@@ -17,17 +18,16 @@ import com.cornspies.fusionfactions.weapon.upgrade.WeaponUpgrades;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.MultiVariant;
+import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.ItemModelUtils;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
-import net.minecraft.client.data.models.MultiVariant;
-import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
-import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.data.models.model.TexturedModel;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.client.renderer.item.EmptyModel;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.RangeSelectItemModel;
@@ -35,6 +35,7 @@ import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public class ModModelProvider extends ModelProvider {
     public ModModelProvider(PackOutput output) {
@@ -69,9 +70,14 @@ public class ModModelProvider extends ModelProvider {
                 BlockModelGenerators.plainVariant(interceptor)));
         blockModels.registerSimpleItemModel(ModBlocks.INTERCEPTOR.get(), interceptor);
 
-        // Power (D67): generator and charging station face the player and light their front while they work; the solar
-        // panel and the cable use models from tools/machine_models.py, the cable one arm per connected side.
-        for (Block machine : List.of(ModBlocks.COMBUSTION_GENERATOR.get(), ModBlocks.CHARGING_STATION.get())) {
+        // Power and machines (D67, D70): generator, charging station and the processing machines face the player and light
+        // their front while they work; the solar panel and the cable use models from tools/machine_models.py, the cable
+        // one arm per connected side.
+        List<Block> machines = new ArrayList<>(List.of(ModBlocks.COMBUSTION_GENERATOR.get(), ModBlocks.CHARGING_STATION.get()));
+        for (Machine machine : Machine.values()) {
+            machines.add(ModBlocks.machine(machine));
+        }
+        for (Block machine : machines) {
             blockModels.createFurnace(machine, TexturedModel.ORIENTABLE_ONLY_TOP);
             blockModels.registerSimpleItemModel(machine, ModelLocationUtils.getModelLocation(machine));
         }

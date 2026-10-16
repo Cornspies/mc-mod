@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
 // Combustion generator screen: the flame above the fuel slot burns down with the current fuel.
 public class CombustionGeneratorScreen extends MachineScreen {
     // The flame outline in the panel and the lit flame on the sheet (tools/power_textures.py).
-    private static final int FLAME_X = 81;
+    private static final int FLAME_X = 90;
     private static final int FLAME_Y = 35;
     private static final int FLAME_SIZE = 14;
     private static final int CAPACITY = 100_000;
@@ -49,7 +49,6 @@ public class CombustionGeneratorScreen extends MachineScreen {
         Line status = output > 0 ? new Line(Component.translatable("fusionfactions.generator.burning"), TEXT)
                 : this.menu.data(0) > 0 ? new Line(Component.translatable("fusionfactions.generator.full"), WARNING)
                 : new Line(Component.translatable("fusionfactions.generator.no_fuel"), DIM);
-        return List.of(status, new Line(Component.translatable("fusionfactions.machine.rate", output), output > 0 ? TEXT : DIM),
-                new Line(Component.translatable("fusionfactions.machine.energy", this.energyPerMille() / 10), TEXT));
+        return List.of(status, new Line(Component.translatable("fusionfactions.machine.rate", output), output > 0 ? TEXT : DIM));
     }
 }

@@ -34,7 +34,7 @@ public class ChargingStationBlockEntity extends MachineBlockEntity {
     public static final int SLOT = 0;
     private static final int CAPACITY = 50_000;
     private static final int MAX_INSERT = 2_000;
-    public static final List<MachineMenu.SlotSpec> SLOTS = List.of(new MachineMenu.SlotSpec(80, 35, true));
+    public static final List<MachineMenu.SlotSpec> SLOTS = List.of(new MachineMenu.SlotSpec(89, 35, true));
     // Data slots: energy per mille, the item's charge per mille (-1 without a chargeable item), FE per tick right now.
     public static final int DATA_COUNT = 3;
 

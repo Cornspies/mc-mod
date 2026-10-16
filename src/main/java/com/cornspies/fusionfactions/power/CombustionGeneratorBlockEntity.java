@@ -36,7 +36,7 @@ public class CombustionGeneratorBlockEntity extends MachineBlockEntity {
     public static final int FUEL_SLOT = 0;
     private static final int CAPACITY = 100_000;
     private static final int MAX_PUSH = 2_000;
-    public static final List<MachineMenu.SlotSpec> SLOTS = List.of(new MachineMenu.SlotSpec(80, 53, true));
+    public static final List<MachineMenu.SlotSpec> SLOTS = List.of(new MachineMenu.SlotSpec(89, 53, true));
     // Data slots: ticks of burning left, total ticks of the current fuel, energy per mille, FE per tick right now.
     public static final int DATA_COUNT = 4;
 
