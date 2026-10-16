@@ -2,6 +2,7 @@ package com.cornspies.fusionfactions.client.datagen;
 
 import java.util.Set;
 
+import com.cornspies.fusionfactions.industry.Machine;
 import com.cornspies.fusionfactions.registry.ModBlocks;
 import com.cornspies.fusionfactions.registry.ModItems;
 
@@ -36,6 +37,9 @@ public class ModBlockLoot extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.SOLAR_PANEL.get());
         this.dropSelf(ModBlocks.FE_CABLE.get());
         this.dropSelf(ModBlocks.CHARGING_STATION.get());
+        for (Machine machine : Machine.values()) {
+            this.dropSelf(ModBlocks.machine(machine));
+        }
 
         // Ores drop their raw item, more with Fortune; niter drops 2-4 like redstone. Silk Touch drops the ore.
         this.add(ModBlocks.BAUXITE_ORE.get(), block -> this.createOreDrop(block, ModItems.RAW_BAUXITE.get()));

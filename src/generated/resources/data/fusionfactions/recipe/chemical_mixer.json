@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": "#c:ingots/aluminum",
+    "C": "minecraft:cauldron",
+    "G": "#c:glass_blocks",
+    "I": "#c:ingots/iron",
+    "P": "minecraft:piston"
+  },
+  "pattern": [
+    "AGA",
+    "GCG",
+    "IPI"
+  ],
+  "result": {
+    "id": "fusionfactions:chemical_mixer"
+  }
+}

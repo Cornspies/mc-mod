@@ -1,0 +1,24 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "minecraft:spyglass"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:basic_chip"
+    },
+    {
+      "count": 2,
+      "ingredient": "#c:ingots/aluminum"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:dusts/redstone"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:target_designator"
+  }
+}

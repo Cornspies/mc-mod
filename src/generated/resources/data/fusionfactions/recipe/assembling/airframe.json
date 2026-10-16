@@ -1,0 +1,16 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": "#c:ingots/aluminum"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:ingots/iron"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:airframe"
+  }
+}

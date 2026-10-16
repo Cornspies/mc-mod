@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "cookingtime": 200,
+  "experience": 0.3,
+  "group": "silicon",
+  "ingredient": "fusionfactions:silicon_dust",
+  "result": {
+    "id": "fusionfactions:silicon"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_niter": {
+      "conditions": {
+        "items": [
+          {
+            "items": "fusionfactions:niter"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipes": "fusionfactions:chemical_mixer"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_niter"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fusionfactions:chemical_mixer"
+    ]
+  }
+}

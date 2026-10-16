@@ -1,0 +1,20 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:basic_chip"
+    },
+    {
+      "count": 1,
+      "ingredient": "minecraft:amethyst_shard"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:ingots/aluminum"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:fusion_core"
+  }
+}

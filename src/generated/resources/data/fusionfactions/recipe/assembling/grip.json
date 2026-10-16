@@ -1,0 +1,16 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": "#c:leathers"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:ingots/aluminum"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:grip"
+  }
+}

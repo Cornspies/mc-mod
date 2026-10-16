@@ -1,0 +1,13 @@
+{
+  "type": "fusionfactions:crushing",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "#c:ores/niter"
+    }
+  ],
+  "result": {
+    "count": 5,
+    "id": "fusionfactions:niter"
+  }
+}

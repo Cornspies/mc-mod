@@ -1,0 +1,21 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": "#c:obsidians"
+    },
+    {
+      "count": 4,
+      "ingredient": "#c:ingots/aluminum"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:storage_blocks/iron"
+    }
+  ],
+  "result": {
+    "count": 8,
+    "id": "fusionfactions:silo_casing"
+  }
+}

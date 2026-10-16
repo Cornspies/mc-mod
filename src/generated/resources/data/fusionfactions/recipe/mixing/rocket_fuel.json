@@ -1,0 +1,24 @@
+{
+  "type": "fusionfactions:mixing",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "#c:dusts/aluminum"
+    },
+    {
+      "count": 2,
+      "ingredient": "#c:dusts/niter"
+    },
+    {
+      "count": 1,
+      "ingredient": [
+        "minecraft:slime_ball",
+        "minecraft:resin_clump"
+      ]
+    }
+  ],
+  "result": {
+    "count": 2,
+    "id": "fusionfactions:rocket_fuel"
+  }
+}

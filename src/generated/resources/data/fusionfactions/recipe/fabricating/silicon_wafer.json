@@ -1,0 +1,14 @@
+{
+  "type": "fusionfactions:fabricating",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "#c:silicon"
+    }
+  ],
+  "result": {
+    "count": 2,
+    "id": "fusionfactions:silicon_wafer"
+  },
+  "ticks": 100
+}

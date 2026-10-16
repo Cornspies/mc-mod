@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": "#c:ingots/aluminum",
+    "C": "minecraft:crafting_table",
+    "I": "#c:ingots/iron",
+    "P": "minecraft:piston",
+    "R": "#c:storage_blocks/redstone"
+  },
+  "pattern": [
+    "AAA",
+    "PCP",
+    "IRI"
+  ],
+  "result": {
+    "id": "fusionfactions:assembler"
+  }
+}

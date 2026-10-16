@@ -1,0 +1,26 @@
+{
+  "type": "fusionfactions:fabricating",
+  "energy_per_tick": 100,
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:advanced_chip"
+    },
+    {
+      "count": 2,
+      "ingredient": "#c:dusts/rare_earth"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:gems/diamond"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:dusts/lithium"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:military_chip"
+  },
+  "ticks": 400
+}

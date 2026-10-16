@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_gunpowder": {
+    "has_niter": {
       "conditions": {
         "items": [
           {
-            "items": "minecraft:gunpowder"
+            "items": "#c:dusts/niter"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_gunpowder"
+      "has_niter"
     ]
   ],
   "rewards": {

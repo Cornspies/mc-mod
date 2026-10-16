@@ -1,0 +1,12 @@
+{
+  "type": "fusionfactions:crushing",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "#c:ingots/aluminum"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:aluminum_dust"
+  }
+}

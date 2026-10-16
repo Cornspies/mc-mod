@@ -1,0 +1,20 @@
+{
+  "type": "fusionfactions:fabricating",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:silicon_wafer"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:ingots/copper"
+    },
+    {
+      "count": 2,
+      "ingredient": "#c:dusts/redstone"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:basic_chip"
+  }
+}

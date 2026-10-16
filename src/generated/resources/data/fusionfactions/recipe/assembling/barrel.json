@@ -1,0 +1,20 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": "#c:ingots/aluminum"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:ingots/iron"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:ingots/copper"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:barrel"
+  }
+}

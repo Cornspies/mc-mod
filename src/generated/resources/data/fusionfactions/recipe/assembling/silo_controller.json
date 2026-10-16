@@ -1,0 +1,25 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": "fusionfactions:silo_casing"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:missile_launcher"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:military_chip"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:storage_blocks/redstone"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:silo_controller"
+  },
+  "ticks": 300
+}

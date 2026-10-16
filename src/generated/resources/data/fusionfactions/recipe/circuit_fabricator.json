@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": "#c:ingots/aluminum",
+    "C": "minecraft:comparator",
+    "D": "#c:gems/diamond",
+    "I": "#c:ingots/iron",
+    "R": "#c:dusts/redstone"
+  },
+  "pattern": [
+    "ARA",
+    "CDC",
+    "III"
+  ],
+  "result": {
+    "id": "fusionfactions:circuit_fabricator"
+  }
+}

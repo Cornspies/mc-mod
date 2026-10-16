@@ -1,0 +1,29 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": "#c:ingots/aluminum"
+    },
+    {
+      "count": 1,
+      "ingredient": "minecraft:compass"
+    },
+    {
+      "count": 2,
+      "ingredient": "minecraft:amethyst_shard"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:advanced_chip"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:storage_blocks/redstone"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:radar"
+  },
+  "ticks": 200
+}

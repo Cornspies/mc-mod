@@ -1,0 +1,20 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "#c:ingots/lithium"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:ingots/copper"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:dusts/redstone"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:battery"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "type": "fusionfactions:assembling",
+  "energy_per_tick": 80,
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:airframe"
+    },
+    {
+      "count": 2,
+      "ingredient": "fusionfactions:rocket_fuel"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:basic_chip"
+    },
+    {
+      "count": 4,
+      "ingredient": "minecraft:blaze_powder"
+    },
+    {
+      "count": 1,
+      "ingredient": "minecraft:tnt"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:incendiary_missile_1"
+  },
+  "ticks": 200
+}

@@ -1,0 +1,13 @@
+{
+  "type": "fusionfactions:crushing",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:raw_rare_earth"
+    }
+  ],
+  "result": {
+    "count": 2,
+    "id": "fusionfactions:rare_earth_dust"
+  }
+}

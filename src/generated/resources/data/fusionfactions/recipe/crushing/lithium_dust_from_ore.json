@@ -1,0 +1,13 @@
+{
+  "type": "fusionfactions:crushing",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "#c:ores/lithium"
+    }
+  ],
+  "result": {
+    "count": 2,
+    "id": "fusionfactions:lithium_dust"
+  }
+}

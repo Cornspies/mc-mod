@@ -1,0 +1,24 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": "fusionfactions:silo_casing"
+    },
+    {
+      "count": 1,
+      "ingredient": "minecraft:iron_trapdoor"
+    },
+    {
+      "count": 2,
+      "ingredient": "#c:ingots/aluminum"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:dusts/redstone"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:silo_hatch"
+  }
+}

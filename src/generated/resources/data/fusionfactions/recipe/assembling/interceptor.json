@@ -1,0 +1,25 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": "#c:ingots/aluminum"
+    },
+    {
+      "count": 2,
+      "ingredient": "minecraft:firework_rocket"
+    },
+    {
+      "count": 1,
+      "ingredient": "minecraft:dispenser"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:advanced_chip"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:interceptor"
+  },
+  "ticks": 200
+}

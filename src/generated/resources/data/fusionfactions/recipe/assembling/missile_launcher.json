@@ -1,0 +1,29 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": "#c:ingots/aluminum"
+    },
+    {
+      "count": 2,
+      "ingredient": "#c:obsidians"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:storage_blocks/iron"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:advanced_chip"
+    },
+    {
+      "count": 1,
+      "ingredient": "minecraft:dispenser"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:missile_launcher"
+  },
+  "ticks": 200
+}

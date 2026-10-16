@@ -1,0 +1,30 @@
+{
+  "type": "fusionfactions:assembling",
+  "energy_per_tick": 80,
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": "fusionfactions:airframe"
+    },
+    {
+      "count": 4,
+      "ingredient": "fusionfactions:rocket_fuel"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:advanced_chip"
+    },
+    {
+      "count": 2,
+      "ingredient": "minecraft:netherite_scrap"
+    },
+    {
+      "count": 2,
+      "ingredient": "minecraft:tnt"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:breaching_missile_2"
+  },
+  "ticks": 400
+}

@@ -1,0 +1,30 @@
+{
+  "type": "fusionfactions:assembling",
+  "energy_per_tick": 80,
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": "fusionfactions:airframe"
+    },
+    {
+      "count": 4,
+      "ingredient": "fusionfactions:rocket_fuel"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:advanced_chip"
+    },
+    {
+      "count": 2,
+      "ingredient": "#minecraft:lightning_rods"
+    },
+    {
+      "count": 2,
+      "ingredient": "#c:storage_blocks/redstone"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:emp_missile_2"
+  },
+  "ticks": 400
+}

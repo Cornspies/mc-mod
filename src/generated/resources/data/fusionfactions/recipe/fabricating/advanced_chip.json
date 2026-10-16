@@ -1,0 +1,25 @@
+{
+  "type": "fusionfactions:fabricating",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:basic_chip"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:silicon_wafer"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:ingots/gold"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:dusts/rare_earth"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:advanced_chip"
+  },
+  "ticks": 300
+}
