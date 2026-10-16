@@ -133,6 +133,16 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.BARREL.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.FUSION_CORE.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.GRIP.get(), ModelTemplates.FLAT_ITEM);
+
+        // Ores: stone or deepslate with an overlay (models from tools/resource_textures.py). Materials are flat items.
+        for (var ore : ModItems.ORES) {
+            Identifier model = ore.getId().withPrefix("block/");
+            blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(ore.get().getBlock(), BlockModelGenerators.plainVariant(model)));
+            blockModels.registerSimpleItemModel(ore.get().getBlock(), model);
+        }
+        for (var material : ModItems.MATERIALS) {
+            itemModels.generateFlatItem(material.get(), ModelTemplates.FLAT_ITEM);
+        }
     }
 
     // A formed silo model from tools/silo_textures.py.

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "cookingtime": 200,
+  "experience": 1.0,
+  "group": "lithium_ingot",
+  "ingredient": "fusionfactions:lithium_dust",
+  "result": {
+    "id": "fusionfactions:lithium_ingot"
+  }
+}

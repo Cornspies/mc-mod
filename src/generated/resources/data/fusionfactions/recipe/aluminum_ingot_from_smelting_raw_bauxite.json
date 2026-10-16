@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "cookingtime": 200,
+  "experience": 0.7,
+  "group": "aluminum_ingot",
+  "ingredient": "fusionfactions:raw_bauxite",
+  "result": {
+    "id": "fusionfactions:aluminum_ingot"
+  }
+}

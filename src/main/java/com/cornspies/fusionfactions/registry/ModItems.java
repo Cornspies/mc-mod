@@ -50,6 +50,30 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RADAR = ITEMS.registerSimpleBlockItem(ModBlocks.RADAR);
     public static final DeferredItem<BlockItem> INTERCEPTOR = ITEMS.registerSimpleBlockItem(ModBlocks.INTERCEPTOR);
 
+    // Resources (D69, DESIGN.md §6b.2): ores, what they drop, and what they are smelted or ground into.
+    public static final DeferredItem<BlockItem> BAUXITE_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.BAUXITE_ORE);
+    public static final DeferredItem<BlockItem> DEEPSLATE_BAUXITE_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.DEEPSLATE_BAUXITE_ORE);
+    public static final DeferredItem<BlockItem> NITER_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.NITER_ORE);
+    public static final DeferredItem<BlockItem> DEEPSLATE_NITER_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.DEEPSLATE_NITER_ORE);
+    public static final DeferredItem<BlockItem> RARE_EARTH_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.RARE_EARTH_ORE);
+    public static final DeferredItem<BlockItem> DEEPSLATE_RARE_EARTH_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.DEEPSLATE_RARE_EARTH_ORE);
+    public static final DeferredItem<BlockItem> LITHIUM_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.LITHIUM_ORE);
+    public static final DeferredItem<BlockItem> DEEPSLATE_LITHIUM_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.DEEPSLATE_LITHIUM_ORE);
+    public static final DeferredItem<Item> RAW_BAUXITE = ITEMS.registerSimpleItem("raw_bauxite");
+    public static final DeferredItem<Item> NITER = ITEMS.registerSimpleItem("niter");
+    public static final DeferredItem<Item> RAW_RARE_EARTH = ITEMS.registerSimpleItem("raw_rare_earth");
+    public static final DeferredItem<Item> RAW_LITHIUM = ITEMS.registerSimpleItem("raw_lithium");
+    public static final DeferredItem<Item> ALUMINUM_INGOT = ITEMS.registerSimpleItem("aluminum_ingot");
+    public static final DeferredItem<Item> LITHIUM_INGOT = ITEMS.registerSimpleItem("lithium_ingot");
+    public static final DeferredItem<Item> ALUMINUM_DUST = ITEMS.registerSimpleItem("aluminum_dust");
+    public static final DeferredItem<Item> RARE_EARTH_DUST = ITEMS.registerSimpleItem("rare_earth_dust");
+    public static final DeferredItem<Item> LITHIUM_DUST = ITEMS.registerSimpleItem("lithium_dust");
+
+    public static final List<DeferredItem<BlockItem>> ORES = List.of(BAUXITE_ORE, DEEPSLATE_BAUXITE_ORE, NITER_ORE, DEEPSLATE_NITER_ORE, RARE_EARTH_ORE,
+            DEEPSLATE_RARE_EARTH_ORE, LITHIUM_ORE, DEEPSLATE_LITHIUM_ORE);
+    public static final List<DeferredItem<Item>> MATERIALS = List.of(RAW_BAUXITE, NITER, RAW_RARE_EARTH, RAW_LITHIUM, ALUMINUM_INGOT, LITHIUM_INGOT,
+            ALUMINUM_DUST, RARE_EARTH_DUST, LITHIUM_DUST);
+
     // Movement speed while aiming down sights, as a share of walking speed.
     private static final float AIM_MOVE_SPEED = 0.8F;
 

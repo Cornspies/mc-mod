@@ -47,6 +47,8 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.missile(type, tier).get());
                     }
                 }
+                ModItems.ORES.forEach(ore -> output.accept(ore.get()));
+                ModItems.MATERIALS.forEach(material -> output.accept(material.get()));
             })
             .build());
 

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "cookingtime": 200,
+  "experience": 0.7,
+  "group": "aluminum_ingot",
+  "ingredient": "fusionfactions:deepslate_bauxite_ore",
+  "result": {
+    "id": "fusionfactions:aluminum_ingot"
+  }
+}

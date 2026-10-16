@@ -286,5 +286,22 @@
   "entity.fusionfactions.interceptor_rocket": "Interceptor Rocket",
   "subtitles.fusionfactions.missile.shot_down": "Missile bursts",
   "subtitles.fusionfactions.radar.alert": "Radar alarm",
-  "subtitles.fusionfactions.interceptor.launch": "Interceptor fires"
+  "subtitles.fusionfactions.interceptor.launch": "Interceptor fires",
+  "block.fusionfactions.bauxite_ore": "Bauxite Ore",
+  "block.fusionfactions.deepslate_bauxite_ore": "Deepslate Bauxite Ore",
+  "block.fusionfactions.niter_ore": "Niter Ore",
+  "block.fusionfactions.deepslate_niter_ore": "Deepslate Niter Ore",
+  "block.fusionfactions.rare_earth_ore": "Rare Earth Ore",
+  "block.fusionfactions.deepslate_rare_earth_ore": "Deepslate Rare Earth Ore",
+  "block.fusionfactions.lithium_ore": "Lithium Ore",
+  "block.fusionfactions.deepslate_lithium_ore": "Deepslate Lithium Ore",
+  "item.fusionfactions.raw_bauxite": "Raw Bauxite",
+  "item.fusionfactions.niter": "Niter",
+  "item.fusionfactions.raw_rare_earth": "Raw Rare Earth",
+  "item.fusionfactions.raw_lithium": "Raw Lithium",
+  "item.fusionfactions.aluminum_ingot": "Aluminum Ingot",
+  "item.fusionfactions.lithium_ingot": "Lithium Ingot",
+  "item.fusionfactions.aluminum_dust": "Aluminum Dust",
+  "item.fusionfactions.rare_earth_dust": "Rare Earth Dust",
+  "item.fusionfactions.lithium_dust": "Lithium Dust"
 }

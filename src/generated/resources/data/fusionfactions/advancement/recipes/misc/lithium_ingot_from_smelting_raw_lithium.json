@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_raw_lithium": {
+      "conditions": {
+        "items": [
+          {
+            "items": "fusionfactions:raw_lithium"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipes": "fusionfactions:lithium_ingot_from_smelting_raw_lithium"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_raw_lithium"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fusionfactions:lithium_ingot_from_smelting_raw_lithium"
+    ]
+  }
+}

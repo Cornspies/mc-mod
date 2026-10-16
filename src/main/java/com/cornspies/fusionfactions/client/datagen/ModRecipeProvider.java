@@ -1,17 +1,24 @@
 package com.cornspies.fusionfactions.client.datagen;
 
+import java.util.List;
+
+import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.crafting.HeavyWeaponRecipesCondition;
 import com.cornspies.fusionfactions.missile.MissileType;
 import com.cornspies.fusionfactions.registry.ModItems;
 
 import net.minecraft.advancements.Advancement;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Items;
 import net.minecraft.tags.BlockItemTags;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
@@ -27,6 +34,13 @@ public class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes() {
+        // Resources (DESIGN.md §6b.2): ores, raw items and dusts smelt into ingots, faster in a blast furnace. Rare earth
+        // and niter are used as they are (rare earth is ground in the crusher).
+        this.smeltAndBlast(List.of(ModItems.RAW_BAUXITE.get(), ModItems.BAUXITE_ORE.get(), ModItems.DEEPSLATE_BAUXITE_ORE.get(),
+                ModItems.ALUMINUM_DUST.get()), ModItems.ALUMINUM_INGOT.get(), 0.7F);
+        this.smeltAndBlast(List.of(ModItems.RAW_LITHIUM.get(), ModItems.LITHIUM_ORE.get(), ModItems.DEEPSLATE_LITHIUM_ORE.get(),
+                ModItems.LITHIUM_DUST.get()), ModItems.LITHIUM_INGOT.get(), 1.0F);
+
         this.shaped(RecipeCategory.MISC, ModItems.BARREL.get())
                 .pattern("ICI")
                 .define('I', Items.IRON_INGOT)
@@ -240,5 +254,20 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('F', ModItems.FUSION_CORE.get())
                 .unlockedBy(getHasName(tierOne), this.has(tierOne))
                 .save(this.output);
+    }
+
+    private void smeltAndBlast(List<ItemLike> inputs, ItemLike result, float experience) {
+        String resultName = getItemName(result);
+        for (ItemLike input : inputs) {
+            String suffix = "_" + getItemName(input);
+            SimpleCookingRecipeBuilder.smelting(Ingredient.of(input), RecipeCategory.MISC, CookingBookCategory.MISC, result, experience, 200)
+                    .group(resultName)
+                    .unlockedBy(getHasName(input), this.has(input))
+                    .save(this.output, ResourceKey.create(Registries.RECIPE, FusionFactions.id(resultName + "_from_smelting" + suffix)));
+            SimpleCookingRecipeBuilder.blasting(Ingredient.of(input), RecipeCategory.MISC, CookingBookCategory.MISC, result, experience, 100)
+                    .group(resultName)
+                    .unlockedBy(getHasName(input), this.has(input))
+                    .save(this.output, ResourceKey.create(Registries.RECIPE, FusionFactions.id(resultName + "_from_blasting" + suffix)));
+        }
     }
 }
