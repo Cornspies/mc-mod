@@ -624,7 +624,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | Milestone | Deliverables |
 |---|---|
 | **M11 Resources** ✅ *done 2026-10-16* | Bauxite, niter, rare earth and lithium ores (stone and deepslate), raw items, dusts, ingots, world generation with biome limits, `c:` tags, smelting, ore textures, game tests. |
-| **M12 Power** ✅ *implemented, waiting for the owner's test* | Combustion generator, solar panel, FE cable network, charging station, `requirePower` default true, game tests. |
+| **M12 Power** ✅ *done 2026-10-16* | Combustion generator, solar panel, FE cable network, charging station, `requirePower` default true, game tests. |
 | **M13 Machines and materials** | Crusher, chemical mixer, circuit fabricator, assembler with their recipe types; silicon, wafers, chips I–III, rocket fuel, battery, airframe; new recipes for missiles, missile blocks and weapon parts and ammo (D72). |
 | **M14 Rocket launcher** | Rocket launcher weapon and model, rockets, lock-on, guided rocket, tactical helmet with implant, handheld radar, lock warning HUD and sounds. |
 | **M15 Integration & release** | Interceptor ammo and menu, 64×64 missile icons, crate loot, `docs/SERVER.md`, two-player playtest, release v0.3.0. |
@@ -833,6 +833,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-16 | M11 details | Ore amounts tuned by counting a freshly generated area (per chunk: bauxite 40–80, niter 15–35, rare earth about 5 in mountains, lithium about 10 in deserts). Ores are as hard as iron ore; niter ore drops experience like redstone ore. Ingots smelt from raw items, ores and dusts (faster in a blast furnace). The ores' `c:` tags follow the material (`c:ores/aluminum` for bauxite, `c:dusts/niter` and `c:dusts/saltpeter` for niter). Ores are drawn as an overlay on vanilla stone and deepslate (`tools/resource_textures.py`). *Provisional.* | Agent |
 | 2026-10-16 | M11 done | Owner tested the ores, drops and amounts and approved them. | Owner |
 | 2026-10-16 | M12 details | Generator buffer 100k FE, pauses when full, pushes 2000 FE/t; solar panel 6 px high, half output in rain; cable networks split FE evenly and never send it back; charging station buffer 50k; recipes as in §6b.3; the power blocks share a machine base (menu, readout, energy gauge) that M13's machines will use. Game tests run with the dev config, so they now charge the blocks they fire and pass with `requirePower` on or off. *Provisional.* | Agent |
+| 2026-10-16 | M12 done | Owner tested generators, cables, the solar panel and power requirements, and approved them. | Owner |
 
 ---
 
