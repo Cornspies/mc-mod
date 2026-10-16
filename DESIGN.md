@@ -1,7 +1,7 @@
 # Fusion Factions — Design Document
 
 > **Mod ID:** `fusionfactions` · **Package:** `com.cornspies.fusionfactions` · **License:** MIT
-> **Status:** Phase 1 released as v0.1.0; Phase 2 in development (M7 and M8 done, M9 implemented) · **Last updated:** 2026-10-09
+> **Status:** Phase 1 released as v0.1.0; Phase 2 in development (M7 to M9 done, M10 in progress) · **Last updated:** 2026-10-16
 > **Audience:** the project owner and the coding agent (Claude Code). Read together with `CLAUDE.md`.
 
 ---
@@ -499,7 +499,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 |---|---|
 | **M7 Missile core** ✅ *done 2026-10-09* | Designator, missile launcher block and menu, explosive missiles I–II, flight (launch, cruise in SavedData, descent, chunk tickets), block damage rules (§6.6), raid windows, cooldown, optional FE, `[missiles]` config, admin commands, game tests. |
 | **M8 Missile types and silo** ✅ *done 2026-10-09* | Breaching, EMP and incendiary missiles; tier III; missile silo multiblock; recipes; tier III missiles in legendary crates. |
-| **M9 Counterplay** | Radar block with team alerts and launch area, interceptor block, shooting missiles down. |
+| **M9 Counterplay** ✅ *done 2026-10-16* | Radar block with team alerts and launch area, interceptor block, shooting missiles down. |
 | **M10 Integration & release** | Models and textures pass, `docs/SERVER.md`, two-player playtest on a dedicated server, release v0.2.0. |
 
 ---
@@ -673,6 +673,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-09 | Silo look, launcher screen | Owner asked for a formation animation and a darker, connected look for a complete silo, and for the readout text to stay inside its panel. Each formed block gets a block state `part` (its place in the 3×3×4 silo) with its own model; the controller checks its silo every 10 ticks and forms it over about 1.5 s. The readout lays out target, distance and status line by line in four lines and drops the distance if a long status needs the room. *Provisional.* | Owner / Agent |
 | 2026-10-09 | M8 details | Incendiary missiles: entities within the fire radius burn for 8 s; fire lands on about a third of the spots in the radius where it can stay, after the blast, and those spots go through the explosion event too. EMP missiles drain every FE handler in the radius from every side and break nothing; missile blocks hit by one show "shut down" with the seconds left. The silo is checked whenever its menu is open and before each launch, not on every block change. Recipes: each type's tier I is the explosive recipe with its payload (diamond, lightning rod, blaze powder), tier II adds a richer payload (netherite scrap, redstone blocks, blaze rods); silo casing (4) from iron and obsidian, hatch from casing, an iron trapdoor, iron and redstone, controller from casing, a missile launcher, barrels, a fusion core and a redstone block. A quarter of the legendary crates hold one tier III missile. Missile types are told apart by the band on the model and icon: dark, violet, cyan, orange. *Provisional.* | Agent |
 | 2026-10-08 | M7 details | The launcher needs open sky above it. Blast model: rays lose 1.3 strength per block of air and a quarter of a block's blast resistance per block (vanilla loses about 3.3 times the resistance), so explosive missiles reach about 5 / 7 / 9 blocks in the open and dig a few blocks into stone. Entity damage uses vanilla's formula over twice the reach; the damage type is in `minecraft:is_explosion`, so Blast Protection counts. Hard blocks: blast resistance 600 and up. Blasts break at most 1024 blocks per tick. The flying missile is drawn 3 times the item's size (about 5.5 blocks long) with a continuous smoke trail. Missiles stack to 4. Recipes: designator from a spyglass, redstone, iron and a fusion core; launcher from barrels, obsidian, iron blocks, a fusion core and a dispenser; explosive missile I from TNT, iron, gunpowder and a fusion core; II from missile I, TNT, diamonds and a fusion core. *Provisional.* | Agent |
+| 2026-10-16 | M9 done | Owner tested the radar, interceptor and shooting missiles down, and approved the milestone. Merged into `main`. | Owner |
 
 ---
 
