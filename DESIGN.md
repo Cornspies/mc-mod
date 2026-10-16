@@ -622,7 +622,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 
 | Milestone | Deliverables |
 |---|---|
-| **M11 Resources** ✅ *implemented, waiting for the owner's test* | Bauxite, niter, rare earth and lithium ores (stone and deepslate), raw items, dusts, ingots, world generation with biome limits, `c:` tags, smelting, ore textures, game tests. |
+| **M11 Resources** ✅ *done 2026-10-16* | Bauxite, niter, rare earth and lithium ores (stone and deepslate), raw items, dusts, ingots, world generation with biome limits, `c:` tags, smelting, ore textures, game tests. |
 | **M12 Power** | Combustion generator, solar panel, FE cable network, charging station, `requirePower` default true, game tests. |
 | **M13 Machines and materials** | Crusher, chemical mixer, circuit fabricator, assembler with their recipe types; silicon, wafers, chips I–III, rocket fuel, battery, airframe; new recipes for missiles, missile blocks and weapon parts and ammo (D72). |
 | **M14 Rocket launcher** | Rocket launcher weapon and model, rockets, lock-on, guided rocket, tactical helmet with implant, handheld radar, lock warning HUD and sounds. |
@@ -820,6 +820,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-16 | D60–D74 | Phase 3: guided rocket launcher, lock warning gear, interceptor ammo and power, generators and cables, four ores, four machines, three chip tiers, materials in missiles, missile blocks and weapons, 64×64 missile icons, industry first | Owner |
 | 2026-10-16 | Phase 3 spec | Material chain, numbers and placement in §6b (ore heights and biomes, generator output, cable throughput, machine recipes and times, chip recipes, rocket stats, helmet stats and recipe, handheld radar capacity, rocket launcher in 25% of legendary crates, tier III missiles stay crate-only). *Provisional.* | Agent |
 | 2026-10-16 | M11 details | Ore amounts tuned by counting a freshly generated area (per chunk: bauxite 40–80, niter 15–35, rare earth about 5 in mountains, lithium about 10 in deserts). Ores are as hard as iron ore; niter ore drops experience like redstone ore. Ingots smelt from raw items, ores and dusts (faster in a blast furnace). The ores' `c:` tags follow the material (`c:ores/aluminum` for bauxite, `c:dusts/niter` and `c:dusts/saltpeter` for niter). Ores are drawn as an overlay on vanilla stone and deepslate (`tools/resource_textures.py`). *Provisional.* | Agent |
+| 2026-10-16 | M11 done | Owner tested the ores, drops and amounts and approved them. | Owner |
 
 ---
 
