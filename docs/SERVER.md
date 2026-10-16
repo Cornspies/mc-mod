@@ -61,7 +61,7 @@ New in 0.2.0. A config file from 0.1.0 gets this section with its defaults when 
 |---|---|---|
 | `raidWindows` | `[]` | When missiles can be launched. Entries like `"SAT 18:00-23:00"`, `"MON-FRI 20:00-22:00"`, `"SAT,SUN 14:00-02:00"` or `"DAILY 20:00-22:00"`. An end before the start runs past midnight. Empty: any time. Missiles already in the air still land. |
 | `raidTimeZone` | `""` | Time zone for the raid windows, e.g. `Europe/Berlin`. Empty: the server's time zone. |
-| `requirePower` | `false` | Whether launchers, silos, radars and interceptors need FE from another mod (Mekanism or any mod with FE cables). Minecraft itself has no power source, so leave it off without such a mod. |
+| `requirePower` | `true` | Whether launchers, silos, radars and machines need FE, from our generators or any other mod's. Interceptors always need it. **A config file from 0.2.0 keeps `false`**: set it to `true` by hand to make power matter. |
 | `range` | `[500, 1000, 2000]` | Maximum distance to the target for missile tiers I, II and III, in blocks. |
 | `minRange` | `64` | Minimum distance to the target, in blocks. |
 | `flightSpeed` | `25.0` | Blocks per second on the way to the target. Flight time is this plus a 3 s climb and a 4 s descent. |
@@ -83,7 +83,7 @@ New in 0.2.0. A config file from 0.1.0 gets this section with its defaults when 
 | `interceptor.range` | `96` | How far an interceptor reaches. It needs a clear line of sight. |
 | `interceptor.cooldownTicks` | `40` | Ticks between two interceptor shots. |
 | `interceptor.damage` | `20.0` | Damage of one interceptor hit. |
-| `interceptor.energyPerShot` | `10000` | FE per interceptor shot, if `requirePower` is on. |
+| `interceptor.energyPerShot` | `10000` | FE per interceptor shot. Interceptors always need it. |
 
 Missile blasts break blocks without dropping them; containers spill their contents. Blocks in the block tag `fusionfactions:missile_immune` never break (bedrock, barriers, portals, command blocks and supply crates by default). Add your own with a datapack at `data/fusionfactions/tags/block/missile_immune.json`. Protection and claim mods that stop explosions also stop missiles.
 
@@ -92,6 +92,17 @@ Tier III missiles only come from legendary supply crates and need a **missile si
 **Counterplay.** A radar alerts the team of the player who placed it (their vanilla `/team`, or just them without one) about every missile that enters its range, with a launch area that contains the launch spot. It gives a redstone signal while it sees missiles. Interceptors shoot down missiles coming down near them, and players can shoot them down with weapons.
 
 Missiles in flight are saved with the world and keep flying after a restart. Their launch and target areas are kept loaded, so they work with nobody nearby.
+
+### Power: `[power]`
+
+New in the upcoming 0.3.0. Generators, cables and the charging station.
+
+| Option | Default | Meaning |
+|---|---|---|
+| `generatorOutput` | `40` | FE per tick a combustion generator makes while it burns. Fuel lasts as long as in a furnace. |
+| `solarOutput` | `8` | FE per tick a solar panel makes under open sky by day. Half in rain, nothing at night. |
+| `cableThroughput` | `2000` | FE per tick one network of connected cables carries in total. |
+| `chargingRate` | `500` | FE per tick the charging station puts into the item in its slot. |
 
 ### Ores
 
@@ -147,4 +158,5 @@ Permission level 2 (operators).
 - With a gun in hand, left click doesn't hit or break blocks.
 - Weapon damage counts as the shooter's attack, so vanilla team friendly-fire settings and PvP-protection mods apply.
 - Missiles: mark a target with the target designator (right click a block, up to 256 blocks away), put it and a missile into a missile launcher under open sky, and press Launch. Anyone can use any launcher. Explosive missiles blow craters, breaching missiles also break obsidian, EMP missiles drain power and shut down launchers, radars and interceptors, incendiary missiles set fires.
+- Power: combustion generators burn anything a furnace burns, solar panels work by day. FE cables carry the power to launchers, radars, interceptors and machines, split evenly between them. Any mod's FE cables work too.
 - Defense: a radar alerts your `/team` in chat when a missile comes into its range, with the area it was launched from; its dish stops turning while it is shut down. Interceptors shoot down missiles coming down near them (right click one to see whether it's ready), and a missile on its way down can be shot with any weapon.

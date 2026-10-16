@@ -495,11 +495,12 @@ Silicon comes from vanilla materials: the crusher grinds nether quartz into 2 si
 
 ### 6b.3 Power (D66, D67, D59 amended)
 
-- **Combustion generator:** burns furnace fuels into FE, 40 FE/t. Coal lasts 1600 ticks (64k FE); rocket fuel burns four times as long. Buffer 100k FE.
-- **Solar panel:** 8 FE/t under open sky by day, less in rain, nothing at night. Buffer 10k FE.
-- **FE cable:** one tier, connects automatically to cables and to any block with the energy capability (ours, Mekanism's, …), carries 2000 FE/t. Cables form a network; generators push into it, consumers pull from it.
-- **Charging station:** charges the FE item in its slot (the handheld radar, or any FE item from other mods) at 500 FE/t.
-- `requirePower` now defaults to **true**: launchers, silo, radar, interceptor and all machines need FE. Existing config files keep their old value (`false`) until the admin changes it (`docs/SERVER.md` says so).
+- **Combustion generator:** burns furnace fuels into FE, 40 FE/t, for as long as a furnace would burn them. Coal lasts 1600 ticks (64k FE); rocket fuel (M13) will burn four times as long. Buffer 100k FE. It pauses while its buffer is full, so no fuel is wasted, and pushes up to 2000 FE/t into the blocks around it. A menu shows the fuel, the flame, its output and its energy.
+- **Solar panel:** a low panel; 8 FE/t under open sky by day (sky light 15, so glass is fine), half in rain, nothing at night. Buffer 10k FE; pushes into the blocks around it. Right click shows its output.
+- **FE cable:** one tier, connects automatically to cables and to any block with the energy capability (ours, Mekanism's, …), carries 2000 FE/t. Cables form a network; whatever is pushed into it is split evenly between the blocks on it that take FE, never back to the block it came from. Up to 4096 cables per network. Cables hold no FE.
+- **Charging station:** charges the FE item in its slot (the handheld radar, or any FE item from other mods) at 500 FE/t, from a 50k FE buffer. Hoppers can take items out once they are full.
+- `requirePower` now defaults to **true**: launchers, silo, radar, interceptor and all machines need FE. Existing config files keep their old value (`false`) until the admin changes it (`docs/SERVER.md` says so). The interceptor always needs FE (D66). Output, throughput and charging rate are in `[power]`.
+- Recipes (crafting table, so power comes before the machines): generator from iron, copper, a furnace and redstone; solar panel from glass panes, aluminum, a daylight detector and iron; 8 cables from copper and dried kelp; charging station from iron, copper, aluminum and a redstone block.
 
 ### 6b.4 Machines (D70)
 
@@ -623,7 +624,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | Milestone | Deliverables |
 |---|---|
 | **M11 Resources** ✅ *done 2026-10-16* | Bauxite, niter, rare earth and lithium ores (stone and deepslate), raw items, dusts, ingots, world generation with biome limits, `c:` tags, smelting, ore textures, game tests. |
-| **M12 Power** | Combustion generator, solar panel, FE cable network, charging station, `requirePower` default true, game tests. |
+| **M12 Power** ✅ *implemented, waiting for the owner's test* | Combustion generator, solar panel, FE cable network, charging station, `requirePower` default true, game tests. |
 | **M13 Machines and materials** | Crusher, chemical mixer, circuit fabricator, assembler with their recipe types; silicon, wafers, chips I–III, rocket fuel, battery, airframe; new recipes for missiles, missile blocks and weapon parts and ammo (D72). |
 | **M14 Rocket launcher** | Rocket launcher weapon and model, rockets, lock-on, guided rocket, tactical helmet with implant, handheld radar, lock warning HUD and sounds. |
 | **M15 Integration & release** | Interceptor ammo and menu, 64×64 missile icons, crate loot, `docs/SERVER.md`, two-player playtest, release v0.3.0. |
@@ -731,6 +732,16 @@ The supply crate comes first because it is self-contained and proves out the sha
 - **Recipe IDs:** `RecipeBuilder.save(output, String)` parses the id in the `minecraft` namespace, which the mod-filtered datagen drops. Save with a `ResourceKey` in our namespace.
 - NeoForge applies biome modifiers before game tests run, so `Biome.getGenerationSettings().features()` shows the added features.
 
+### Learned while building M12 (verified against 26.3 sources)
+
+- **Fuel is a data component:** `DataComponents.COOKING_FUEL` (`CookingFuel`, with a `ResolvableInt` burn time resolved against a loot context, `BaseContainerBlockEntity.getLootContext(level, stack)`). There is no fuel map any more; an item becomes fuel by having the component.
+- **Transaction-aware state:** extend `SnapshotJournal` and call `updateSnapshots(transaction)` before changing the state (the cable network's per-tick throughput), so simulated transfers roll back.
+- **Block capabilities without a block entity:** `RegisterCapabilitiesEvent.registerBlock(capability, (level, pos, state, blockEntity, side) -> …, blocks)`. Item energy: `ItemAccess.forStack(stack).getCapability(Capabilities.Energy.ITEM)`.
+- **Time of day lives in world clocks** (`server.clockManager()`); `ServerLevel.setDayTime` is gone. `/time set noon` still works.
+- `canSeeSky` is sky light 15, which the light engine updates a tick or so after a block changes.
+- `BlockModelGenerators.createFurnace(block, TexturedModel.ORIENTABLE_ONLY_TOP)` makes a facing block with a lit front (`_front`, `_front_on`, `_side`, `_top`); `MultiPartGenerator` with `condition().term(...)` makes pipe-like blocks.
+
+
 
 ### Reference code
 
@@ -821,6 +832,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-16 | Phase 3 spec | Material chain, numbers and placement in §6b (ore heights and biomes, generator output, cable throughput, machine recipes and times, chip recipes, rocket stats, helmet stats and recipe, handheld radar capacity, rocket launcher in 25% of legendary crates, tier III missiles stay crate-only). *Provisional.* | Agent |
 | 2026-10-16 | M11 details | Ore amounts tuned by counting a freshly generated area (per chunk: bauxite 40–80, niter 15–35, rare earth about 5 in mountains, lithium about 10 in deserts). Ores are as hard as iron ore; niter ore drops experience like redstone ore. Ingots smelt from raw items, ores and dusts (faster in a blast furnace). The ores' `c:` tags follow the material (`c:ores/aluminum` for bauxite, `c:dusts/niter` and `c:dusts/saltpeter` for niter). Ores are drawn as an overlay on vanilla stone and deepslate (`tools/resource_textures.py`). *Provisional.* | Agent |
 | 2026-10-16 | M11 done | Owner tested the ores, drops and amounts and approved them. | Owner |
+| 2026-10-16 | M12 details | Generator buffer 100k FE, pauses when full, pushes 2000 FE/t; solar panel 6 px high, half output in rain; cable networks split FE evenly and never send it back; charging station buffer 50k; recipes as in §6b.3; the power blocks share a machine base (menu, readout, energy gauge) that M13's machines will use. Game tests run with the dev config, so they now charge the blocks they fire and pass with `requirePower` on or off. *Provisional.* | Agent |
 
 ---
 
