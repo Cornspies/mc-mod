@@ -6,6 +6,7 @@ import com.cornspies.fusionfactions.config.ServerConfig;
 import com.cornspies.fusionfactions.config.StartupConfig;
 import com.cornspies.fusionfactions.gametest.CrateLootGameTests;
 import com.cornspies.fusionfactions.gametest.MissileGameTests;
+import com.cornspies.fusionfactions.gametest.PowerGameTests;
 import com.cornspies.fusionfactions.gametest.ResourceGameTests;
 import com.cornspies.fusionfactions.gametest.TriggerGameTests;
 import com.cornspies.fusionfactions.gametest.UpgradeGameTests;
@@ -63,6 +64,7 @@ public class FusionFactions {
         CrateLootGameTests.TEST_FUNCTIONS.register(modEventBus);
         MissileGameTests.TEST_FUNCTIONS.register(modEventBus);
         ResourceGameTests.TEST_FUNCTIONS.register(modEventBus);
+        PowerGameTests.TEST_FUNCTIONS.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.SYNCED, ServerConfig.SPEC);
         modContainer.registerConfig(ModConfig.Type.STARTUP, StartupConfig.SPEC);

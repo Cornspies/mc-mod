@@ -91,6 +91,7 @@ public final class WeaponGameTests {
         functions.addAll(TriggerGameTests.TESTS);
         functions.addAll(CrateLootGameTests.TESTS);
         functions.addAll(ResourceGameTests.TESTS);
+        functions.addAll(PowerGameTests.TESTS);
         for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function : functions) {
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
