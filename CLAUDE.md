@@ -21,7 +21,8 @@ The full design, including what is decided and what is still open, is in **@DESI
 - **Phase 3 (industry and rocket launcher, DESIGN.md §6b):** all decisions answered (D60–D74), milestones M11–M15 in §8. 
 - **M11 (resources): done** (owner approved 2026-10-16), on branch `m11-resources`.
 - **M12 (power): done** (owner approved 2026-10-16), on branch `m12-power`.
-- **M13 (machines and materials): implemented** on branch `m13-machines` (based on `m12-power`), waiting for the owner's test.
+- **M13 (machines and materials): done** (owner approved 2026-10-17), on branch `m13-machines` (based on `m12-power`).
+- **M14 (rocket launcher): in progress** on branch `m14-rocket-launcher` (based on `m13-machines`).
 - Missile models come from `tools/missile_models.py`, missile icons, launcher textures and screen from `tools/missile_textures.py`, the formed silo's textures and models from `tools/silo_textures.py`, the radar, interceptor and interceptor rocket models from `tools/machine_models.py`, ore overlays, ore models and material icons from `tools/resource_textures.py`, power block and machine textures and machine screens from `tools/power_textures.py` (solar panel and cable models in `tools/machine_models.py`).
 - Aim positions for first person come from `tools/weapon_models.py` too (`weapon_aim.json`).
 - Upgrade values and the fields per weapon are in the synced config (`[weaponUpgrades]`). Part models come from `tools/weapon_models.py`, part icons and workbench textures from `tools/workbench_textures.py`.
