@@ -8,6 +8,7 @@ import org.jspecify.annotations.Nullable;
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.config.ServerConfig;
 import com.cornspies.fusionfactions.registry.ModBlocks;
+import com.cornspies.fusionfactions.registry.ModSounds;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
@@ -18,7 +19,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ColumnPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.Level;
@@ -219,7 +219,7 @@ public final class SupplyDropManager {
         drop.land(pos, despawnAt);
         data.setDirty();
 
-        level.playSound(null, pos, SoundEvents.ANVIL_LAND, SoundSource.BLOCKS, 0.8F, 0.6F);
+        level.playSound(null, pos, ModSounds.SUPPLY_CRATE_LAND.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
         level.sendParticles(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 0.2, pos.getZ() + 0.5, 20, 0.8, 0.1, 0.8, 0.02);
         FusionFactions.LOGGER.info("Supply drop #{} landed at {}", drop.id(), pos);
         DropAnnouncer.landed(level.getServer(), level, drop);

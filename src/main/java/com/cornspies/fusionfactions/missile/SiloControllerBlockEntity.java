@@ -7,12 +7,12 @@ import org.jspecify.annotations.Nullable;
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.config.MissileConfig;
 import com.cornspies.fusionfactions.registry.ModBlockEntityTypes;
+import com.cornspies.fusionfactions.registry.ModSounds;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -74,11 +74,11 @@ public class SiloControllerBlockEntity extends AbstractLauncherBlockEntity {
         SiloStructure.setFormed(level, hatch, layer, true);
         BlockPos center = hatch.below(layer);
         level.sendParticles(ParticleTypes.ELECTRIC_SPARK, center.getX() + 0.5, center.getY() + 0.5, center.getZ() + 0.5, 40, 1.0, 0.4, 1.0, 0.05);
-        level.playSound(null, center, SoundEvents.BEACON_POWER_SELECT, SoundSource.BLOCKS, 0.8F, 0.6F + 0.25F * (SiloStructure.DEPTH - layer));
+        level.playSound(null, center, ModSounds.SILO_FORM_LAYER.get(), SoundSource.BLOCKS, 1.0F, 0.6F + 0.25F * (SiloStructure.DEPTH - layer));
         this.formingLayer--;
         this.formingTimer = LAYER_TICKS;
         if (this.formingLayer < 0) {
-            level.playSound(null, hatch, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
+            level.playSound(null, hatch, ModSounds.SILO_FORMED.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
             for (int i = 0; i < 12; i++) {
                 level.sendParticles(ParticleTypes.END_ROD, hatch.getX() + 0.5, hatch.getY() - SiloStructure.DEPTH + 1 + i * 0.6, hatch.getZ() + 0.5,
                         3, 0.15, 0.1, 0.15, 0.01);
@@ -93,7 +93,7 @@ public class SiloControllerBlockEntity extends AbstractLauncherBlockEntity {
         for (int layer = 0; layer <= SiloStructure.DEPTH; layer++) {
             SiloStructure.setFormed(level, this.formedHatch, layer, false);
         }
-        level.playSound(null, this.formedHatch, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
+        level.playSound(null, this.formedHatch, ModSounds.SILO_UNFORMED.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         this.formedHatch = null;
         this.formingLayer = -1;
         this.setChanged();

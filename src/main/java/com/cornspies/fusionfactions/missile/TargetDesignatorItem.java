@@ -6,13 +6,13 @@ import org.jspecify.annotations.Nullable;
 
 import com.cornspies.fusionfactions.config.MissileConfig;
 import com.cornspies.fusionfactions.registry.ModDataComponents;
+import com.cornspies.fusionfactions.registry.ModSounds;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -57,7 +57,7 @@ public class TargetDesignatorItem extends Item {
         BlockPos pos = blockHit.getBlockPos();
         stack.set(ModDataComponents.TARGET.get(), GlobalPos.of(serverLevel.dimension(), pos));
         player.sendOverlayMessage(Component.translatable("fusionfactions.designator.set", pos.getX(), pos.getY(), pos.getZ()));
-        serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.5F, 1.6F);
+        serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.DESIGNATOR_MARK.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
         return InteractionResult.SUCCESS;
     }
 
