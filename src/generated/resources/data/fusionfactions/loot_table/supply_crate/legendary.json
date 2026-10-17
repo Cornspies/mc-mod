@@ -158,6 +158,48 @@
         }
       ],
       "rolls": 1
+    },
+    {
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.25
+      },
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "value": {
+            "pools": [
+              {
+                "entries": [
+                  {
+                    "type": "minecraft:item",
+                    "name": "fusionfactions:rocket_launcher"
+                  }
+                ],
+                "rolls": 1
+              },
+              {
+                "entries": [
+                  {
+                    "type": "minecraft:item",
+                    "modifier": {
+                      "type": "minecraft:set_count",
+                      "count": {
+                        "type": "minecraft:uniform",
+                        "max": 8,
+                        "min": 4
+                      }
+                    },
+                    "name": "fusionfactions:rocket"
+                  }
+                ],
+                "rolls": 1
+              }
+            ]
+          }
+        }
+      ],
+      "rolls": 1
     }
   ],
   "random_sequence": "fusionfactions:supply_crate/legendary"

@@ -30,14 +30,15 @@ public final class CrateLootGameTests {
 
     private static final int ROLLS = 400;
 
-    // Every crate has ammo and only our items; upgrade parts match the crate's tier; the heavy weapons
-    // come only from legendary crates, about half of them.
+    // Every crate has ammo and only our items; upgrade parts match the crate's tier; the heavy weapons come only from
+    // legendary crates, about half of them, and the rocket launcher, with rockets, from about a quarter.
     private static void crateLootFollowsTiers(GameTestHelper helper) {
         for (CrateRarity rarity : CrateRarity.values()) {
             int tier = rarity.ordinal() + 1;
             LootTable table = helper.getLevel().getServer().reloadableRegistries().getLootTable(rarity.lootTable());
             int heavy = 0;
             int missiles = 0;
+            int launchers = 0;
             for (int roll = 0; roll < ROLLS; roll++) {
                 LootParams params = new LootParams.Builder(helper.getLevel())
                         .withParameter(LootContextParams.ORIGIN, helper.absoluteVec(Vec3.ZERO))
@@ -62,6 +63,11 @@ public final class CrateLootGameTests {
                         heavyHere = true;
                     }
                 }
+                if (loot.stream().anyMatch(stack -> stack.is(ModItems.ROCKET_LAUNCHER.get()))) {
+                    launchers++;
+                    helper.assertTrue(loot.stream().anyMatch(stack -> stack.is(ModItems.ROCKET.get()) && stack.getCount() >= 4),
+                            "a rocket launcher should come with at least 4 rockets");
+                }
                 if (heavyHere) {
                     heavy++;
                 }
@@ -69,9 +75,11 @@ public final class CrateLootGameTests {
             if (rarity == CrateRarity.LEGENDARY) {
                 helper.assertTrue(missiles > ROLLS * 0.15 && missiles < ROLLS * 0.35, "about a quarter of the legendary crates should hold a tier III missile, not " + missiles + "/" + ROLLS);
                 helper.assertTrue(heavy > ROLLS * 0.35 && heavy < ROLLS * 0.65, "about half the legendary crates should hold a heavy weapon, not " + heavy + "/" + ROLLS);
+                helper.assertTrue(launchers > ROLLS * 0.15 && launchers < ROLLS * 0.35, "about a quarter of the legendary crates should hold a rocket launcher, not " + launchers + "/" + ROLLS);
             } else {
                 helper.assertValueEqual(heavy, 0, rarity + " crates with a heavy weapon");
                 helper.assertValueEqual(missiles, 0, rarity + " crates with a missile");
+                helper.assertValueEqual(launchers, 0, rarity + " crates with a rocket launcher");
             }
         }
         helper.succeed();

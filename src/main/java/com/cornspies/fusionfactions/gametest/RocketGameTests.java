@@ -178,12 +178,13 @@ public final class RocketGameTests {
                 helper.setBlock(x, 0, z, Blocks.STONE);
             }
         }
-        for (int z = 0; z <= length; z += 8) {
-            BlockPos pos = helper.absolutePos(new BlockPos(0, 0, z));
-            helper.getLevel().setChunkForced(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), true);
+        // Every chunk the range touches, also sideways: rockets and pigs stop in chunks that don't tick.
+        for (int x = -2; x <= 6; x += 4) {
+            for (int z = 0; z <= length; z += 4) {
+                BlockPos pos = helper.absolutePos(new BlockPos(x, 0, z));
+                helper.getLevel().setChunkForced(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), true);
+            }
         }
-        BlockPos end = helper.absolutePos(new BlockPos(6, 0, length));
-        helper.getLevel().setChunkForced(SectionPos.blockToSectionCoord(end.getX()), SectionPos.blockToSectionCoord(end.getZ()), true);
     }
 
     private RocketGameTests() {

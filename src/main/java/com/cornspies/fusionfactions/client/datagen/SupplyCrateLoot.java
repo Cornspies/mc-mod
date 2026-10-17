@@ -12,10 +12,13 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.EmptyLootItem;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
-// Supply crate loot (OD-19 → D43): only our own items. Legendary crates may hold a tier III missile (D57). Every crate has ammo, weapon parts and upgrade
+// Supply crate loot (OD-19 → D43): only our own items. Legendary crates may hold a tier III missile (D57) and the
+// rocket launcher (D65). Every crate has ammo, weapon parts and upgrade
 // parts of its tier (tier I in common, II in rare, III in legendary crates); weapons are a chance, the
 // crate-only sniper and gatling only in legendary crates (D44). Each pool is one kind of loot, so the
 // odds stay readable. Servers can override the tables with a datapack (supply_crate/<rarity>).
@@ -53,7 +56,14 @@ public class SupplyCrateLoot implements LootTableSubProvider {
                 // ...and some a close-range weapon as well.
                 .withPool(single(item(ModItems.SMG.get(), 1), item(ModItems.SHOTGUN.get(), 1), nothing(4)))
                 // Tier III missiles only come from here (D57): a quarter of the crates hold one, any type.
-                .withPool(single(missileEntries(3, nothing(3 * MissileType.values().length)))));
+                .withPool(single(missileEntries(3, nothing(3 * MissileType.values().length))))
+                // The crate-only rocket launcher (D65): a quarter of the crates, loaded, with 4 to 8 rockets. An inline table gives
+                // both; a group would only offer them as alternatives.
+                .withPool(single(NestedLootTable.inlineLootTable(LootTable.lootTable()
+                        .withPool(single(item(ModItems.ROCKET_LAUNCHER.get(), 1)))
+                        .withPool(single(item(ModItems.ROCKET.get(), 1, 4, 8)))
+                        .build()))
+                        .when(LootItemRandomChanceCondition.randomChance(0.25F))));
     }
 
     // One roll from the given entries.
