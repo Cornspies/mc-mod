@@ -27,7 +27,15 @@ sourceSets.main.resources {
 }
 
 repositories {
-    // Add here additional repositories if required by some of the dependencies below.
+    // JEI, for the dev runs only (localRuntime below).
+    maven {
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com'
+        content {
+            includeGroup 'mezz.jei'
+            includeGroup 'net.mezzdev.config' // JEI's config library
+        }
+    }
 }
 
 base {
@@ -122,6 +130,10 @@ configurations {
 }
 
 dependencies {
+    // JEI in every dev run (client, server, game tests, data), so recipes can be looked up while testing.
+    // localRuntime keeps it out of the mod jar and out of the published dependencies.
+    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"

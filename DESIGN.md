@@ -845,6 +845,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-16 | M12 details | Generator buffer 100k FE, pauses when full, pushes 2000 FE/t; solar panel 6 px high, half output in rain; cable networks split FE evenly and never send it back; charging station buffer 50k; recipes as in §6b.3; the power blocks share a machine base (menu, readout, energy gauge) that M13's machines will use. Game tests run with the dev config, so they now charge the blocks they fire and pass with `requirePower` on or off. *Provisional.* | Agent |
 | 2026-10-16 | M12 done | Owner tested generators, cables, the solar panel and power requirements, and approved them. | Owner |
 | 2026-10-16 | M13 details | Recipes and times as in §6b.4–§6b.5. A machine recipe must use every item in the input slots, so recipes are told apart by item kinds (the barrel gained a copper ingot to differ from the airframe). Rocket fuel burns 6400 ticks in furnaces and generators. Machines have a 50k FE buffer and pause without power. All four machines share one block entity and one screen, laid out per machine. *Provisional.* | Agent |
+| 2026-10-17 | JEI in dev | JEI (31.15.0.75 for 26.3, from maven.blamejared.com) runs in the dev client, server, game tests and data run, so recipes can be looked up while testing. Only as `localRuntime`: no dependency, not in the jar. Our machine recipes don't show in it until a JEI plugin is written. | Owner |
 
 ---
 
