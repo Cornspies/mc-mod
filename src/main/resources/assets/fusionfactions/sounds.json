@@ -1,10 +1,38 @@
 {
+  "charging_station.running": {
+    "subtitle": "subtitles.fusionfactions.charging_station.running",
+    "sounds": [
+      {
+        "name": "fusionfactions:block/charging_station",
+        "attenuation_distance": 8
+      }
+    ]
+  },
+  "combustion_generator.running": {
+    "subtitle": "subtitles.fusionfactions.combustion_generator.running",
+    "sounds": [
+      {
+        "name": "fusionfactions:block/combustion_generator",
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "designator.mark": {
+    "subtitle": "subtitles.fusionfactions.designator.mark",
+    "sounds": [
+      {
+        "name": "fusionfactions:missile/designator_mark"
+      }
+    ]
+  },
   "interceptor.launch": {
     "subtitle": "subtitles.fusionfactions.interceptor.launch",
     "sounds": [
       {
-        "name": "minecraft:fireworks/launch1",
-        "pitch": 0.8
+        "name": "fusionfactions:missile/interceptor_launch_1"
+      },
+      {
+        "name": "fusionfactions:missile/interceptor_launch_2"
       }
     ]
   },
@@ -12,8 +40,7 @@
     "subtitle": "subtitles.fusionfactions.lock.locked",
     "sounds": [
       {
-        "name": "minecraft:note/bit",
-        "pitch": 2.0
+        "name": "fusionfactions:ui/lock_locked"
       }
     ]
   },
@@ -21,8 +48,43 @@
     "subtitle": "subtitles.fusionfactions.lock.seeking",
     "sounds": [
       {
-        "name": "minecraft:note/bit",
-        "pitch": 1.4
+        "name": "fusionfactions:ui/lock_seeking"
+      }
+    ]
+  },
+  "machine.assembler": {
+    "subtitle": "subtitles.fusionfactions.machine.assembler",
+    "sounds": [
+      {
+        "name": "fusionfactions:block/assembler",
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "machine.chemical_mixer": {
+    "subtitle": "subtitles.fusionfactions.machine.chemical_mixer",
+    "sounds": [
+      {
+        "name": "fusionfactions:block/chemical_mixer",
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "machine.circuit_fabricator": {
+    "subtitle": "subtitles.fusionfactions.machine.circuit_fabricator",
+    "sounds": [
+      {
+        "name": "fusionfactions:block/circuit_fabricator",
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "machine.crusher": {
+    "subtitle": "subtitles.fusionfactions.machine.crusher",
+    "sounds": [
+      {
+        "name": "fusionfactions:block/crusher",
+        "attenuation_distance": 12
       }
     ]
   },
@@ -30,13 +92,7 @@
     "subtitle": "subtitles.fusionfactions.missile.emp",
     "sounds": [
       {
-        "name": "minecraft:block/beacon/deactivate",
-        "pitch": 0.5
-      },
-      {
-        "name": "minecraft:random/explode2",
-        "pitch": 1.6,
-        "volume": 0.6
+        "name": "fusionfactions:missile/emp"
       }
     ]
   },
@@ -44,12 +100,13 @@
     "subtitle": "subtitles.fusionfactions.missile.explode",
     "sounds": [
       {
-        "name": "minecraft:random/explode1",
-        "pitch": 0.55
+        "name": "fusionfactions:missile/explode_1"
       },
       {
-        "name": "minecraft:random/explode3",
-        "pitch": 0.5
+        "name": "fusionfactions:missile/explode_2"
+      },
+      {
+        "name": "fusionfactions:missile/explode_3"
       }
     ]
   },
@@ -57,8 +114,7 @@
     "subtitle": "subtitles.fusionfactions.missile.incoming",
     "sounds": [
       {
-        "name": "minecraft:item/trident/riptide1",
-        "pitch": 1.8
+        "name": "fusionfactions:missile/incoming"
       }
     ]
   },
@@ -66,12 +122,7 @@
     "subtitle": "subtitles.fusionfactions.missile.launch",
     "sounds": [
       {
-        "name": "minecraft:fireworks/launch1",
-        "pitch": 0.5
-      },
-      {
-        "name": "minecraft:item/trident/riptide3",
-        "pitch": 0.6
+        "name": "fusionfactions:missile/launch"
       }
     ]
   },
@@ -79,9 +130,10 @@
     "subtitle": "subtitles.fusionfactions.missile.shot_down",
     "sounds": [
       {
-        "name": "minecraft:random/explode4",
-        "pitch": 1.3,
-        "volume": 0.8
+        "name": "fusionfactions:missile/shot_down_1"
+      },
+      {
+        "name": "fusionfactions:missile/shot_down_2"
       }
     ]
   },
@@ -89,12 +141,53 @@
     "subtitle": "subtitles.fusionfactions.radar.alert",
     "sounds": [
       {
-        "name": "minecraft:note/bit",
-        "pitch": 1.5
+        "name": "fusionfactions:missile/radar_alert"
+      }
+    ]
+  },
+  "rocket.fly": {
+    "subtitle": "subtitles.fusionfactions.rocket.fly",
+    "sounds": [
+      {
+        "name": "fusionfactions:weapon/rocket_fly",
+        "attenuation_distance": 32
+      }
+    ]
+  },
+  "silo.form_layer": {
+    "subtitle": "subtitles.fusionfactions.silo.form_layer",
+    "sounds": [
+      {
+        "name": "fusionfactions:missile/silo_form_layer"
+      }
+    ]
+  },
+  "silo.formed": {
+    "subtitle": "subtitles.fusionfactions.silo.formed",
+    "sounds": [
+      {
+        "name": "fusionfactions:missile/silo_formed"
+      }
+    ]
+  },
+  "silo.unformed": {
+    "subtitle": "subtitles.fusionfactions.silo.unformed",
+    "sounds": [
+      {
+        "name": "fusionfactions:missile/silo_unformed"
+      }
+    ]
+  },
+  "supply_crate.land": {
+    "subtitle": "subtitles.fusionfactions.supply_crate.land",
+    "sounds": [
+      {
+        "name": "fusionfactions:block/supply_crate_land_1",
+        "attenuation_distance": 32
       },
       {
-        "name": "minecraft:note/bit",
-        "pitch": 1.2
+        "name": "fusionfactions:block/supply_crate_land_2",
+        "attenuation_distance": 32
       }
     ]
   },
@@ -102,8 +195,7 @@
     "subtitle": "subtitles.fusionfactions.warning.incoming",
     "sounds": [
       {
-        "name": "minecraft:note/bell",
-        "pitch": 1.8
+        "name": "fusionfactions:ui/warning_incoming"
       }
     ]
   },
@@ -111,8 +203,7 @@
     "subtitle": "subtitles.fusionfactions.warning.locked",
     "sounds": [
       {
-        "name": "minecraft:note/pling",
-        "pitch": 1.4
+        "name": "fusionfactions:ui/warning_locked"
       }
     ]
   },
@@ -120,8 +211,7 @@
     "subtitle": "subtitles.fusionfactions.warning.seeking",
     "sounds": [
       {
-        "name": "minecraft:note/pling",
-        "pitch": 0.8
+        "name": "fusionfactions:ui/warning_seeking"
       }
     ]
   },
@@ -129,10 +219,16 @@
     "subtitle": "subtitles.fusionfactions.weapon.auto_pistol.fire",
     "sounds": [
       {
-        "name": "minecraft:item/crossbow/shoot2",
-        "pitch": 1.7,
-        "attenuation_distance": 48,
-        "volume": 0.9
+        "name": "fusionfactions:weapon/auto_pistol_fire_1",
+        "attenuation_distance": 48
+      },
+      {
+        "name": "fusionfactions:weapon/auto_pistol_fire_2",
+        "attenuation_distance": 48
+      },
+      {
+        "name": "fusionfactions:weapon/auto_pistol_fire_3",
+        "attenuation_distance": 48
       }
     ]
   },
@@ -140,8 +236,7 @@
     "subtitle": "subtitles.fusionfactions.weapon.empty",
     "sounds": [
       {
-        "name": "minecraft:random/click",
-        "pitch": 1.8
+        "name": "fusionfactions:weapon/empty"
       }
     ]
   },
@@ -149,10 +244,16 @@
     "subtitle": "subtitles.fusionfactions.weapon.gatling_gun.fire",
     "sounds": [
       {
-        "name": "minecraft:item/crossbow/shoot1",
-        "pitch": 2.0,
-        "attenuation_distance": 48,
-        "volume": 0.6
+        "name": "fusionfactions:weapon/gatling_gun_fire_1",
+        "attenuation_distance": 48
+      },
+      {
+        "name": "fusionfactions:weapon/gatling_gun_fire_2",
+        "attenuation_distance": 48
+      },
+      {
+        "name": "fusionfactions:weapon/gatling_gun_fire_3",
+        "attenuation_distance": 48
       }
     ]
   },
@@ -160,10 +261,8 @@
     "subtitle": "subtitles.fusionfactions.weapon.gatling_gun.spin",
     "sounds": [
       {
-        "name": "minecraft:item/trident/riptide1",
-        "pitch": 1.6,
-        "attenuation_distance": 32,
-        "volume": 0.8
+        "name": "fusionfactions:weapon/gatling_gun_spin",
+        "attenuation_distance": 32
       }
     ]
   },
@@ -171,8 +270,7 @@
     "subtitle": "subtitles.fusionfactions.weapon.headshot",
     "sounds": [
       {
-        "name": "minecraft:random/orb",
-        "pitch": 1.6
+        "name": "fusionfactions:weapon/headshot"
       }
     ]
   },
@@ -180,8 +278,10 @@
     "subtitle": "subtitles.fusionfactions.weapon.hit",
     "sounds": [
       {
-        "name": "minecraft:random/successful_hit",
-        "pitch": 1.2
+        "name": "fusionfactions:weapon/hit_1"
+      },
+      {
+        "name": "fusionfactions:weapon/hit_2"
       }
     ]
   },
@@ -189,8 +289,15 @@
     "subtitle": "subtitles.fusionfactions.weapon.pistol.fire",
     "sounds": [
       {
-        "name": "minecraft:item/crossbow/shoot1",
-        "pitch": 1.5,
+        "name": "fusionfactions:weapon/pistol_fire_1",
+        "attenuation_distance": 48
+      },
+      {
+        "name": "fusionfactions:weapon/pistol_fire_2",
+        "attenuation_distance": 48
+      },
+      {
+        "name": "fusionfactions:weapon/pistol_fire_3",
         "attenuation_distance": 48
       }
     ]
@@ -199,12 +306,13 @@
     "subtitle": "subtitles.fusionfactions.weapon.reload",
     "sounds": [
       {
-        "name": "minecraft:item/crossbow/loading_middle1",
-        "pitch": 1.4
+        "name": "fusionfactions:weapon/reload_1"
       },
       {
-        "name": "minecraft:item/crossbow/loading_middle2",
-        "pitch": 1.4
+        "name": "fusionfactions:weapon/reload_2"
+      },
+      {
+        "name": "fusionfactions:weapon/reload_3"
       }
     ]
   },
@@ -212,8 +320,7 @@
     "subtitle": "subtitles.fusionfactions.weapon.reload_done",
     "sounds": [
       {
-        "name": "minecraft:item/crossbow/loading_end",
-        "pitch": 1.2
+        "name": "fusionfactions:weapon/reload_done"
       }
     ]
   },
@@ -221,12 +328,10 @@
     "subtitle": "subtitles.fusionfactions.weapon.rocket.explode",
     "sounds": [
       {
-        "name": "minecraft:random/explode2",
-        "pitch": 1.2
+        "name": "fusionfactions:weapon/rocket_explode_1"
       },
       {
-        "name": "minecraft:random/explode4",
-        "pitch": 1.1
+        "name": "fusionfactions:weapon/rocket_explode_2"
       }
     ]
   },
@@ -234,13 +339,12 @@
     "subtitle": "subtitles.fusionfactions.weapon.rocket_launcher.fire",
     "sounds": [
       {
-        "name": "minecraft:fireworks/launch1",
-        "pitch": 0.5
+        "name": "fusionfactions:weapon/rocket_launcher_fire_1",
+        "attenuation_distance": 64
       },
       {
-        "name": "minecraft:random/explode1",
-        "pitch": 2.0,
-        "volume": 0.3
+        "name": "fusionfactions:weapon/rocket_launcher_fire_2",
+        "attenuation_distance": 64
       }
     ]
   },
@@ -248,8 +352,15 @@
     "subtitle": "subtitles.fusionfactions.weapon.shotgun.fire",
     "sounds": [
       {
-        "name": "minecraft:fireworks/blast1",
-        "pitch": 1.1,
+        "name": "fusionfactions:weapon/shotgun_fire_1",
+        "attenuation_distance": 48
+      },
+      {
+        "name": "fusionfactions:weapon/shotgun_fire_2",
+        "attenuation_distance": 48
+      },
+      {
+        "name": "fusionfactions:weapon/shotgun_fire_3",
         "attenuation_distance": 48
       }
     ]
@@ -258,10 +369,16 @@
     "subtitle": "subtitles.fusionfactions.weapon.smg.fire",
     "sounds": [
       {
-        "name": "minecraft:item/crossbow/shoot3",
-        "pitch": 1.9,
-        "attenuation_distance": 48,
-        "volume": 0.8
+        "name": "fusionfactions:weapon/smg_fire_1",
+        "attenuation_distance": 48
+      },
+      {
+        "name": "fusionfactions:weapon/smg_fire_2",
+        "attenuation_distance": 48
+      },
+      {
+        "name": "fusionfactions:weapon/smg_fire_3",
+        "attenuation_distance": 48
       }
     ]
   },
@@ -269,10 +386,16 @@
     "subtitle": "subtitles.fusionfactions.weapon.sniper_rifle.fire",
     "sounds": [
       {
-        "name": "minecraft:random/explode2",
-        "pitch": 1.6,
-        "attenuation_distance": 96,
-        "volume": 0.7
+        "name": "fusionfactions:weapon/sniper_rifle_fire_1",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "fusionfactions:weapon/sniper_rifle_fire_2",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "fusionfactions:weapon/sniper_rifle_fire_3",
+        "attenuation_distance": 96
       }
     ]
   }
