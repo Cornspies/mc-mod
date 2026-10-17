@@ -55,6 +55,7 @@ public final class ModCreativeTabs {
                 output.accept(ModItems.SILO_CASING.get());
                 output.accept(ModItems.RADAR.get());
                 output.accept(ModItems.INTERCEPTOR.get());
+                output.accept(ModItems.INTERCEPTOR_ROCKET.get());
                 output.accept(ModItems.TARGET_DESIGNATOR.get());
                 for (MissileType type : MissileType.values()) {
                     for (int tier = 1; tier <= MissileType.MAX_TIER; tier++) {

@@ -331,6 +331,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 .ticks(200)
                 .save(this.output, "interceptor");
 
+        // Interceptor ammo (D66): an airframe, rocket fuel and a basic chip make four.
+        this.machine(Machine.ASSEMBLER, ModItems.INTERCEPTOR_ROCKET.get(), 4)
+                .input(ModItems.AIRFRAME.get())
+                .input(ModItems.ROCKET_FUEL.get())
+                .input(ModItems.BASIC_CHIP.get())
+                .save(this.output, "interceptor_rocket");
+
         // Rocket launcher gear (D62, D63, D65, DESIGN.md §6b.6, §6b.7). The launcher itself is crate-only. Rockets differ
         // from an explosive missile I by the battery.
         this.machine(Machine.ASSEMBLER, ModItems.ROCKET.get(), 4)

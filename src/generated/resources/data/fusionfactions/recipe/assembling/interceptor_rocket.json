@@ -1,0 +1,21 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:airframe"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:rocket_fuel"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:basic_chip"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "id": "fusionfactions:interceptor_rocket"
+  }
+}

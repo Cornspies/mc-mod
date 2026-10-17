@@ -5,7 +5,7 @@
 - crusher, chemical mixer, circuit fabricator and assembler (front, lit front, side, top)
 - machine screens: a panel with the machine's slots, a readout on the left (not on the assembler), an energy gauge on
   the right and the player's inventory, plus each machine's extras (the generator's flame, the charging station's
-  charge bar, the processing machines' progress arrow)
+  charge bar, the processing machines' progress arrow), and the interceptor's screen with its rocket slot
 
 The 3D models of the solar panel and the cable are in tools/machine_models.py.
 
@@ -361,6 +361,8 @@ def main():
     write_png(ASSETS / 'block/fe_cable.png', 16, 16, cable())
     write_png(ASSETS / 'gui/container/combustion_generator.png', 256, 256, machine_gui([(89, 53)], generator_extra))
     write_png(ASSETS / 'gui/container/charging_station.png', 256, 256, machine_gui([(89, 35)], charging_extra))
+    # The interceptor's menu (DESIGN.md §6b.8): its rocket slot, the readout and the gauge.
+    write_png(ASSETS / 'gui/container/interceptor.png', 256, 256, machine_gui([(89, 35)]))
     for name, (inputs, output, arrow, readout) in PROCESSING.items():
         write_png(ASSETS / f'gui/container/{name}.png', 256, 256, machine_gui(inputs + [output], arrow_extra(arrow), readout))
         for kind in ('front', 'front_on', 'side', 'top'):

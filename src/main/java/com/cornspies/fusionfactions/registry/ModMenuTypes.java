@@ -6,6 +6,7 @@ import java.util.Map;
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.industry.Machine;
 import com.cornspies.fusionfactions.industry.ProcessingMachineBlockEntity;
+import com.cornspies.fusionfactions.missile.InterceptorBlockEntity;
 import com.cornspies.fusionfactions.missile.MissileLauncherMenu;
 import com.cornspies.fusionfactions.missile.RadarMenu;
 import com.cornspies.fusionfactions.power.ChargingStationBlockEntity;
@@ -38,6 +39,10 @@ public final class ModMenuTypes {
             () -> new MenuType<>(CombustionGeneratorBlockEntity::clientMenu, FeatureFlags.VANILLA_SET));
     public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> CHARGING_STATION = MENU_TYPES.register("charging_station",
             () -> new MenuType<>(ChargingStationBlockEntity::clientMenu, FeatureFlags.VANILLA_SET));
+
+    // The interceptor's rocket slot (D66) uses the machine menu too.
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> INTERCEPTOR = MENU_TYPES.register("interceptor",
+            () -> new MenuType<>(InterceptorBlockEntity::clientMenu, FeatureFlags.VANILLA_SET));
 
     private static final Map<Machine, DeferredHolder<MenuType<?>, MenuType<MachineMenu>>> MACHINES = new EnumMap<>(Machine.class);
 

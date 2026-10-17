@@ -63,6 +63,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> SILO_CONTROLLER = ITEMS.registerSimpleBlockItem(ModBlocks.SILO_CONTROLLER);
     public static final DeferredItem<BlockItem> RADAR = ITEMS.registerSimpleBlockItem(ModBlocks.RADAR);
     public static final DeferredItem<BlockItem> INTERCEPTOR = ITEMS.registerSimpleBlockItem(ModBlocks.INTERCEPTOR);
+    // An interceptor's ammo (D66), one per shot.
+    public static final DeferredItem<Item> INTERCEPTOR_ROCKET = ITEMS.registerSimpleItem("interceptor_rocket", properties -> properties.stacksTo(16));
 
     // Resources (D69, DESIGN.md §6b.2): ores, what they drop, and what they are smelted or ground into.
     public static final DeferredItem<BlockItem> BAUXITE_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.BAUXITE_ORE);

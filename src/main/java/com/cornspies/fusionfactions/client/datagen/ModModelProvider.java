@@ -137,6 +137,8 @@ public class ModModelProvider extends ModelProvider {
             }
         }
         itemModels.generateFlatItem(ModItems.TARGET_DESIGNATOR.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        // The interceptor's ammo (D66), a 64x64 icon from tools/missile_icons.py.
+        itemModels.generateFlatItem(ModItems.INTERCEPTOR_ROCKET.get(), ModelTemplates.FLAT_ITEM);
 
         // Weapons use the 3D models from tools/weapon_models.py (D29), kept in src/main/resources. On top of the
         // gun, each upgrade type shows the installed part's model for its tier, or nothing (D34).

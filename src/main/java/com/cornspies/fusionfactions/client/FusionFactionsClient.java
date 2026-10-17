@@ -85,6 +85,7 @@ public class FusionFactionsClient {
         event.register(ModMenuTypes.RADAR.get(), RadarScreen::new);
         event.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         event.register(ModMenuTypes.CHARGING_STATION.get(), ChargingStationScreen::new);
+        event.register(ModMenuTypes.INTERCEPTOR.get(), InterceptorScreen::new);
         for (Machine machine : Machine.values()) {
             event.register(ModMenuTypes.machine(machine),
                     (MachineMenu menu, Inventory inventory, Component title) -> new ProcessingMachineScreen(machine, menu, inventory, title));

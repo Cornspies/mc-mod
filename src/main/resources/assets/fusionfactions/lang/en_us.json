@@ -279,10 +279,6 @@
   "fusionfactions.radar.incoming": "It comes down in range in %s s!",
   "fusionfactions.radar.passing": "It is passing by.",
   "fusionfactions.missile.shot_down": "Missile shot down!",
-  "fusionfactions.interceptor.ready": "Interceptor ready, covers %s blocks",
-  "fusionfactions.interceptor.reloading": "Interceptor reloading",
-  "fusionfactions.interceptor.no_power": "Interceptor needs %s FE per shot",
-  "fusionfactions.interceptor.disabled": "Interceptor shut down by an EMP: %s s",
   "entity.fusionfactions.interceptor_rocket": "Interceptor Rocket",
   "subtitles.fusionfactions.missile.shot_down": "Missile bursts",
   "subtitles.fusionfactions.radar.alert": "Radar alarm",
@@ -385,5 +381,14 @@
   "fusionfactions.configuration.lockConeDegrees": "Lock Cone (degrees)",
   "fusionfactions.configuration.turnDegrees": "Rocket Turn Rate (degrees per tick)",
   "fusionfactions.configuration.blastRadius": "Rocket Blast Radius (blocks)",
-  "fusionfactions.configuration.radarDrain": "Handheld Radar Use (FE/t)"
+  "fusionfactions.configuration.radarDrain": "Handheld Radar Use (FE/t)",
+  "item.fusionfactions.interceptor_rocket": "Interceptor Rocket",
+  "container.fusionfactions.interceptor": "Interceptor",
+  "fusionfactions.interceptor.state.ready": "Ready",
+  "fusionfactions.interceptor.state.reloading": "Reloading",
+  "fusionfactions.interceptor.state.no_power": "No power",
+  "fusionfactions.interceptor.state.no_rockets": "No rockets",
+  "fusionfactions.interceptor.state.disabled": "EMP: %s s",
+  "fusionfactions.interceptor.rockets": "Rockets: %s",
+  "fusionfactions.interceptor.range": "Range %s"
 }

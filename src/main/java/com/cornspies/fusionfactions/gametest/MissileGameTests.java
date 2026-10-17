@@ -86,6 +86,8 @@ public final class MissileGameTests {
             TEST_FUNCTIONS.register("missile_shot_down", () -> MissileGameTests::missileShotDown);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> INTERCEPTOR_STOPS_MISSILE =
             TEST_FUNCTIONS.register("interceptor_stops_missile", () -> MissileGameTests::interceptorStopsMissile);
+    private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> INTERCEPTOR_NEEDS_ROCKETS =
+            TEST_FUNCTIONS.register("interceptor_needs_rockets", () -> MissileGameTests::interceptorNeedsRockets);
     private static final DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> RADAR_TRACKS_MISSILE =
             TEST_FUNCTIONS.register("radar_tracks_missile", () -> MissileGameTests::radarTracksMissile);
 
@@ -98,8 +100,8 @@ public final class MissileGameTests {
 
     static void register(RegisterGameTestsEvent event, Holder<TestEnvironmentDefinition<?>> environment) {
         for (var function : List.of(MISSILE_HITS_TARGET, LAUNCHER_CHECKS, RAID_WINDOWS, BREACHING_BREAKS_OBSIDIAN, EMP_SHUTS_DOWN_LAUNCHER,
-                INCENDIARY_SETS_FIRE, SILO_STRUCTURE, SILO_FORMS, MISSILE_SHOT_DOWN, INTERCEPTOR_STOPS_MISSILE, RADAR_TRACKS_MISSILE)) {
-            int padding = function == INTERCEPTOR_STOPS_MISSILE ? INTERCEPTOR_PADDING : PADDING;
+                INCENDIARY_SETS_FIRE, SILO_STRUCTURE, SILO_FORMS, MISSILE_SHOT_DOWN, INTERCEPTOR_STOPS_MISSILE, INTERCEPTOR_NEEDS_ROCKETS, RADAR_TRACKS_MISSILE)) {
+            int padding = function == INTERCEPTOR_STOPS_MISSILE || function == INTERCEPTOR_NEEDS_ROCKETS ? INTERCEPTOR_PADDING : PADDING;
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, padding);
             event.registerTest(function.getId(), new FunctionGameTestInstance(function.key(), data));
@@ -408,18 +410,38 @@ public final class MissileGameTests {
                 .thenSucceed();
     }
 
-    // An interceptor next to the target shoots the missile down before it lands.
+    // An interceptor next to the target shoots the missile down before it lands, using one of its rockets.
     private static void interceptorStopsMissile(GameTestHelper helper) {
         BlockPos top = platform(helper, 6, 6);
         helper.setBlock(top.offset(0, 1, 3), ModBlocks.INTERCEPTOR.get());
-        charge(helper.getBlockEntity(top.offset(0, 1, 3), InterceptorBlockEntity.class).energy(), 50_000);
+        InterceptorBlockEntity interceptor = helper.getBlockEntity(top.offset(0, 1, 3), InterceptorBlockEntity.class);
+        charge(interceptor.energy(), 50_000);
+        interceptor.setItem(InterceptorBlockEntity.SLOT, new ItemStack(ModItems.INTERCEPTOR_ROCKET.get(), 4));
         MissileFlight flight = launchAt(helper, MissileType.EXPLOSIVE, 1, top);
         helper.startSequence()
                 .thenWaitUntil(() -> helper.assertTrue(landed(helper, flight), "the missile should be gone"))
                 .thenExecuteAfter(20, () -> {
                     helper.assertBlockPresent(Blocks.STONE, top);
                     helper.assertBlockPresent(ModBlocks.INTERCEPTOR.get(), top.offset(0, 1, 3));
+                    helper.assertValueEqual(interceptor.getItem(InterceptorBlockEntity.SLOT).getCount(), 3, "interceptor rockets left");
                 })
+                .thenSucceed();
+    }
+
+    // Without rockets an interceptor stays quiet, however much FE it has (D66), and says why.
+    private static void interceptorNeedsRockets(GameTestHelper helper) {
+        BlockPos top = platform(helper, 6, 6);
+        helper.setBlock(top.offset(0, 1, 3), ModBlocks.INTERCEPTOR.get());
+        InterceptorBlockEntity interceptor = helper.getBlockEntity(top.offset(0, 1, 3), InterceptorBlockEntity.class);
+        charge(interceptor.energy(), 50_000);
+        helper.assertTrue(!interceptor.canPlaceItem(InterceptorBlockEntity.SLOT, new ItemStack(ModItems.AMMO.get())),
+                "the slot should only take interceptor rockets");
+        MissileFlight flight = launchAt(helper, MissileType.EXPLOSIVE, 1, top);
+        helper.startSequence()
+                .thenWaitUntil(() -> helper.assertTrue(landed(helper, flight), "the missile should land"))
+                .thenExecute(() -> helper.assertTrue(interceptor.status() == InterceptorBlockEntity.Status.NO_ROCKETS,
+                        "the interceptor should say it has no rockets"))
+                .thenExecuteAfter(5, () -> helper.assertBlockNotPresent(Blocks.STONE, top))
                 .thenSucceed();
     }
 

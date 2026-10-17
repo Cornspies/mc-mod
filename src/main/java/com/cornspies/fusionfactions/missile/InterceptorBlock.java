@@ -22,7 +22,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-// Interceptor (D53). Works on its own; right click shows what it's doing.
+// Interceptor (D53, D66). Works on its own; right click opens its menu (rocket slot, state, energy).
 public class InterceptorBlock extends BaseEntityBlock {
     // The housing and the launch pod (tools/machine_models.py).
     private static final VoxelShape SHAPE = Shapes.or(Block.box(0, 0, 0, 16, 7, 16), Block.box(3, 7, 3, 13, 15, 13));
@@ -43,14 +43,15 @@ public class InterceptorBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (level instanceof ServerLevel serverLevel && level.getBlockEntity(pos) instanceof InterceptorBlockEntity interceptor) {
-            player.sendOverlayMessage(interceptor.status(serverLevel));
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof InterceptorBlockEntity interceptor) {
+            player.openMenu(interceptor);
         }
         return InteractionResult.SUCCESS;
     }
 
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntityTypes.INTERCEPTOR.get(), InterceptorBlockEntity::serverTick);
+        return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntityTypes.INTERCEPTOR.get(),
+                (tickLevel, pos, tickState, interceptor) -> interceptor.serverTick((ServerLevel) tickLevel));
     }
 }

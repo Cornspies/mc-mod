@@ -1,18 +1,33 @@
 package com.cornspies.fusionfactions.missile;
 
+import java.util.List;
+
 import org.jspecify.annotations.Nullable;
 
+import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.config.MissileConfig;
+import com.cornspies.fusionfactions.power.MachineBlockEntity;
+import com.cornspies.fusionfactions.power.MachineMenu;
 import com.cornspies.fusionfactions.registry.ModBlockEntityTypes;
+import com.cornspies.fusionfactions.registry.ModBlocks;
+import com.cornspies.fusionfactions.registry.ModItems;
+import com.cornspies.fusionfactions.registry.ModMenuTypes;
 import com.cornspies.fusionfactions.registry.ModSounds;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -20,44 +35,63 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.neoforged.neoforge.transfer.energy.EnergyHandler;
-import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 
-// Interceptor (D53, DESIGN.md §6.9): fires a homing rocket at the closest missile coming down within its range
-// that it can see, one shot per cooldown, as long as the missile still needs one. Works for anyone (D58). It always
-// needs FE, whatever requirePower says (D66).
-public class InterceptorBlockEntity extends BlockEntity implements EmpTarget {
+// Interceptor (D53, D66, DESIGN.md §6.9, §6b.8): fires a homing rocket at the closest missile coming down within its
+// range that it can see, one shot per cooldown, as long as the missile still needs one. Every shot uses one
+// interceptor rocket from its slot (hoppers can fill it) and FE, whatever requirePower says. Works for anyone (D58);
+// right click opens its menu.
+public class InterceptorBlockEntity extends MachineBlockEntity implements EmpTarget {
+    public static final int SLOT = 0;
+    public static final int MAX_ROCKETS = 16;
+    public static final int CAPACITY = 100_000;
+    private static final int MAX_INSERT = 10_000;
     private static final int SEARCH_INTERVAL_TICKS = 2;
-    private static final int ENERGY_CAPACITY = 100_000;
-    private static final int ENERGY_MAX_INSERT = 10_000;
+    public static final List<MachineMenu.SlotSpec> SLOTS = List.of(new MachineMenu.SlotSpec(89, 35, true));
+    // Data slots: energy per mille, rockets in the slot, status, seconds left of an EMP shutdown.
+    public static final int DATA_COUNT = 4;
 
-    private final SimpleEnergyHandler energy = new SimpleEnergyHandler(ENERGY_CAPACITY, ENERGY_MAX_INSERT, 0) {
-        @Override
-        protected void onEnergyChanged(int previousAmount) {
-            InterceptorBlockEntity.this.setChanged();
-        }
-    };
+    public enum Status {
+        READY,
+        RELOADING,
+        NO_POWER,
+        NO_ROCKETS,
+        DISABLED
+    }
+
     private long cooldownUntil;
     private long disabledUntil;
+    private long now;
+
+    private final ContainerData data = new ContainerData() {
+        @Override
+        public int get(int index) {
+            InterceptorBlockEntity interceptor = InterceptorBlockEntity.this;
+            return switch (index) {
+                case 0 -> interceptor.energyPerMille();
+                case 1 -> interceptor.items.get(SLOT).getCount();
+                case 2 -> interceptor.status().ordinal();
+                default -> (int) Math.max(0L, (interceptor.disabledUntil - interceptor.now + 19) / 20);
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+        }
+
+        @Override
+        public int getCount() {
+            return DATA_COUNT;
+        }
+    };
 
     public InterceptorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntityTypes.INTERCEPTOR.get(), pos, state);
+        super(ModBlockEntityTypes.INTERCEPTOR.get(), pos, state, 1, CAPACITY, MAX_INSERT, 0);
     }
 
-    public EnergyHandler energy() {
-        return this.energy;
-    }
-
-    public static void serverTick(Level level, BlockPos pos, BlockState state, InterceptorBlockEntity interceptor) {
-        if (level instanceof ServerLevel serverLevel && level.getGameTime() % SEARCH_INTERVAL_TICKS == 0) {
-            interceptor.tick(serverLevel);
-        }
-    }
-
-    private void tick(ServerLevel level) {
-        long now = level.getGameTime();
-        if (now < this.cooldownUntil || now < this.disabledUntil
-                || this.energy.getAmountAsLong() < MissileConfig.interceptorEnergy()) {
+    @Override
+    public void serverTick(ServerLevel level) {
+        this.now = level.getGameTime();
+        if (this.now % SEARCH_INTERVAL_TICKS != 0 || this.status() != Status.READY) {
             return;
         }
         Vec3 muzzle = Vec3.atBottomCenterOf(this.worldPosition.above());
@@ -67,9 +101,32 @@ public class InterceptorBlockEntity extends BlockEntity implements EmpTarget {
         }
         level.addFreshEntity(new InterceptorRocketEntity(level, muzzle, target, MissileConfig.interceptorDamage()));
         level.playSound(null, this.worldPosition, ModSounds.INTERCEPTOR_LAUNCH.get(), SoundSource.BLOCKS, 4.0F, 1.0F);
+        this.items.get(SLOT).shrink(1);
         this.energy.set(this.energy.getAmountAsInt() - MissileConfig.interceptorEnergy());
-        this.cooldownUntil = now + MissileConfig.interceptorCooldownTicks();
+        this.cooldownUntil = this.now + MissileConfig.interceptorCooldownTicks();
         this.setChanged();
+    }
+
+    // What keeps it from firing, most important first; READY if nothing does.
+    public Status status() {
+        if (this.now < this.disabledUntil) {
+            return Status.DISABLED;
+        }
+        if (this.energy.getAmountAsLong() < MissileConfig.interceptorEnergy()) {
+            return Status.NO_POWER;
+        }
+        if (this.items.get(SLOT).isEmpty()) {
+            return Status.NO_ROCKETS;
+        }
+        if (this.now < this.cooldownUntil) {
+            return Status.RELOADING;
+        }
+        return Status.READY;
+    }
+
+    public static Status status(MachineMenu menu) {
+        Status[] values = Status.values();
+        return values[Math.floorMod(menu.data(2), values.length)];
     }
 
     // The closest missile on its way down in range and in sight that still needs fire.
@@ -90,21 +147,6 @@ public class InterceptorBlockEntity extends BlockEntity implements EmpTarget {
         return best;
     }
 
-    // What the interceptor is doing, for players who click it.
-    public Component status(ServerLevel level) {
-        long now = level.getGameTime();
-        if (now < this.disabledUntil) {
-            return Component.translatable("fusionfactions.interceptor.disabled", (this.disabledUntil - now + 19) / 20);
-        }
-        if (this.energy.getAmountAsLong() < MissileConfig.interceptorEnergy()) {
-            return Component.translatable("fusionfactions.interceptor.no_power", MissileConfig.interceptorEnergy());
-        }
-        if (now < this.cooldownUntil) {
-            return Component.translatable("fusionfactions.interceptor.reloading");
-        }
-        return Component.translatable("fusionfactions.interceptor.ready", MissileConfig.interceptorRange());
-    }
-
     @Override
     public void empHit(long disabledUntil) {
         this.energy.set(0);
@@ -113,9 +155,42 @@ public class InterceptorBlockEntity extends BlockEntity implements EmpTarget {
     }
 
     @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return stack.is(ModItems.INTERCEPTOR_ROCKET.get());
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return MAX_ROCKETS;
+    }
+
+    // Hoppers fill it but can't empty it.
+    @Override
+    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
+        return false;
+    }
+
+    @Override
+    protected Component getDefaultName() {
+        return Component.translatable("container." + FusionFactions.MODID + ".interceptor");
+    }
+
+    @Override
+    protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
+        return menu(containerId, inventory, this, this.data, ContainerLevelAccess.create(this.level, this.worldPosition));
+    }
+
+    public static MachineMenu clientMenu(int containerId, Inventory inventory) {
+        return menu(containerId, inventory, new SimpleContainer(SLOTS.size()), new SimpleContainerData(DATA_COUNT), ContainerLevelAccess.NULL);
+    }
+
+    private static MachineMenu menu(int containerId, Inventory inventory, Container container, ContainerData data, ContainerLevelAccess access) {
+        return new MachineMenu(ModMenuTypes.INTERCEPTOR.get(), containerId, inventory, container, data, access, ModBlocks.INTERCEPTOR.get(), SLOTS);
+    }
+
+    @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        this.energy.serialize(output.child("Energy"));
         output.putLong("CooldownUntil", this.cooldownUntil);
         output.putLong("DisabledUntil", this.disabledUntil);
     }
@@ -123,7 +198,6 @@ public class InterceptorBlockEntity extends BlockEntity implements EmpTarget {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        input.child("Energy").ifPresent(this.energy::deserialize);
         this.cooldownUntil = input.getLongOr("CooldownUntil", 0L);
         this.disabledUntil = input.getLongOr("DisabledUntil", 0L);
     }
