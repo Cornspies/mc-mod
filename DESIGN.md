@@ -1,7 +1,7 @@
 # Fusion Factions — Design Document
 
 > **Mod ID:** `fusionfactions` · **Package:** `com.cornspies.fusionfactions` · **License:** MIT
-> **Status:** Phase 1 released as v0.1.0; Phase 2 released as v0.2.0; Phase 3 built (M11–M15), waiting for the release playtest · **Last updated:** 2026-10-17
+> **Status:** Phase 1 released as v0.1.0; Phase 2 released as v0.2.0; Phase 3 released as v0.3.0 · **Last updated:** 2026-10-17
 > **Audience:** the project owner and the coding agent (Claude Code). Read together with `CLAUDE.md`.
 
 ---
@@ -635,7 +635,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | **M12 Power** ✅ *done 2026-10-16* | Combustion generator, solar panel, FE cable network, charging station, `requirePower` default true, game tests. |
 | **M13 Machines and materials** ✅ *done 2026-10-17* | Crusher, chemical mixer, circuit fabricator, assembler with their recipe types; silicon, wafers, chips I–III, rocket fuel, battery, airframe; new recipes for missiles, missile blocks and weapon parts and ammo (D72). |
 | **M14 Rocket launcher** ✅ *done 2026-10-17* | Rocket launcher weapon and model, rockets, lock-on, guided rocket, tactical helmet with implant, handheld radar, lock warning HUD and sounds. |
-| **M15 Integration & release** ✅ *implemented, waiting for the owner's playtest* | Interceptor ammo and menu, 32×32 missile icons, clearer upgrade icons, crate loot, `docs/SERVER.md`, two-player playtest, release v0.3.0. |
+| **M15 Integration & release** ✅ *done 2026-10-17, released as v0.3.0* | Interceptor ammo and menu, 32×32 missile icons, clearer upgrade icons, crate loot, `docs/SERVER.md`, two-player playtest, release v0.3.0. |
 
 ---
 
@@ -873,6 +873,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-16 | M12 details | Generator buffer 100k FE, pauses when full, pushes 2000 FE/t; solar panel 6 px high, half output in rain; cable networks split FE evenly and never send it back; charging station buffer 50k; recipes as in §6b.3; the power blocks share a machine base (menu, readout, energy gauge) that M13's machines will use. Game tests run with the dev config, so they now charge the blocks they fire and pass with `requirePower` on or off. *Provisional.* | Agent |
 | 2026-10-16 | M12 done | Owner tested generators, cables, the solar panel and power requirements, and approved them. | Owner |
 | 2026-10-16 | M13 details | Recipes and times as in §6b.4–§6b.5. A machine recipe must use every item in the input slots, so recipes are told apart by item kinds (the barrel gained a copper ingot to differ from the airframe). Rocket fuel burns 6400 ticks in furnaces and generators. Machines have a 50k FE buffer and pause without power. All four machines share one block entity and one screen, laid out per machine. *Provisional.* | Agent |
+| 2026-10-17 | M15 done, v0.3.0 | Owner tested Phase 3 (interceptor ammo, icons, crate loot) and approved it. Phase 3 released as v0.3.0; M11 to M15 merged into `main`. | Owner |
 | 2026-10-17 | Icons | Owner: the 64×64 missile icons were too detailed; redrawn at 32×32 as pixel art with flat shading, darker outlines and pixel type badges. Owner asked for clearer upgrade icons: each type now shows what it does, the sight one picture per tier, with tier pips. Then the guided rocket (looked like a sword) and the battery: the rocket is now a short, thick 32×32 pixel rocket like the missiles, the battery a black cell with a copper top, terminal, '+' and a lightning bolt. | Owner / Agent |
 | 2026-10-17 | M15 details | Interceptor rockets stack to 16, hoppers can load but not unload an interceptor; the type badge sits beside the missile on the new icons rather than on its body, so it stays readable at 16 px; the rocket launcher comes with 4–8 rockets. Version set to 0.3.0; the tag follows the owner's playtest. *Provisional.* | Agent |
 | 2026-10-17 | M14 done | Owner tested the rocket launcher, lock-on, the warning gear and the handheld radar, and approved them. | Owner |

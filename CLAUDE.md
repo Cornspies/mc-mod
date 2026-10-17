@@ -18,12 +18,12 @@ The full design, including what is decided and what is still open, is in **@DESI
 - **M8 (missile types and silo): done** (owner approved 2026-10-09).
 - **M9 (counterplay): done** (owner approved 2026-10-16). M7 to M9 are merged into `main`.
 - **M10 (integration & release): done** (owner approved 2026-10-16). **Phase 2 is released as v0.2.0** (tag `v0.2.0`). M7 to M10 are merged into `main`.
-- **Phase 3 (industry and rocket launcher, DESIGN.md §6b):** all decisions answered (D60–D74), milestones M11–M15 in §8. 
+- **Phase 3 (industry and rocket launcher, DESIGN.md §6b):** all decisions answered (D60–D74), milestones M11–M15 in §8.
 - **M11 (resources): done** (owner approved 2026-10-16), on branch `m11-resources`.
 - **M12 (power): done** (owner approved 2026-10-16), on branch `m12-power`.
 - **M13 (machines and materials): done** (owner approved 2026-10-17), on branch `m13-machines` (based on `m12-power`).
 - **M14 (rocket launcher): done** (owner approved 2026-10-17), on branch `m14-rocket-launcher` (based on `m13-machines`).
-- **M15 (integration & release): implemented** on branch `m15-release` (based on `m14-rocket-launcher`), version 0.3.0, waiting for the owner's playtest. Tag `v0.3.0` and merge into `main` only when the owner says so.
+- **M15 (integration & release): done** (owner approved 2026-10-17). **Phase 3 is released as v0.3.0** (tag `v0.3.0`). M11 to M15 are merged into `main`.
 - Missile models come from `tools/missile_models.py`, the 32x32 missile, interceptor rocket and guided rocket icons from `tools/missile_icons.py`, the designator icon, launcher textures and screen from `tools/missile_textures.py`, the formed silo's textures and models from `tools/silo_textures.py`, the radar, interceptor and interceptor rocket models from `tools/machine_models.py`, ore overlays, ore models and material icons from `tools/resource_textures.py`, power block and machine textures and machine screens from `tools/power_textures.py` (solar panel and cable models in `tools/machine_models.py`), the helmet (icon and worn), implant and handheld radar textures from `tools/gear_textures.py` (the guided rocket's icon from `tools/missile_icons.py`) (the launcher's model from `tools/weapon_models.py`, the guided rocket's from `tools/machine_models.py`).
 - Aim positions for first person come from `tools/weapon_models.py` too (`weapon_aim.json`).
 - Upgrade values and the fields per weapon are in the synced config (`[weaponUpgrades]`). Part models come from `tools/weapon_models.py`, part icons and the workbench's field silhouettes from `tools/upgrade_icons.py`, the other workbench textures from `tools/workbench_textures.py`.
