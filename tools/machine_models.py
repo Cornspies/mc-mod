@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Generates the 3D models of the radar, the interceptor and the interceptor's rocket (DESIGN.md §6.9).
+"""Generates the 3D models of the radar, the interceptor, the rockets (DESIGN.md §6.9, §6b.6) and the power blocks.
 
 - radar: a housing with a scope screen (the block), and a dish on a mast that the client turns while the radar is
   online (client.RadarDishRenderer draws block/radar_dish on its own). block/radar_inventory has both, for the item.
 - interceptor: a housing with a launch pod of four tubes on top.
-- interceptor rocket: a small rocket, drawn by client.InterceptorRocketRenderer.
+- interceptor rocket: a small rocket, drawn by client.RocketRenderer.
+- guided rocket: the rocket launcher's rocket (DESIGN.md §6b.6), dark with a glowing seeker in the nose, drawn by
+  client.RocketRenderer too.
 - solar panel: a 6 pixel high panel; FE cable: a core and one arm per connected side (multipart, see
   client.datagen.ModModelProvider), and an inventory model with two arms.
 
@@ -102,6 +104,21 @@ def rocket():
             *fins]
 
 
+# The rocket launcher's rocket: nose up (+y), centred on x and z 8, 16 pixels long. A dark body with a light warhead,
+# a glowing seeker eye at the tip, four fins and the motor's glow at the back.
+def guided_rocket():
+    fins = [box((5.6, 1, 7.7), (7.0, 5, 8.3), DARK), box((9.0, 1, 7.7), (10.4, 5, 8.3), DARK),
+            box((7.7, 1, 5.6), (8.3, 5, 7.0), DARK), box((7.7, 1, 9.0), (8.3, 5, 10.4), DARK)]
+    return [box((7.3, 0, 7.3), (8.7, 1, 8.7), ORANGE, glow=True),
+            box((7.0, 1, 7.0), (9.0, 11, 9.0), DARK),
+            box((6.9, 4, 6.9), (9.1, 4.6, 9.1), ORANGE, glow=True),
+            box((6.9, 9, 6.9), (9.1, 10, 9.1), METAL),
+            box((7.1, 11, 7.1), (8.9, 14, 8.9), LIGHT),
+            box((7.4, 14, 7.4), (8.6, 15.4, 8.6), LIGHT),
+            box((7.7, 15.4, 7.7), (8.3, 16, 8.3), CYAN, glow=True),
+            *fins]
+
+
 def solar_panel():
     side = ('side', (0, 10, 16, 16))
     return [textured((0, 0, 0), (16, 6, 16), {**{s: side for s in SIDES}, 'up': ('top', (0, 0, 16, 16)), 'down': ('bottom', (0, 0, 16, 16))},
@@ -143,6 +160,7 @@ def main():
           {'side': tex('interceptor_side'), 'top': tex('interceptor_top'), 'bottom': tex('interceptor_bottom'), 'pod': tex('interceptor_pod'),
            'pod_top': tex('interceptor_pod_top'), 'particle': tex('interceptor_top')}, 'minecraft:block/block')
     write(models / 'entity/interceptor_rocket.json', rocket(), {'particle': tex('machine_palette')})
+    write(models / 'entity/guided_rocket.json', guided_rocket(), {'particle': tex('machine_palette')})
     write(models / 'block/solar_panel.json', solar_panel(), {'side': tex('solar_panel_side'), 'top': tex('solar_panel_top'),
                                                             'bottom': tex('solar_panel_bottom'), 'particle': tex('solar_panel_top')}, 'minecraft:block/block')
     cable = {'cable': tex('fe_cable'), 'particle': tex('fe_cable')}
@@ -154,7 +172,7 @@ def main():
         element['faces']['south']['cullface'] = 'south'
         del element['faces']['north']['cullface']
     write(models / 'block/fe_cable_inventory.json', cable_core() + cable_arm() + south, cable, 'minecraft:block/block')
-    print('wrote radar, interceptor, rocket, solar panel and cable models')
+    print('wrote radar, interceptor, rocket, guided rocket, solar panel and cable models')
 
 
 if __name__ == '__main__':

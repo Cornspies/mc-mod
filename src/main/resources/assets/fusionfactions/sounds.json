@@ -8,6 +8,24 @@
       }
     ]
   },
+  "lock.locked": {
+    "subtitle": "subtitles.fusionfactions.lock.locked",
+    "sounds": [
+      {
+        "name": "minecraft:note/bit",
+        "pitch": 2.0
+      }
+    ]
+  },
+  "lock.seeking": {
+    "subtitle": "subtitles.fusionfactions.lock.seeking",
+    "sounds": [
+      {
+        "name": "minecraft:note/bit",
+        "pitch": 1.4
+      }
+    ]
+  },
   "missile.emp": {
     "subtitle": "subtitles.fusionfactions.missile.emp",
     "sounds": [
@@ -77,6 +95,33 @@
       {
         "name": "minecraft:note/bit",
         "pitch": 1.2
+      }
+    ]
+  },
+  "warning.incoming": {
+    "subtitle": "subtitles.fusionfactions.warning.incoming",
+    "sounds": [
+      {
+        "name": "minecraft:note/bell",
+        "pitch": 1.8
+      }
+    ]
+  },
+  "warning.locked": {
+    "subtitle": "subtitles.fusionfactions.warning.locked",
+    "sounds": [
+      {
+        "name": "minecraft:note/pling",
+        "pitch": 1.4
+      }
+    ]
+  },
+  "warning.seeking": {
+    "subtitle": "subtitles.fusionfactions.warning.seeking",
+    "sounds": [
+      {
+        "name": "minecraft:note/pling",
+        "pitch": 0.8
       }
     ]
   },
@@ -169,6 +214,33 @@
       {
         "name": "minecraft:item/crossbow/loading_end",
         "pitch": 1.2
+      }
+    ]
+  },
+  "weapon.rocket.explode": {
+    "subtitle": "subtitles.fusionfactions.weapon.rocket.explode",
+    "sounds": [
+      {
+        "name": "minecraft:random/explode2",
+        "pitch": 1.2
+      },
+      {
+        "name": "minecraft:random/explode4",
+        "pitch": 1.1
+      }
+    ]
+  },
+  "weapon.rocket_launcher.fire": {
+    "subtitle": "subtitles.fusionfactions.weapon.rocket_launcher.fire",
+    "sounds": [
+      {
+        "name": "minecraft:fireworks/launch1",
+        "pitch": 0.5
+      },
+      {
+        "name": "minecraft:random/explode1",
+        "pitch": 2.0,
+        "volume": 0.3
       }
     ]
   },

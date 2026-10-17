@@ -1,0 +1,29 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:advanced_chip"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:battery"
+    },
+    {
+      "count": 1,
+      "ingredient": "minecraft:compass"
+    },
+    {
+      "count": 2,
+      "ingredient": "#c:ingots/aluminum"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:glass_panes"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:handheld_radar"
+  },
+  "ticks": 200
+}

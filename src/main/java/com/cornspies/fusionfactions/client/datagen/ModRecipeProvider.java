@@ -331,6 +331,40 @@ public class ModRecipeProvider extends RecipeProvider {
                 .ticks(200)
                 .save(this.output, "interceptor");
 
+        // Rocket launcher gear (D62, D63, D65, DESIGN.md §6b.6, §6b.7). The launcher itself is crate-only. Rockets differ
+        // from an explosive missile I by the battery.
+        this.machine(Machine.ASSEMBLER, ModItems.ROCKET.get(), 4)
+                .input(ModItems.AIRFRAME.get())
+                .input(ModItems.ROCKET_FUEL.get())
+                .input(ModItems.BASIC_CHIP.get())
+                .input(ModItems.BATTERY.get())
+                .input(Items.TNT)
+                .energy(60)
+                .ticks(200)
+                .save(this.output, "rocket");
+        this.machine(Machine.ASSEMBLER, ModItems.TACTICAL_HELMET.get(), 1)
+                .input(aluminum, 3)
+                .input(this.tag(Tags.Items.GEMS_DIAMOND), 2)
+                .input(ModItems.ADVANCED_CHIP.get())
+                .input(this.tag(Tags.BlockItems.GLASS_PANES.item()), 1)
+                .ticks(200)
+                .save(this.output, "tactical_helmet");
+        this.machine(Machine.ASSEMBLER, ModItems.THREAT_WARNING_IMPLANT.get(), 1)
+                .input(ModItems.ADVANCED_CHIP.get())
+                .input(this.tag(Tags.Items.INGOTS_GOLD), 1)
+                .input(redstone, 2)
+                .input(Items.AMETHYST_SHARD)
+                .ticks(200)
+                .save(this.output, "threat_warning_implant");
+        this.machine(Machine.ASSEMBLER, ModItems.HANDHELD_RADAR.get(), 1)
+                .input(ModItems.ADVANCED_CHIP.get())
+                .input(ModItems.BATTERY.get())
+                .input(Items.COMPASS)
+                .input(aluminum, 2)
+                .input(this.tag(Tags.BlockItems.GLASS_PANES.item()), 1)
+                .ticks(200)
+                .save(this.output, "handheld_radar");
+
         // Missiles (D48, D71): airframes, rocket fuel, the tier's chip and the type's payload. Tier III stays crate-only
         // (D57).
         this.missile(MissileType.EXPLOSIVE, List.of(payload(Items.TNT, 2)), List.of(payload(Items.TNT, 4)));

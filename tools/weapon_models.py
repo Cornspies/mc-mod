@@ -223,6 +223,51 @@ def gatling_gun():
     return parts
 
 
+def shifted(elements, dx):
+    """Moves boxes sideways (along x), e.g. sights that sit beside a weapon instead of on its middle."""
+    for element in elements:
+        element['from'][0] = round(element['from'][0] + dx, 3)
+        element['to'][0] = round(element['to'][0] + dx, 3)
+        if 'rotation' in element:
+            element['rotation']['origin'][0] = round(element['rotation']['origin'][0] + dx, 3)
+    return elements
+
+
+# The rocket launcher's sights sit on a rail on top of the seeker unit, left of the tube like on real launchers, so the
+# tube doesn't fill the view while aiming. LAUNCHER_SIGHT_X is the sight line's x.
+LAUNCHER_SIGHT_X = 4.8
+
+
+def rocket_launcher():
+    """A launch tube on the shoulder (DESIGN.md §6b.6): rings, a black muzzle with the rocket's seeker glowing inside,
+    an exhaust with the motor's glow at the back, a seeker unit with a lens and the sight rail on the left and a grip
+    under the middle."""
+    parts = [box((6, 9, -14), (10, 13, 14), DARK),
+             box((5.6, 8.6, -15), (10.4, 13.4, -14), BLACK),
+             box((6.6, 9.6, -15.05), (9.4, 12.4, -14.95), CYAN, glow=True),
+             box((5.6, 8.6, 14), (10.4, 13.4, 15), BLACK),
+             box((6.6, 9.6, 14.95), (9.4, 12.4, 15.05), ORANGE, glow=True),
+             box((7.85, 13, -11), (8.15, 13.1, 5), CYAN, glow=True),
+             # Seeker unit: lens at the front, a small screen at the back, the sight rail on top.
+             box((3.6, 9.5, -5), (6, 12.5, 1), METAL),
+             box((4.1, 12.5, -5.5), (5.5, 13.0, 2.5), BLACK),
+             *shifted(iron_sights(13.8, -5.2, 1.6, front_base=13.0), LAUNCHER_SIGHT_X - 8),
+             box((3.8, 10, -5.1), (5.8, 12, -5.0), LENS),
+             box((4.4, 10.6, -5.15), (5.2, 11.4, -5.1), CYAN, glow=True),
+             box((3.8, 10, 1.0), (5.8, 12, 1.1), LENS),
+             box((4.2, 10.4, 1.1), (4.6, 10.8, 1.15), CYAN, glow=True),
+             box((3.5, 9.3, -2.6), (3.6, 12.7, -1.4), ORANGE, glow=True),
+             # Receiver, grip and foregrip under the tube, and a shoulder rest.
+             box((7, 8, -1), (9, 9, 7), METAL),
+             *grip(4, 6.5, top=8, bottom=3, lean=10),
+             *trigger(2.5),
+             box((7.3, 5.5, -8), (8.7, 9, -6.5), LEATHER_DARK),
+             box((7, 7.2, 9), (9, 9, 13), LEATHER)]
+    for z in (-12, -3, 8):
+        parts.append(box((5.8, 8.8, z), (10.2, 13.2, z + 1), METAL))
+    return parts
+
+
 # --- Upgrade parts ------------------------------------------------------------------------------
 # Building blocks; c is the tier color. Coordinates are in the gun's own space, like the guns above.
 
@@ -378,6 +423,19 @@ PARTS = {
         'accuracy': lambda c: stabilizer(10.2, -8, -6, c),
         'range': lambda c: coils(7.5, 8.5, 10.2, 11.2, (-14.6, -10.4, -6.4), c),
     },
+    'rocket_launcher': {
+        'penetration': lambda c: core(9.5, 12.5, -10, 6, 6, 10, c),
+        'magazine': lambda c: magazine(7.2, 8.8, 8, 2.0, 0, 3, c),
+        'noise': lambda c: suppressor(11, -15, 2.6, 3, c),
+        'recoil': lambda c: pad(6.5, 9.5, 7.2, 12.5, 15, c),
+        'reload': lambda c: coupler(6, 10, 9.6, 12.4, 10, 13, c),
+        'accuracy': lambda c: stabilizer(8.8, -12, -9.5, c),
+        # The range upgrade raises the lock range: a bigger seeker antenna on the seeker unit.
+        'range': lambda c: [box((2.8, 9.8, -4.4), (3.6, 12.2, 0.4), DARK),
+                            box((2.7, 10.6, -4.0), (2.8, 11.4, 0.0), c, glow=True),
+                            box((3.0, 12.2, -2.2), (3.4, 14.5, -1.8), DARK),
+                            box((2.95, 14.2, -2.25), (3.45, 14.6, -1.75), c, glow=True)],
+    },
     'gatling_gun': {
         'penetration': lambda c: core(9, 11, 8, 13, 5.5, 10.5, c),
         'magazine': lambda c: magazine(10.5, 13, 5, 2.5, 8, 13, c),
@@ -401,6 +459,7 @@ SIGHT_MOUNTS = {
     'shotgun': (12.5, 10.5),
     'sniper_rifle': (11.2, -12),
     'gatling_gun': (15.6, 9.5),
+    'rocket_launcher': (13.0, -1.5),
 }
 IRON_SIGHTS = {
     'pistol': (12.8, 10.8),
@@ -409,9 +468,12 @@ IRON_SIGHTS = {
     'shotgun': (12.75, 13.2),
     'sniper_rifle': (13.4, 12),
     'gatling_gun': (16.0, 12.6),
+    'rocket_launcher': (13.6, 2.2),
 }
+# Sight lines that aren't on the weapon's middle (x = 8).
+SIGHT_X = {'rocket_launcher': LAUNCHER_SIGHT_X}
 for name, (rail, z) in SIGHT_MOUNTS.items():
-    PARTS[name]['sight'] = {tier: (lambda c, t=tier, r=rail, zz=z: sight(t, r, zz, c)) for tier in (1, 2, 3)}
+    PARTS[name]['sight'] = {tier: (lambda c, t=tier, r=rail, zz=z, dx=SIGHT_X.get(name, 8) - 8: shifted(sight(t, r, zz, c), dx)) for tier in (1, 2, 3)}
 
 
 WEAPONS = {
@@ -421,6 +483,7 @@ WEAPONS = {
     'shotgun': shotgun,
     'sniper_rifle': sniper_rifle,
     'gatling_gun': gatling_gun,
+    'rocket_launcher': rocket_launcher,
 }
 
 
@@ -453,6 +516,7 @@ GRIPS = {
     'shotgun': (8.5, 15.5),
     'sniper_rifle': (7, 14),
     'gatling_gun': (5, 15),
+    'rocket_launcher': (5.5, 5.5),
 }
 HAND_SCALE = 0.6
 FIRST_PERSON_SCALE = 0.55
@@ -552,10 +616,15 @@ def aim_offsets(name, shift_z):
     for tier in (1, 2, 3):
         points[tier] = (rail + SIGHT_EYE[tier], z + SIGHT_HALF_LENGTH[tier])
     offsets = {}
+    px = SIGHT_X.get(name, 8)
     for key, (py, pz) in points.items():
         y = -ty - s1 * (py / 16 - 0.5)
         zz = -EYE_DISTANCE[key] - tz - s1 * ((pz + shift_z) / 16 - 0.5)
-        offsets[str(key)] = [round(y, 4), round(zz, 4)]
+        offset = [round(y, 4), round(zz, 4)]
+        if px != 8:
+            # Sideways too, so a sight line beside the weapon ends up in the middle of the screen.
+            offset.append(round(-s1 * (px / 16 - 0.5), 4))
+        offsets[str(key)] = offset
     return offsets
 
 

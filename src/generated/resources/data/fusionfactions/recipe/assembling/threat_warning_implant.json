@@ -1,0 +1,25 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:advanced_chip"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:ingots/gold"
+    },
+    {
+      "count": 2,
+      "ingredient": "#c:dusts/redstone"
+    },
+    {
+      "count": 1,
+      "ingredient": "minecraft:amethyst_shard"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:threat_warning_implant"
+  },
+  "ticks": 200
+}

@@ -1,0 +1,25 @@
+{
+  "type": "fusionfactions:assembling",
+  "inputs": [
+    {
+      "count": 3,
+      "ingredient": "#c:ingots/aluminum"
+    },
+    {
+      "count": 2,
+      "ingredient": "#c:gems/diamond"
+    },
+    {
+      "count": 1,
+      "ingredient": "fusionfactions:advanced_chip"
+    },
+    {
+      "count": 1,
+      "ingredient": "#c:glass_panes"
+    }
+  ],
+  "result": {
+    "id": "fusionfactions:tactical_helmet"
+  },
+  "ticks": 200
+}

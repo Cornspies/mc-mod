@@ -160,6 +160,11 @@ public class ModModelProvider extends ModelProvider {
             }
         }
         itemModels.generateFlatItem(ModItems.AMMO.get(), ModelTemplates.FLAT_ITEM);
+        // Rocket launcher gear (DESIGN.md §6b.6, §6b.7), icons from tools/gear_textures.py.
+        itemModels.generateFlatItem(ModItems.ROCKET.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.TACTICAL_HELMET.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.THREAT_WARNING_IMPLANT.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.HANDHELD_RADAR.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.BARREL.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.FUSION_CORE.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.GRIP.get(), ModelTemplates.FLAT_ITEM);
