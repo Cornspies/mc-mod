@@ -2,10 +2,8 @@
 """Generates the textures for weapon modification (DESIGN.md §4.5).
 
 - the weapon workbench screen background (176x176 on a 256x256 sheet)
-- one empty-field silhouette per upgrade type, the weapon slot silhouette and the locked-field overlay
-  (GUI sprites, 16x16)
-- the 21 upgrade part item icons, one per type and tier, with the tier color (blue / orange / red,
-  like the supply crate rarities)
+- the weapon slot silhouette and the locked-field overlay (GUI sprites, 16x16); the upgrade part icons and the
+  empty-field silhouettes come from tools/upgrade_icons.py
 - the weapon workbench block (top, side, bottom)
 
 Run from the repository root:  python3 tools/workbench_textures.py
@@ -16,154 +14,8 @@ from pathlib import Path
 
 ASSETS = Path('src/main/resources/assets/fusionfactions/textures')
 
-# Upgrade icons, 16x16. '#' body, '-' light metal, '+' tier color, 'o' dark detail, '.' transparent.
-ICONS = {
-    'penetration': [
-        '.......++.......',
-        '......++++......',
-        '.....+o++o+.....',
-        '.....#-++-#.....',
-        '.....#-++-#.....',
-        '....##-++-##....',
-        '....#--++--#....',
-        '....#--++--#....',
-        '....#oo++oo#....',
-        '....#--++--#....',
-        '...##--++--##...',
-        '..#-#--++--#-#..',
-        '..#-#-++++-#-#..',
-        '..#o########o#..',
-        '....#oooooo#....',
-        '......####......',
-    ],
-    'magazine': [
-        '.....oo--oo.....',
-        '....#--++--#....',
-        '...##########...',
-        '...#--#++#--#...',
-        '...#oo#++#oo#...',
-        '...#--#++#--#...',
-        '....#-#++#-#....',
-        '....#o#++#o#....',
-        '....#-#++#-#....',
-        '.....#o++#o#....',
-        '.....#-#++-#....',
-        '.....#o#++#o#...',
-        '......#-#++-#...',
-        '......#######...',
-        '.....#ooooooo#..',
-        '.....#########..',
-    ],
-    'noise': [
-        '................',
-        '................',
-        '................',
-        '..############..',
-        '.##--#----#--##.',
-        '#oo#++#--#++#oo#',
-        '#--#++#--#++#--#',
-        '#--#++#--#++#--#',
-        '#oo#++#--#++#oo#',
-        '.##--#----#--##.',
-        '..############..',
-        '................',
-        '................',
-        '................',
-        '................',
-        '................',
-    ],
-    'recoil': [
-        '................',
-        '.######.........',
-        '.#----##........',
-        '.#-oo--##.......',
-        '.##--o--##......',
-        '..##--o--##.....',
-        '...##--o--##+...',
-        '....##--o--#++#.',
-        '....##--o--#++#.',
-        '...##--o--##+...',
-        '..##--o--##.....',
-        '.##--o--##......',
-        '.#----##........',
-        '.######.........',
-        '................',
-        '................',
-    ],
-    'reload': [
-        '..oo............',
-        '.####...........',
-        '.#--#....oo.....',
-        '.#--#...####....',
-        '.####...#--#....',
-        '.#--######--#...',
-        '.#--#++++#--#...',
-        '.#--#++++#--#...',
-        '.#--######--#...',
-        '.####...#--#....',
-        '.#--#...####....',
-        '.#oo#...#--#....',
-        '.####...#--#....',
-        '........#oo#....',
-        '........####....',
-        '................',
-    ],
-    'accuracy': [
-        '..###......###..',
-        '..#-#..##..#-#..',
-        '..#-#..##..#-#..',
-        '.......++.......',
-        '.......++.......',
-        '.####.++++.####.',
-        '.#-++-++++-++-#.',
-        '.#-++-++++-++-#.',
-        '.####.++++.####.',
-        '.......++.......',
-        '.......++.......',
-        '..#-#..##..#-#..',
-        '..#-#..##..#-#..',
-        '..###......###..',
-        '................',
-        '................',
-    ],
-    'range': [
-        '................',
-        '................',
-        '....##....##....',
-        '...#++#..#++#...',
-        '.############...',
-        '##-++++--++-####',
-        '#--++++--++---++',
-        '#--++++--++---++',
-        '##-++++--++-####',
-        '.############...',
-        '...#++#..#++#...',
-        '....##....##....',
-        '................',
-        '................',
-        '................',
-        '................',
-    ],
-    'sight': [
-        '................',
-        '...##########...',
-        '..#----------#..',
-        '.##-oooooooo-##.',
-        '.#--o......o--#.',
-        '.#--o..++..o--#.',
-        '.#--o.++++.o--#.',
-        '.#--o.++++.o--#.',
-        '.#--o..++..o--#.',
-        '.#--oooooooo--#.',
-        '.##############.',
-        '..#----------#..',
-        '################',
-        '.#oo#......#oo#.',
-        '..##........##..',
-        '................',
-    ],
-}
-
+# The upgrade part icons and their field silhouettes are drawn by tools/upgrade_icons.py.
+# 16x16 silhouettes: '#' body, '-' light metal, '+' accent, 'o' dark detail, '.' transparent.
 WEAPON_ICON = [
     '................',
     '................',
@@ -221,11 +73,6 @@ def write_png(path, width, height, pixels):
 
 def icon_pixels(rows, colors):
     return [[colors.get(ch, (0, 0, 0, 0)) for ch in row] for row in rows]
-
-
-def item_icon(rows, tier):
-    tint = TIER_COLORS[tier] + (255,)
-    return icon_pixels(rows, {'#': BODY + (255,), '-': LIGHT + (255,), '+': tint, 'o': DARK + (255,)})
 
 
 def silhouette(rows):
@@ -346,11 +193,6 @@ def block_face(kind):
 def main():
     write_png(ASSETS / 'gui/container/weapon_workbench.png', 256, 256, gui())
     sprites = ASSETS / 'gui/sprites/container/weapon_workbench'
-    for name, rows in ICONS.items():
-        assert len(rows) == 16 and all(len(r) == 16 for r in rows), name
-        write_png(sprites / f'{name}.png', 16, 16, silhouette(rows))
-        for tier in (1, 2, 3):
-            write_png(ASSETS / f'item/{name}_upgrade_{tier}.png', 16, 16, item_icon(rows, tier))
     write_png(sprites / 'weapon.png', 16, 16, silhouette(WEAPON_ICON))
     write_png(sprites / 'locked.png', 16, 16, locked())
     for kind in ('top', 'side', 'bottom'):
