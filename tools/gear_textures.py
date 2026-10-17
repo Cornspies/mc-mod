@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Generates the textures for the rocket launcher's gear (DESIGN.md §6b.6, §6b.7).
 
-- item icons: the rocket, the tactical helmet, the threat-warning implant and the handheld radar
+- item icons: the tactical helmet, the threat-warning implant and the handheld radar (the guided rocket's icon is
+  drawn by tools/missile_icons.py, like the missiles)
 - the tactical helmet as worn (textures/entity/equipment/humanoid/tactical.png, a vanilla-style 64x32 armor layer of
   which only the head is used), referenced by assets/fusionfactions/equipment/tactical.json
 - the empty implant field in the weapon workbench, a faint silhouette like the other field icons
@@ -18,27 +19,6 @@ from workbench_textures import silhouette, write_png
 ASSETS = Path('src/main/resources/assets/fusionfactions')
 
 # 16x16 pictures; '.' is transparent, the other letters are keys into the palette passed with them.
-ROCKET = [
-    '................',
-    '.............oo.',
-    '............ohho',
-    '...........ohhlo',
-    '..........ohllo.',
-    '.........oxmlo..',
-    '........odmmo...',
-    '.......odmmo....',
-    '..oo..odmmo.....',
-    '..oxoodmmo......',
-    '...oxdmmo.......',
-    '....odmo........',
-    '...offoxo.......',
-    '..offo.oxo......',
-    '.ofyo...oo......',
-    '..o.............',
-]
-ROCKET_COLORS = {'o': (28, 30, 34), 'd': (52, 58, 64), 'm': (78, 86, 94), 'l': (170, 176, 184), 'h': (215, 220, 226), 'x': (230, 140, 40),
-                 'f': (250, 170, 50), 'y': (255, 235, 120)}
-
 HELMET = [
     '................',
     '................',
@@ -197,13 +177,12 @@ def helmet_layer():
 
 
 def main():
-    write_png(ASSETS / 'textures/item/rocket.png', 16, 16, pixels(ROCKET, ROCKET_COLORS))
     write_png(ASSETS / 'textures/item/tactical_helmet.png', 16, 16, pixels(HELMET, HELMET_COLORS))
     write_png(ASSETS / 'textures/item/threat_warning_implant.png', 16, 16, pixels(IMPLANT, IMPLANT_COLORS))
     write_png(ASSETS / 'textures/item/handheld_radar.png', 16, 16, pixels(RADAR, RADAR_COLORS))
     write_png(ASSETS / 'textures/entity/equipment/humanoid/tactical.png', 64, 32, helmet_layer())
     write_png(ASSETS / 'textures/gui/sprites/container/weapon_workbench/implant.png', 16, 16, silhouette(IMPLANT_FIELD))
-    print('wrote rocket, helmet, implant and handheld radar textures')
+    print('wrote helmet, implant and handheld radar textures')
 
 
 if __name__ == '__main__':

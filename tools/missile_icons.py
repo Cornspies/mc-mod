@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Draws the missile inventory icons at 32x32 (D68, DESIGN.md §6b.9), and the interceptor rocket's icon.
+"""Draws the missile inventory icons at 32x32 (D68, DESIGN.md §6b.9), and the interceptor rocket's and the guided rocket's.
 
 Pixel art in the style of vanilla items: each missile flies diagonally up to the right, with a body shaded in three
 flat tones and the type's color band (as on the 3D model), the nose and fins in the tier color (blue / orange / red),
@@ -174,6 +174,41 @@ def render(sample):
     return pixels
 
 
+# The rocket launcher's guided rocket (DESIGN.md §6b.6), like its 3D model: short and thick, a dark body with an orange
+# band, a light warhead with the cyan seeker in its tip, big dark fins and the motor's flame.
+ROCKET_BODY, ROCKET_BAND, ROCKET_WARHEAD, ROCKET_FINS, SEEKER = (66, 72, 80), (232, 142, 44), (198, 204, 212), (112, 118, 128), (88, 214, 250)
+
+
+def guided_rocket_sample(u, v):
+    length, radius = 31.0, 3.7
+    body_start, warhead_start = 8.0, 20.0
+    result = None
+    if 1.0 <= u < body_start - 1.0 and abs(v) <= 2.8 * ((u - 1.0) / (body_start - 2.0)):
+        result = FLAME_INNER if abs(v) < 1.0 else FLAME_OUTER
+    fin_end = body_start + 7.0
+    if body_start - 1.0 <= u < fin_end:
+        span = radius + 4.2 * (fin_end - u) / (fin_end - body_start + 1.0)
+        if abs(v) <= span:
+            result = shaded(ROCKET_FINS, v, span)
+    if body_start - 1.5 <= u < body_start and abs(v) <= radius - 1.0:
+        result = shaded(NOZZLE, v, radius)
+    if body_start <= u < warhead_start and abs(v) <= radius:
+        result = shaded(ROCKET_BAND if 12.5 <= u < 14.0 else ROCKET_BODY, v, radius)
+    if warhead_start <= u < length:
+        t = (u - warhead_start) / (length - warhead_start)
+        r = radius * (1.0 - t ** 2.2) + 0.2
+        if abs(v) <= r:
+            result = shaded(SEEKER if u >= length - 2.2 else ROCKET_WARHEAD, v, max(r, 0.6))
+    return result
+
+
+def guided_rocket_icon():
+    def sample(x, y):
+        u, v = to_local(x - 1.5, y + 3.0)
+        return guided_rocket_sample(u, v)
+    return render(sample)
+
+
 def missile_icon(kind, tier):
     def sample(x, y):
         badge = badge_sample(x, y, kind)
@@ -198,7 +233,8 @@ def main():
         for tier in (1, 2, 3):
             write_png(ASSETS / f'item/{kind}_missile_{tier}.png', SIZE, SIZE, missile_icon(kind, tier))
     write_png(ASSETS / 'item/interceptor_rocket.png', SIZE, SIZE, interceptor_rocket_icon())
-    print('wrote 12 missile icons and the interceptor rocket icon at 32x32')
+    write_png(ASSETS / 'item/rocket.png', SIZE, SIZE, guided_rocket_icon())
+    print('wrote 12 missile icons and the interceptor and guided rocket icons at 32x32')
 
 
 if __name__ == '__main__':
