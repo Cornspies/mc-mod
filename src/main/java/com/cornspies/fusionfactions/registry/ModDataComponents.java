@@ -9,6 +9,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.Unit;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -35,6 +36,14 @@ public final class ModDataComponents {
     // The block a target designator points missiles at (D49).
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<GlobalPos>> TARGET = DATA_COMPONENTS.registerComponentType("target",
             builder -> builder.persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC));
+
+    // FE stored in an item (the handheld radar, D62). Changes come once a second while it's held, so no swap animation.
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ENERGY = DATA_COMPONENTS.registerComponentType("energy",
+            builder -> builder.persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).ignoreSwapAnimation());
+
+    // A threat-warning implant installed in a tactical helmet (D62, D63).
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Unit>> IMPLANT = DATA_COMPONENTS.registerComponentType("implant",
+            builder -> builder.persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC));
 
     private ModDataComponents() {
     }

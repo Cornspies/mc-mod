@@ -136,12 +136,17 @@ public class WeaponItem extends Item {
         // Firing interrupts a reload. The rounds loaded so far stay in the magazine.
         stack.remove(ModDataComponents.RELOAD.get());
         stack.set(ModDataComponents.AMMO.get(), ammo - 1);
+        this.shoot(level, player, stack, stats);
+        // Everyone in hearing range but the shooter hears this. The shooter's client plays it right away (D22).
+        GunshotPayload.broadcast(level, player instanceof ServerPlayer serverPlayer ? serverPlayer : null, player.position(), stats);
+    }
+
+    // One shot, after the round has been taken from the magazine: the bullets (pellets) with spread.
+    protected void shoot(ServerLevel level, Player player, ItemStack stack, WeaponStats stats) {
         float spread = spread(player, stack, stats);
         for (int i = 0; i < stats.pellets(); i++) {
             spawnBullet(level, player, stats, spread);
         }
-        // Everyone in hearing range but the shooter hears this. The shooter's client plays it right away (D22).
-        GunshotPayload.broadcast(level, player instanceof ServerPlayer serverPlayer ? serverPlayer : null, player.position(), stats);
     }
 
     private static void spawnBullet(ServerLevel level, Player player, WeaponStats stats, float spread) {
@@ -163,7 +168,7 @@ public class WeaponItem extends Item {
         if (getAmmo(stack) >= stats.magazineSize()) {
             return;
         }
-        if (!player.hasInfiniteMaterials() && countAmmo(player) < stats.ammoPerRound()) {
+        if (!player.hasInfiniteMaterials() && weapon.countAmmo(player) < stats.ammoPerRound()) {
             player.sendOverlayMessage(Component.translatable("fusionfactions.weapon.no_ammo"));
             return;
         }
@@ -188,7 +193,7 @@ public class WeaponItem extends Item {
             return;
         }
         int ammo = getAmmo(stack);
-        if (ammo >= stats.magazineSize() || (!player.hasInfiniteMaterials() && !consumeAmmo(player, stats.ammoPerRound()))) {
+        if (ammo >= stats.magazineSize() || (!player.hasInfiniteMaterials() && !this.consumeAmmo(player, stats.ammoPerRound()))) {
             stack.remove(ModDataComponents.RELOAD.get());
             return;
         }
@@ -202,26 +207,33 @@ public class WeaponItem extends Item {
         }
     }
 
-    public static int countAmmo(Player player) {
+    // The item this weapon loads: the shared ammo (D20); the rocket launcher has its own (D65).
+    public Item ammoItem() {
+        return ModItems.AMMO.get();
+    }
+
+    public int countAmmo(Player player) {
+        Item ammoItem = this.ammoItem();
         Inventory inventory = player.getInventory();
         int count = 0;
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
-            if (stack.is(ModItems.AMMO.get())) {
+            if (stack.is(ammoItem)) {
                 count += stack.getCount();
             }
         }
         return count;
     }
 
-    private static boolean consumeAmmo(Player player, int amount) {
-        if (countAmmo(player) < amount) {
+    private boolean consumeAmmo(Player player, int amount) {
+        if (this.countAmmo(player) < amount) {
             return false;
         }
+        Item ammoItem = this.ammoItem();
         Inventory inventory = player.getInventory();
         for (int slot = 0; slot < inventory.getContainerSize() && amount > 0; slot++) {
             ItemStack stack = inventory.getItem(slot);
-            if (stack.is(ModItems.AMMO.get())) {
+            if (stack.is(ammoItem)) {
                 int taken = Math.min(amount, stack.getCount());
                 stack.shrink(taken);
                 amount -= taken;
@@ -243,7 +255,7 @@ public class WeaponItem extends Item {
             Component name = Component.translatable(type.translationKey()).append(" ").append(UpgradeItem.tierName(tier));
             if (UpgradeRules.accepts(this, type)) {
                 builder.accept(name.copy().withStyle(UpgradeItem.tierColor(tier))
-                        .append(Component.literal(": ").append(UpgradeRules.describe(type, tier)).withStyle(ChatFormatting.GRAY)));
+                        .append(Component.literal(": ").append(UpgradeRules.describe(this.baseStats, type, tier)).withStyle(ChatFormatting.GRAY)));
             } else {
                 builder.accept(Component.translatable("tooltip.fusionfactions.weapon.upgrade_inactive", name).withStyle(ChatFormatting.DARK_GRAY));
             }

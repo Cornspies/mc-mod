@@ -4,6 +4,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.cornspies.fusionfactions.FusionFactions;
 import com.cornspies.fusionfactions.registry.ModBlocks;
+import com.cornspies.fusionfactions.registry.ModItems;
 import com.cornspies.fusionfactions.registry.ModMenuTypes;
 import com.cornspies.fusionfactions.weapon.WeaponItem;
 import com.cornspies.fusionfactions.weapon.upgrade.UpgradeItem;
@@ -20,8 +21,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 // Weapon workbench menu (DESIGN.md §4.5): the weapon in the middle of a 3x3 grid, an upgrade field for each
-// type around it. Fields the weapon doesn't accept are locked. All moves go through the server-side menu,
-// which checks every part against the weapon (§3.2).
+// type around it. Fields the weapon doesn't accept are locked. A tactical helmet in the middle gets one field
+// instead, for the threat-warning implant (D63), in the sight field's place. All moves go through the server-side
+// menu, which checks every part against the weapon (§3.2).
 public class WeaponWorkbenchMenu extends AbstractContainerMenu {
     // Layout, shared with the screen. Slot positions are the item's top-left corner inside the 18x18 frame.
     public static final int GRID_X = 58;
@@ -31,7 +33,8 @@ public class WeaponWorkbenchMenu extends AbstractContainerMenu {
 
     private static final int WEAPON_SLOT = 0;
     private static final int FIELDS_START = 1;
-    private static final int INVENTORY_START = FIELDS_START + UpgradeType.values().length;
+    private static final int IMPLANT_SLOT = FIELDS_START + UpgradeType.values().length;
+    private static final int INVENTORY_START = IMPLANT_SLOT + 1;
     private static final int HOTBAR_START = INVENTORY_START + 27;
     private static final int INVENTORY_END = HOTBAR_START + 9;
 
@@ -49,7 +52,7 @@ public class WeaponWorkbenchMenu extends AbstractContainerMenu {
         this.addSlot(new Slot(this.weaponContainer, 0, fieldX(4), fieldY(4)) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.getItem() instanceof WeaponItem;
+                return stack.getItem() instanceof WeaponItem || stack.is(ModItems.TACTICAL_HELMET.get());
             }
 
             @Override
@@ -66,6 +69,7 @@ public class WeaponWorkbenchMenu extends AbstractContainerMenu {
         for (UpgradeType type : UpgradeType.values()) {
             this.addSlot(new FieldSlot(fields, type));
         }
+        this.addSlot(new ImplantSlot(new ImplantField(this.weaponContainer)));
         this.addStandardInventorySlots(inventory, 8, INVENTORY_Y);
     }
 
@@ -79,6 +83,11 @@ public class WeaponWorkbenchMenu extends AbstractContainerMenu {
 
     public ItemStack weapon() {
         return this.weaponContainer.getItem(0);
+    }
+
+    // Whether a tactical helmet is in the middle (then only the implant field is shown).
+    public boolean hasHelmet() {
+        return this.weapon().is(ModItems.TACTICAL_HELMET.get());
     }
 
     // Whether a part of this type can go on the weapon now in the workbench.
@@ -99,13 +108,17 @@ public class WeaponWorkbenchMenu extends AbstractContainerMenu {
             if (!this.moveItemStackTo(stack, INVENTORY_START, INVENTORY_END, true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (stack.getItem() instanceof WeaponItem) {
+        } else if (stack.getItem() instanceof WeaponItem || stack.is(ModItems.TACTICAL_HELMET.get())) {
             if (!this.moveItemStackTo(stack, WEAPON_SLOT, WEAPON_SLOT + 1, false)) {
                 return ItemStack.EMPTY;
             }
         } else if (stack.getItem() instanceof UpgradeItem part) {
             int field = FIELDS_START + part.type().ordinal();
             if (!this.moveItemStackTo(stack, field, field + 1, false)) {
+                return ItemStack.EMPTY;
+            }
+        } else if (stack.is(ModItems.THREAT_WARNING_IMPLANT.get())) {
+            if (!this.moveItemStackTo(stack, IMPLANT_SLOT, IMPLANT_SLOT + 1, false)) {
                 return ItemStack.EMPTY;
             }
         } else if (slotIndex < HOTBAR_START) {
@@ -159,6 +172,12 @@ public class WeaponWorkbenchMenu extends AbstractContainerMenu {
             return WeaponWorkbenchMenu.this.isOpen(this.type);
         }
 
+        // Hidden while a helmet is in the workbench, so the implant field can take the sight field's place.
+        @Override
+        public boolean isActive() {
+            return !WeaponWorkbenchMenu.this.hasHelmet();
+        }
+
         @Override
         public boolean mayPlace(ItemStack stack) {
             return UpgradeItem.isPart(stack, this.type) && this.isOpen();
@@ -177,6 +196,38 @@ public class WeaponWorkbenchMenu extends AbstractContainerMenu {
         @Override
         public @Nullable Identifier getNoItemIcon() {
             return this.isOpen() ? FusionFactions.id("container/weapon_workbench/" + this.type.getSerializedName()) : null;
+        }
+    }
+
+    // The implant field (D63): open only while a tactical helmet is in the middle.
+    public class ImplantSlot extends Slot {
+        ImplantSlot(ImplantField field) {
+            super(field, 0, fieldX(UpgradeType.SIGHT.field()), fieldY(UpgradeType.SIGHT.field()));
+        }
+
+        @Override
+        public boolean isActive() {
+            return WeaponWorkbenchMenu.this.hasHelmet();
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return stack.is(ModItems.THREAT_WARNING_IMPLANT.get()) && WeaponWorkbenchMenu.this.hasHelmet();
+        }
+
+        @Override
+        public int getMaxStackSize() {
+            return 1;
+        }
+
+        @Override
+        public int getMaxStackSize(ItemStack stack) {
+            return 1;
+        }
+
+        @Override
+        public Identifier getNoItemIcon() {
+            return FusionFactions.id("container/weapon_workbench/implant");
         }
     }
 }

@@ -38,8 +38,9 @@ public final class UpgradeGameTests {
             TEST_FUNCTIONS.register("workbench_installs_and_returns_parts", () -> UpgradeGameTests::workbenchInstallsAndReturnsParts),
             TEST_FUNCTIONS.register("workbench_returns_weapon_on_close", () -> UpgradeGameTests::workbenchReturnsWeaponOnClose));
 
-    // Index of the first hotbar slot in the workbench menu: weapon, fields, 27 inventory slots.
-    private static final int HOTBAR = 1 + UpgradeType.values().length + 27;
+    // Index of the first hotbar slot in the workbench menu: weapon, fields, the implant field, 27 inventory slots.
+    private static final int IMPLANT_FIELD = 1 + UpgradeType.values().length;
+    private static final int HOTBAR = IMPLANT_FIELD + 1 + 27;
 
     // Each part changes its stat by the configured amount; a part the weapon doesn't accept does nothing.
     private static void upgradesChangeStats(GameTestHelper helper) {

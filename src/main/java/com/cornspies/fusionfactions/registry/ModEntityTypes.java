@@ -5,6 +5,7 @@ import com.cornspies.fusionfactions.missile.InterceptorRocketEntity;
 import com.cornspies.fusionfactions.missile.MissileEntity;
 import com.cornspies.fusionfactions.supplydrop.FallingCrateEntity;
 import com.cornspies.fusionfactions.weapon.BulletEntity;
+import com.cornspies.fusionfactions.weapon.GuidedRocketEntity;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -44,6 +45,17 @@ public final class ModEntityTypes {
                     .noSummon());
 
     // An interceptor's homing shot (DESIGN.md §6.9). Drawn as its smoke trail only.
+    // The rocket launcher's rocket (DESIGN.md §6b.6). Updated every tick so its turns look smooth; tracked from far,
+    // since seeing it come is the counterplay.
+    public static final DeferredHolder<EntityType<?>, EntityType<GuidedRocketEntity>> GUIDED_ROCKET = ENTITY_TYPES.registerEntityType("guided_rocket",
+            GuidedRocketEntity::new, MobCategory.MISC, builder -> builder
+                    .noLootTable()
+                    .sized(0.3F, 0.3F)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .noSummon());
+
     public static final DeferredHolder<EntityType<?>, EntityType<InterceptorRocketEntity>> INTERCEPTOR_ROCKET = ENTITY_TYPES.registerEntityType(
             "interceptor_rocket", InterceptorRocketEntity::new, MobCategory.MISC, builder -> builder
                     .noLootTable()

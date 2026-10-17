@@ -41,7 +41,11 @@ public record WeaponStats(
         boolean scoped,
         Holder<SoundEvent> fireSound,
         // Blocks within which other players hear a shot. The noise upgrade shortens it.
-        float soundRange) {
+        float soundRange,
+        // Fires guided rockets that lock on while aiming (the rocket launcher, DESIGN.md §6b.6) instead of bullets.
+        boolean guided,
+        // Lock range as a share of the configured one; the range upgrade raises it for guided weapons.
+        float lockRangeFactor) {
 
     public static Builder builder() {
         return new Builder();
@@ -69,6 +73,8 @@ public record WeaponStats(
         builder.scoped = this.scoped;
         builder.fireSound = this.fireSound;
         builder.soundRange = this.soundRange;
+        builder.guided = this.guided;
+        builder.lockRangeFactor = this.lockRangeFactor;
         return builder;
     }
 
@@ -95,6 +101,8 @@ public record WeaponStats(
         private boolean scoped;
         private Holder<SoundEvent> fireSound;
         private float soundRange = 48.0F;
+        private boolean guided;
+        private float lockRangeFactor = 1.0F;
 
         public Builder damage(float damage) {
             this.damage = damage;
@@ -191,10 +199,21 @@ public record WeaponStats(
             return this;
         }
 
+        public Builder guided() {
+            this.guided = true;
+            return this;
+        }
+
+        public Builder lockRangeFactor(float factor) {
+            this.lockRangeFactor = factor;
+            return this;
+        }
+
         public WeaponStats build() {
             return new WeaponStats(this.damage, this.pellets, this.magazineSize, this.fireIntervalTicks, this.automatic, this.spinUpTicks,
                     this.reloadTicksPerRound, this.ammoPerRound, this.spreadDegrees, this.aimSpreadFactor, this.aimZoom, this.recoilDegrees, this.bulletSpeed,
-                    this.bulletLifetimeTicks, this.knockback, this.armorPiercing, this.scoped, this.fireSound, this.soundRange);
+                    this.bulletLifetimeTicks, this.knockback, this.armorPiercing, this.scoped, this.fireSound, this.soundRange, this.guided,
+                    this.lockRangeFactor);
         }
     }
 }

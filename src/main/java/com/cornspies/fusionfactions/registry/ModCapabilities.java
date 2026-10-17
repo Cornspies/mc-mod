@@ -1,13 +1,15 @@
 package com.cornspies.fusionfactions.registry;
 
+import com.cornspies.fusionfactions.gear.HandheldRadarItem;
 import com.cornspies.fusionfactions.industry.Machine;
 import com.cornspies.fusionfactions.power.CableNetworks;
 
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.transfer.energy.ItemAccessEnergyHandler;
 
-// FE for the missile blocks, generators and machines (D47, D59, D67): any side, so cables, ours or other mods', can
+// FE for the missile blocks, generators, machines and the handheld radar (D47, D59, D62, D67): any side, so cables, ours or other mods', can
 // reach them. Cables have no block entity: their handler passes FE on to the cable network.
 public final class ModCapabilities {
     public static void register(RegisterCapabilitiesEvent event) {
@@ -24,6 +26,9 @@ public final class ModCapabilities {
         event.registerBlock(Capabilities.Energy.BLOCK, (level, pos, state, blockEntity, side) -> level instanceof ServerLevel serverLevel && side != null
                 ? CableNetworks.handler(serverLevel, pos, side)
                 : null, ModBlocks.FE_CABLE.get());
+        // The handheld radar takes FE from chargers but gives none back (D62).
+        event.registerItem(Capabilities.Energy.ITEM, (stack, access) -> new ItemAccessEnergyHandler(access, ModDataComponents.ENERGY.get(),
+                HandheldRadarItem.CAPACITY, HandheldRadarItem.MAX_INSERT, 0), ModItems.HANDHELD_RADAR.get());
     }
 
     private ModCapabilities() {

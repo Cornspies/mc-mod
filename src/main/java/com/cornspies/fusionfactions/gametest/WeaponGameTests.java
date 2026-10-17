@@ -92,6 +92,7 @@ public final class WeaponGameTests {
         functions.addAll(CrateLootGameTests.TESTS);
         functions.addAll(ResourceGameTests.TESTS);
         functions.addAll(PowerGameTests.TESTS);
+        functions.addAll(RocketGameTests.TESTS);
         for (DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>> function : functions) {
             TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, Level.OVERWORLD, Identifier.withDefaultNamespace("empty"),
                     MAX_TICKS, 0, true, Rotation.NONE, false, 1, 1, false, PADDING);
@@ -391,7 +392,7 @@ public final class WeaponGameTests {
         helper.succeedWhen(() -> {
             ItemStack held = player.getMainHandItem();
             helper.assertTrue(WeaponItem.getAmmo(held) == 5, "five rounds should be loaded");
-            helper.assertTrue(WeaponItem.countAmmo(player) == 0, "all five ammo items should be used");
+            helper.assertTrue(ModItems.PISTOL.get().countAmmo(player) == 0, "all five ammo items should be used");
             helper.assertTrue(!WeaponItem.isReloading(held), "the reload should stop when the ammo runs out");
         });
     }

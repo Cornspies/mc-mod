@@ -1,6 +1,7 @@
 package com.cornspies.fusionfactions.registry;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.gear.HandheldRadarItem;
 import com.cornspies.fusionfactions.industry.Machine;
 import com.cornspies.fusionfactions.missile.MissileType;
 import com.cornspies.fusionfactions.weapon.upgrade.UpgradeType;
@@ -8,6 +9,7 @@ import com.cornspies.fusionfactions.weapon.upgrade.WeaponUpgrades;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -26,7 +28,18 @@ public final class ModCreativeTabs {
                 output.accept(ModItems.SHOTGUN.get());
                 output.accept(ModItems.SNIPER_RIFLE.get());
                 output.accept(ModItems.GATLING_GUN.get());
+                output.accept(ModItems.ROCKET_LAUNCHER.get());
                 output.accept(ModItems.AMMO.get());
+                output.accept(ModItems.ROCKET.get());
+                output.accept(ModItems.TACTICAL_HELMET.get());
+                ItemStack helmetWithImplant = new ItemStack(ModItems.TACTICAL_HELMET.get());
+                helmetWithImplant.set(ModDataComponents.IMPLANT.get(), Unit.INSTANCE);
+                output.accept(helmetWithImplant);
+                output.accept(ModItems.THREAT_WARNING_IMPLANT.get());
+                output.accept(ModItems.HANDHELD_RADAR.get());
+                ItemStack chargedRadar = new ItemStack(ModItems.HANDHELD_RADAR.get());
+                chargedRadar.set(ModDataComponents.ENERGY.get(), HandheldRadarItem.CAPACITY);
+                output.accept(chargedRadar);
                 output.accept(ModItems.BARREL.get());
                 output.accept(ModItems.FUSION_CORE.get());
                 output.accept(ModItems.GRIP.get());

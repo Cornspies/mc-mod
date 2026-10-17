@@ -15,6 +15,9 @@ public final class ModTags {
     // Aluminum from any mod (D47), like our own ingot.
     public static final TagKey<Item> INGOTS_ALUMINUM = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "ingots/aluminum"));
 
+    // What repairs the tactical helmet (D63) on an anvil.
+    public static final TagKey<Item> REPAIRS_TACTICAL_ARMOR = TagKey.create(Registries.ITEM, FusionFactions.id("repairs_tactical_armor"));
+
     private ModTags() {
     }
 }

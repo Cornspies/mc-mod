@@ -34,6 +34,16 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> RADAR_ALERT = register("radar.alert");
     public static final DeferredHolder<SoundEvent, SoundEvent> INTERCEPTOR_LAUNCH = register("interceptor.launch");
 
+    // Rocket launcher and lock warning (DESIGN.md §6b.6, §6b.7). The tones are played by the client to the shooter
+    // and to a target with warning gear only.
+    public static final DeferredHolder<SoundEvent, SoundEvent> ROCKET_LAUNCHER_FIRE = register("weapon.rocket_launcher.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ROCKET_EXPLODE = register("weapon.rocket.explode");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LOCK_SEEKING = register("lock.seeking");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LOCK_LOCKED = register("lock.locked");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WARNING_SEEKING = register("warning.seeking");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WARNING_LOCKED = register("warning.locked");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WARNING_INCOMING = register("warning.incoming");
+
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
         return SOUND_EVENTS.register(name, id -> SoundEvent.createVariableRangeEvent(id));
     }

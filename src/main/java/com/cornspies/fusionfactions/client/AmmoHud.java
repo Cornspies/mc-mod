@@ -35,7 +35,7 @@ public final class AmmoHud {
         } else if (player.hasInfiniteMaterials()) {
             text = Component.translatable("hud.fusionfactions.ammo.infinite", ammo, magazine);
         } else {
-            text = Component.translatable("hud.fusionfactions.ammo", ammo, magazine, WeaponItem.countAmmo(player));
+            text = Component.translatable("hud.fusionfactions.ammo", ammo, magazine, weapon.countAmmo(player));
         }
         graphics.text(minecraft.font, text, graphics.guiWidth() / 2 + OFFSET_X, graphics.guiHeight() - OFFSET_Y,
                 ammo > 0 ? COLOR : COLOR_EMPTY, true);

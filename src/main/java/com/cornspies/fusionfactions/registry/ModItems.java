@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 import com.cornspies.fusionfactions.FusionFactions;
+import com.cornspies.fusionfactions.gear.HandheldRadarItem;
+import com.cornspies.fusionfactions.gear.TacticalArmor;
+import com.cornspies.fusionfactions.gear.TacticalHelmetItem;
 import com.cornspies.fusionfactions.industry.Machine;
 import com.cornspies.fusionfactions.missile.MissileItem;
 import com.cornspies.fusionfactions.missile.MissileType;
 import com.cornspies.fusionfactions.missile.TargetDesignatorItem;
+import com.cornspies.fusionfactions.weapon.RocketLauncherItem;
 import com.cornspies.fusionfactions.weapon.WeaponItem;
 import com.cornspies.fusionfactions.weapon.WeaponStats;
 import com.cornspies.fusionfactions.weapon.Weapons;
@@ -22,6 +27,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.component.UseEffects;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders;
 import net.minecraft.world.level.storage.loot.providers.number.floats.ResolvableFloat;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
@@ -37,6 +43,9 @@ public final class ModItems {
     public static final DeferredItem<WeaponItem> SHOTGUN = weapon("shotgun", Weapons.SHOTGUN);
     public static final DeferredItem<WeaponItem> SNIPER_RIFLE = weapon("sniper_rifle", Weapons.SNIPER_RIFLE);
     public static final DeferredItem<WeaponItem> GATLING_GUN = weapon("gatling_gun", Weapons.GATLING_GUN);
+    // Crate-only (D65); fires guided rockets, its own ammo.
+    public static final DeferredItem<WeaponItem> ROCKET_LAUNCHER = weapon("rocket_launcher", Weapons.ROCKET_LAUNCHER, RocketLauncherItem::new);
+    public static final DeferredItem<Item> ROCKET = ITEMS.registerSimpleItem("rocket", properties -> properties.stacksTo(16));
     // The one shared ammo item (D20).
     public static final DeferredItem<Item> AMMO = ITEMS.registerSimpleItem("ammo");
     // Crafting parts (D27).
@@ -101,6 +110,13 @@ public final class ModItems {
     public static final DeferredItem<Item> BATTERY = ITEMS.registerSimpleItem("battery");
     public static final DeferredItem<Item> AIRFRAME = ITEMS.registerSimpleItem("airframe", properties -> properties.stacksTo(16));
 
+    // Lock warning gear (D62, D63, DESIGN.md §6b.7).
+    public static final DeferredItem<TacticalHelmetItem> TACTICAL_HELMET = ITEMS.registerItem("tactical_helmet", TacticalHelmetItem::new,
+            properties -> properties.humanoidArmor(TacticalArmor.MATERIAL, ArmorType.HELMET));
+    public static final DeferredItem<Item> THREAT_WARNING_IMPLANT = ITEMS.registerSimpleItem("threat_warning_implant", properties -> properties.stacksTo(16));
+    public static final DeferredItem<HandheldRadarItem> HANDHELD_RADAR = ITEMS.registerItem("handheld_radar", HandheldRadarItem::new,
+            properties -> properties.stacksTo(1));
+
     public static BlockItem machine(Machine machine) {
         return MACHINES.get(machine).get();
     }
@@ -123,7 +139,7 @@ public final class ModItems {
     // Movement speed while aiming down sights, as a share of walking speed.
     private static final float AIM_MOVE_SPEED = 0.8F;
 
-    public static final List<DeferredItem<WeaponItem>> WEAPONS = List.of(PISTOL, AUTO_PISTOL, SMG, SHOTGUN, SNIPER_RIFLE, GATLING_GUN);
+    public static final List<DeferredItem<WeaponItem>> WEAPONS = List.of(PISTOL, AUTO_PISTOL, SMG, SHOTGUN, SNIPER_RIFLE, GATLING_GUN, ROCKET_LAUNCHER);
 
     // Upgrade parts (D31–D33), one per type and tier, named like "magazine_upgrade_2". Crate-only: no recipes.
     private static final Map<UpgradeType, List<DeferredItem<UpgradeItem>>> UPGRADES = new EnumMap<>(UpgradeType.class);
@@ -164,7 +180,11 @@ public final class ModItems {
     }
 
     private static DeferredItem<WeaponItem> weapon(String name, WeaponStats stats) {
-        return ITEMS.registerItem(name, properties -> new WeaponItem(stats, properties), properties -> properties
+        return weapon(name, stats, WeaponItem::new);
+    }
+
+    private static DeferredItem<WeaponItem> weapon(String name, WeaponStats stats, BiFunction<WeaponStats, Item.Properties, WeaponItem> factory) {
+        return ITEMS.registerItem(name, properties -> factory.apply(stats, properties), properties -> properties
                 .stacksTo(1)
                 // New weapons come loaded.
                 .component(ModDataComponents.AMMO.get(), stats.magazineSize())

@@ -39,7 +39,14 @@ public final class UpgradeRules {
                 case RECOIL -> stats.recoil((float) (base.recoilDegrees() * kept));
                 case RELOAD -> stats.reloadPerRound(Math.max(1, (int) Math.round(base.reloadTicksPerRound() * kept)));
                 case ACCURACY -> stats.spread((float) (base.spreadDegrees() * kept));
-                case RANGE -> stats.bulletSpeed((float) (base.bulletSpeed() * (1.0 + value)));
+                // Guided rockets keep their speed (the turn rate is tuned to it); the range is their lock range.
+                case RANGE -> {
+                    if (base.guided()) {
+                        stats.lockRangeFactor((float) (base.lockRangeFactor() * (1.0 + value)));
+                    } else {
+                        stats.bulletSpeed((float) (base.bulletSpeed() * (1.0 + value)));
+                    }
+                }
                 case SIGHT -> stats.aimZoom((float) (1.0 + value));
             }
         }
@@ -48,9 +55,20 @@ public final class UpgradeRules {
 
     // The effect of one part, e.g. "+40% rounds per magazine", for tooltips.
     public static MutableComponent describe(UpgradeType type, int tier) {
+        return Component.translatable(type.translationKey() + ".effect", number(type, tier));
+    }
+
+    // The effect of one part on this weapon: the range upgrade raises a guided weapon's lock range.
+    public static MutableComponent describe(WeaponStats base, UpgradeType type, int tier) {
+        if (type == UpgradeType.RANGE && base.guided()) {
+            return Component.translatable(type.translationKey() + ".effect.lock", number(type, tier));
+        }
+        return describe(type, tier);
+    }
+
+    private static String number(UpgradeType type, int tier) {
         double value = UpgradeConfig.value(type, tier);
-        String number = value == Math.rint(value) ? Long.toString(Math.round(value)) : String.format(Locale.ROOT, "%.1f", value);
-        return Component.translatable(type.translationKey() + ".effect", number);
+        return value == Math.rint(value) ? Long.toString(Math.round(value)) : String.format(Locale.ROOT, "%.1f", value);
     }
 
     private UpgradeRules() {

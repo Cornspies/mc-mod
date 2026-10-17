@@ -9,6 +9,7 @@ import com.cornspies.fusionfactions.gametest.MachineGameTests;
 import com.cornspies.fusionfactions.gametest.MissileGameTests;
 import com.cornspies.fusionfactions.gametest.PowerGameTests;
 import com.cornspies.fusionfactions.gametest.ResourceGameTests;
+import com.cornspies.fusionfactions.gametest.RocketGameTests;
 import com.cornspies.fusionfactions.gametest.TriggerGameTests;
 import com.cornspies.fusionfactions.gametest.UpgradeGameTests;
 import com.cornspies.fusionfactions.gametest.WeaponGameTests;
@@ -30,7 +31,10 @@ import com.cornspies.fusionfactions.supplydrop.SupplyDropCommands;
 import com.cornspies.fusionfactions.supplydrop.SupplyDropManager;
 import com.cornspies.fusionfactions.weapon.BulletEntity;
 import com.cornspies.fusionfactions.weapon.GunshotPayload;
+import com.cornspies.fusionfactions.weapon.LockOn;
+import com.cornspies.fusionfactions.weapon.LockStatePayload;
 import com.cornspies.fusionfactions.weapon.ReloadPayload;
+import com.cornspies.fusionfactions.weapon.ThreatPayload;
 import com.cornspies.fusionfactions.weapon.Trigger;
 import com.cornspies.fusionfactions.weapon.TriggerPayload;
 import com.mojang.logging.LogUtils;
@@ -71,6 +75,7 @@ public class FusionFactions {
         ResourceGameTests.TEST_FUNCTIONS.register(modEventBus);
         PowerGameTests.TEST_FUNCTIONS.register(modEventBus);
         MachineGameTests.TEST_FUNCTIONS.register(modEventBus);
+        RocketGameTests.TEST_FUNCTIONS.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.SYNCED, ServerConfig.SPEC);
         modContainer.registerConfig(ModConfig.Type.STARTUP, StartupConfig.SPEC);
@@ -81,6 +86,8 @@ public class FusionFactions {
         modEventBus.addListener(ReloadPayload::register);
         modEventBus.addListener(GunshotPayload::register);
         modEventBus.addListener(TriggerPayload::register);
+        modEventBus.addListener(LockStatePayload::register);
+        modEventBus.addListener(ThreatPayload::register);
         modEventBus.addListener(WeaponGameTests::registerTests);
         NeoForge.EVENT_BUS.addListener(SupplyDropManager::onServerTick);
         NeoForge.EVENT_BUS.addListener(SupplyDropCommands::register);
@@ -88,6 +95,7 @@ public class FusionFactions {
         NeoForge.EVENT_BUS.addListener(MissileCommands::register);
         NeoForge.EVENT_BUS.addListener(BulletEntity::onIncomingDamage);
         NeoForge.EVENT_BUS.addListener(Trigger::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(LockOn::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(ModRecipes::sendToClients);
     }
 

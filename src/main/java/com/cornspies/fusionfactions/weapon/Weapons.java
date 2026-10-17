@@ -98,6 +98,24 @@ public final class Weapons {
             .fireSound(ModSounds.GATLING_GUN_FIRE)
             .build();
 
+    // Crate-only (D65). One guided rocket per load: damage is the blast at its centre, speed and lifetime are the
+    // rocket's (1.5 blocks per tick for 10 s). Lock-on and the rocket's turn rate are in the synced config
+    // ([rocketLauncher]). Rockets are its own ammo item.
+    public static final WeaponStats ROCKET_LAUNCHER = WeaponStats.builder()
+            .damage(16.0F)
+            .magazine(1)
+            .fireInterval(20)
+            .reloadPerRound(60)
+            .recoil(8.0F)
+            .bulletSpeed(1.5F)
+            .bulletLifetime(200)
+            .knockback(0.0F)
+            .armorPiercing(0.0F)
+            .guided()
+            .fireSound(ModSounds.ROCKET_LAUNCHER_FIRE)
+            .soundRange(64.0F)
+            .build();
+
     private Weapons() {
     }
 }

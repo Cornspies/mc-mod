@@ -3,6 +3,7 @@ package com.cornspies.fusionfactions.missile;
 import org.jspecify.annotations.Nullable;
 
 import com.cornspies.fusionfactions.registry.ModEntityTypes;
+import com.cornspies.fusionfactions.weapon.GuidedRocketEntity;
 import com.cornspies.fusionfactions.weapon.ModDamageTypes;
 
 import net.minecraft.core.particles.ParticleTypes;
@@ -67,6 +68,7 @@ public class InterceptorRocketEntity extends Projectile {
             level.sendParticles(ParticleTypes.SMOKE, true, true, at.x, at.y, at.z, 1, 0.05, 0.05, 0.05, 0.0);
         }
         this.setPos(this.position().add(step));
+        GuidedRocketEntity.faceAlong(this, step);
         if (distance <= SPEED || this.getBoundingBox().inflate(0.5).intersects(target.getBoundingBox())) {
             level.sendParticles(ParticleTypes.EXPLOSION, true, true, aim.x, aim.y, aim.z, 1, 0.0, 0.0, 0.0, 0.0);
             this.release(target);

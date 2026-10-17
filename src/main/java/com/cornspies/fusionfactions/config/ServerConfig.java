@@ -93,6 +93,7 @@ public final class ServerConfig {
         UpgradeConfig.define(builder);
         MissileConfig.define(builder);
         PowerConfig.define(builder);
+        RocketConfig.define(builder);
         SPEC = builder.build();
     }
 

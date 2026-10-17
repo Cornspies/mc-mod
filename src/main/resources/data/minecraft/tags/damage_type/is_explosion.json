@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "fusionfactions:missile"
+    "fusionfactions:missile",
+    "fusionfactions:rocket"
   ]
 }

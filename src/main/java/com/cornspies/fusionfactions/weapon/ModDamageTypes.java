@@ -13,6 +13,9 @@ public final class ModDamageTypes {
     // Missile blasts (DESIGN.md §6.5). In minecraft:is_explosion, so Blast Protection counts.
     public static final ResourceKey<DamageType> MISSILE = ResourceKey.create(Registries.DAMAGE_TYPE, FusionFactions.id("missile"));
 
+    // Rocket launcher blasts (DESIGN.md §6b.6). In minecraft:is_explosion, so Blast Protection counts.
+    public static final ResourceKey<DamageType> ROCKET = ResourceKey.create(Registries.DAMAGE_TYPE, FusionFactions.id("rocket"));
+
     private ModDamageTypes() {
     }
 }
