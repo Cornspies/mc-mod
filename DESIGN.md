@@ -102,7 +102,7 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 | D65 | Rocket launcher **legendary-crate-only**; its **rockets are crafted** and are **their own ammo item** | Owner, 2026-10-16. Amends D20 (one shared ammo item). |
 | D66 | The **interceptor needs FE and ammo**: its own crafted **interceptor rockets** | Owner, 2026-10-16. |
 | D67 | Power: **combustion generator and solar panel**, our **own FE cable**, a **charging station**; `requirePower` **defaults to true** for every missile block and machine | Owner, 2026-10-16. Amends D59. |
-| D68 | Missile inventory icons redrawn at **64×64**, clearer | Owner, 2026-10-16. |
+| D68 | Missile inventory icons redrawn, clearer: at **32×32**, in a Minecraft pixel style | Owner, 2026-10-16; 32×32 instead of the first 64×64 on 2026-10-17. |
 | D69 | Ores: **bauxite** (aluminum), **niter** (oxidizer), **rare earth**, **lithium**. Bauxite and niter everywhere; rare earth and lithium only in some biomes | Owner, 2026-10-16. Contested regions. |
 | D70 | Machines: **crusher, chemical mixer, circuit fabricator, assembler** | Owner, 2026-10-16. |
 | D71 | **Three chip tiers**: basic, advanced, military, for missile tiers I / II / III | Owner, 2026-10-16. |
@@ -282,7 +282,7 @@ A sniper headshot kills an unarmored or iron-armored player in one hit.
 | Sniper rifle | ✓ | ✓ | ✓ | ✓ | ✓ | | ✓ | |
 | Gatling gun | ✓ | ✓ | | ✓ | ✓ | ✓ | | ✓ |
 
-**Parts** are items, one per type and tier (8 × 3 = 24), named like "Magazine Upgrade II"; the sights are "Red Dot Sight", "Holographic Sight" and "2x Optic". They come only from supply crates (D33): tier I in common crates, II in rare, III in legendary (§5.6).
+**Parts** are items, one per type and tier (8 × 3 = 24), named like "Magazine Upgrade II"; the sights are "Red Dot Sight", "Holographic Sight" and "2x Optic". Their icons (`tools/upgrade_icons.py`) show what the part does (an armor-piercing round, a magazine, a suppressor, a spring, a circular arrow around a magazine, a reticle, a round with speed lines, and per tier the red dot, holographic sight and optic), with the tier color on the accent and one to three tier pips in the corner. They come only from supply crates (D33): tier I in common crates, II in rare, III in legendary (§5.6).
 
 **Stats.** The installed parts are a data component on the weapon (`fusionfactions:upgrades`, type → tier). The server computes the effective stats from the base stats in `Weapons` plus the parts (`UpgradeRules`); the client uses the same calculation for cosmetic effects, the ammo HUD and tooltips. A weapon's tooltip lists its parts. Taking out a magazine upgrade drops the rounds that no longer fit.
 
@@ -565,7 +565,7 @@ Players without the gear get no warning: the rocket's sound and smoke trail are 
 
 ### 6b.9 Missile icons (D68)
 
-The 12 missile inventory icons are redrawn at **64×64** (`tools/missile_icons.py`): a missile flying diagonally with a shaded body and the type's band (as on the 3D model), the tier color on the nose and fins, one to three tier stripes and its flame, and a large round badge in the empty corner with the type symbol (explosive: blast, breaching: drill bit, EMP: lightning, incendiary: flame). Shapes are supersampled, so edges are smooth instead of stair-stepped. The interceptor rocket's icon comes from the same script. Only the inventory icons change; the 3D model stays.
+The 12 missile inventory icons are redrawn at **32×32** (`tools/missile_icons.py`) as pixel art in the style of vanilla items: a missile flying diagonally with a body in three flat tones and the type's band (as on the 3D model), the tier color on the nose and fins, one to three tier stripes and its flame, outlined in a darker shade of each color, and a round badge in the empty corner with a small pixel symbol for the type (explosive: blast, breaching: drill bit, EMP: lightning, incendiary: flame). The interceptor rocket's icon comes from the same script. Only the inventory icons change; the 3D model stays. (A first 64×64 version with smooth, supersampled edges looked too detailed next to vanilla items; the owner asked for 32×32 and a more Minecraft look.)
 
 ---
 
@@ -635,7 +635,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | **M12 Power** ✅ *done 2026-10-16* | Combustion generator, solar panel, FE cable network, charging station, `requirePower` default true, game tests. |
 | **M13 Machines and materials** ✅ *done 2026-10-17* | Crusher, chemical mixer, circuit fabricator, assembler with their recipe types; silicon, wafers, chips I–III, rocket fuel, battery, airframe; new recipes for missiles, missile blocks and weapon parts and ammo (D72). |
 | **M14 Rocket launcher** ✅ *done 2026-10-17* | Rocket launcher weapon and model, rockets, lock-on, guided rocket, tactical helmet with implant, handheld radar, lock warning HUD and sounds. |
-| **M15 Integration & release** ✅ *implemented, waiting for the owner's playtest* | Interceptor ammo and menu, 64×64 missile icons, crate loot, `docs/SERVER.md`, two-player playtest, release v0.3.0. |
+| **M15 Integration & release** ✅ *implemented, waiting for the owner's playtest* | Interceptor ammo and menu, 32×32 missile icons, clearer upgrade icons, crate loot, `docs/SERVER.md`, two-player playtest, release v0.3.0. |
 
 ---
 
@@ -873,6 +873,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-16 | M12 details | Generator buffer 100k FE, pauses when full, pushes 2000 FE/t; solar panel 6 px high, half output in rain; cable networks split FE evenly and never send it back; charging station buffer 50k; recipes as in §6b.3; the power blocks share a machine base (menu, readout, energy gauge) that M13's machines will use. Game tests run with the dev config, so they now charge the blocks they fire and pass with `requirePower` on or off. *Provisional.* | Agent |
 | 2026-10-16 | M12 done | Owner tested generators, cables, the solar panel and power requirements, and approved them. | Owner |
 | 2026-10-16 | M13 details | Recipes and times as in §6b.4–§6b.5. A machine recipe must use every item in the input slots, so recipes are told apart by item kinds (the barrel gained a copper ingot to differ from the airframe). Rocket fuel burns 6400 ticks in furnaces and generators. Machines have a 50k FE buffer and pause without power. All four machines share one block entity and one screen, laid out per machine. *Provisional.* | Agent |
+| 2026-10-17 | Icons | Owner: the 64×64 missile icons were too detailed; redrawn at 32×32 as pixel art with flat shading, darker outlines and pixel type badges. Owner asked for clearer upgrade icons: each type now shows what it does, the sight one picture per tier, with tier pips. | Owner / Agent |
 | 2026-10-17 | M15 details | Interceptor rockets stack to 16, hoppers can load but not unload an interceptor; the type badge sits beside the missile on the new icons rather than on its body, so it stays readable at 16 px; the rocket launcher comes with 4–8 rockets. Version set to 0.3.0; the tag follows the owner's playtest. *Provisional.* | Agent |
 | 2026-10-17 | M14 done | Owner tested the rocket launcher, lock-on, the warning gear and the handheld radar, and approved them. | Owner |
 | 2026-10-17 | M14 details | Lock cone 5°, lock progress holds during the grace time, only players can be locked; the launcher fires at most once a second; the blast is measured to hitboxes, reduced by cover, pushes, uses its own `rocket` damage type (explosion tag) and hurts the shooter too; rockets burst when their fuel runs out. The range upgrade raises the launcher's lock range. The launcher's sights sit on a left rail. Recipes (assembler): rockets as in §6b.6, helmet, implant and handheld radar as in §6b.7. The implant field takes the sight field's place in the workbench. The radar's charge is taken once a second. Warnings have three levels (seeking, locked, incoming). Placeholder sounds are vanilla note blocks and fireworks. *Provisional.* | Agent |
