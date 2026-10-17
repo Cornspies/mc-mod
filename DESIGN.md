@@ -1,7 +1,7 @@
 # Fusion Factions — Design Document
 
 > **Mod ID:** `fusionfactions` · **Package:** `com.cornspies.fusionfactions` · **License:** MIT
-> **Status:** Phase 1 released as v0.1.0; Phase 2 released as v0.2.0; Phase 3 planned (D60–D74) · **Last updated:** 2026-10-16
+> **Status:** Phase 1 released as v0.1.0; Phase 2 released as v0.2.0; Phase 3 in progress (M11–M14 built) · **Last updated:** 2026-10-17
 > **Audience:** the project owner and the coding agent (Claude Code). Read together with `CLAUDE.md`.
 
 ---
@@ -539,19 +539,21 @@ A recipe is shapeless: its inputs (with counts) can be in any input slots, and *
 
 ### 6b.6 Rocket launcher (D61–D65)
 
-- A seventh weapon, **legendary-crate-only** (like the sniper and gatling: 25% of legendary crates, on top of their other loot). Its **rockets are their own ammo item** (D65, amends D20), built in the assembler from an airframe, rocket fuel, a basic chip, a battery and TNT → 4 rockets.
-- **Lock-on** (D61): aim down sights at a player within 96 blocks with a clear line of sight. After 1.5 s of keeping them near the crosshair, the shooter hears a lock tone and sees a lock marker on them. Losing them for more than 0.5 s resets the lock.
-- Fire with a lock: the rocket homes on that player, flying 1.5 blocks/tick and turning at most 6° per tick, so dodging sideways at the last moment or getting behind cover beats it. Without a lock it flies straight. It lives for 10 s.
-- **Blast:** entities only, no block damage (D64). 16 damage at the center, falling off over 3 blocks, our weapon damage type with the shooter as the causing entity (so friendly fire rules apply).
-- Magazine 1, reload 3 s. Workbench fields: reload speed, range (lock range), sight. Third-person pose like the other weapons, held on the shoulder.
+- A seventh weapon, **legendary-crate-only** (like the sniper and gatling: 25% of legendary crates, on top of their other loot, M15). Its **rockets are their own ammo item** (D65, amends D20), built in the assembler from an airframe, rocket fuel, a basic chip, a battery and TNT → 4 rockets (60 FE/t, 200 ticks). Rockets stack to 16.
+- **Lock-on** (D61), decided by the server (`weapon.LockOn`): while a player aims down sights, the nearest other player within 96 blocks, within 5° of the crosshair (to their middle or their eyes) and in sight becomes the target. After 1.5 s of keeping them there the launcher locks on. Losing them for more than 0.5 s drops the target; the progress holds meanwhile. The shooter sees brackets close in on the target with "LOCKING n%" and hears beeps that speed up; once locked, red brackets, "LOCKED" and a fast tone. Only players can be locked on to.
+- Fire with a lock: the rocket homes on that player, flying 1.5 blocks/tick and turning at most 6° per tick, so dodging sideways at the last moment or getting behind cover beats it. Without a lock it flies straight. It lives for 10 s and bursts when its fuel runs out. Firing leaves a back blast of smoke behind the shooter instead of a tracer.
+- **Blast:** entities only, no block damage (D64). 16 damage at the center, falling off over 3 blocks (measured to each entity's hitbox), reduced by cover like a vanilla explosion, and a push away from the center. Its own damage type `fusionfactions:rocket` (an explosion, so Blast Protection counts) with the shooter as the causing entity, so friendly fire rules apply. The shooter's own blast hurts them too.
+- Magazine 1, reload 3 s (60 ticks), one shot per second at most. Workbench fields: reload speed, range (on the launcher it raises the **lock range**, not the rocket's speed), sight. The sights sit on a rail on the seeker unit, left of the tube like on real launchers, so the tube doesn't fill the view while aiming. Third-person pose like the other weapons.
+- Lock-on numbers, the turn rate, the blast radius and the radar's use are in the synced config (`[rocketLauncher]`); the launcher's own stats are in `weapon.Weapons` like every weapon's (OD-29).
 
 ### 6b.7 Lock warning gear (D62, D63)
 
 The target only gets a warning if they have one of these:
 
-- **Tactical helmet** (D63): diamond-level protection (3 armor, 2 toughness), crafted from aluminum, diamonds and an advanced chip. It has one implant field at the weapon workbench.
-- **Threat-warning implant:** installed into the tactical helmet at the workbench. With it, the wearer hears a warning tone and sees a direction marker while someone is locking on, and a faster tone once they are locked.
-- **Handheld radar:** an FE item (100k FE, a battery and an advanced chip), charged at the charging station. Held in either hand it gives the same warning and uses 10 FE/t while held. Empty, it does nothing.
+- **Tactical helmet** (D63): diamond-level protection (3 armor, 2 toughness, diamond durability, repaired with aluminum), built in the assembler from 3 aluminum, 2 diamonds, an advanced chip and a glass pane. It has one implant field at the weapon workbench, in the sight field's place; the weapons' fields are hidden while the helmet is in.
+- **Threat-warning implant:** built in the assembler from an advanced chip, a gold ingot, 2 redstone and an amethyst shard, installed into the tactical helmet at the workbench (and taken out again there). The helmet's tooltip says whether it has one.
+- **Handheld radar:** an FE item (100k FE), built in the assembler from an advanced chip, a battery, a compass, 2 aluminum and a glass pane, charged at the charging station (or any FE charger). Held in either hand with charge left it warns like the implant and uses 10 FE/t while held, taken once a second. Empty, it does nothing.
+- **The warning** (`weapon.LockWarning`, `client.ThreatWarningHud`): "LOCK WARNING" with a slow tone while someone is locking on, "LOCKED ON" with a faster tone once they have, "ROCKET INCOMING" flashing with a fast tone while a guided rocket homes on the player. An arrow around the crosshair points towards the shooter (or the rocket).
 
 Players without the gear get no warning: the rocket's sound and smoke trail are all they have.
 
@@ -631,7 +633,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | **M11 Resources** ✅ *done 2026-10-16* | Bauxite, niter, rare earth and lithium ores (stone and deepslate), raw items, dusts, ingots, world generation with biome limits, `c:` tags, smelting, ore textures, game tests. |
 | **M12 Power** ✅ *done 2026-10-16* | Combustion generator, solar panel, FE cable network, charging station, `requirePower` default true, game tests. |
 | **M13 Machines and materials** ✅ *done 2026-10-17* | Crusher, chemical mixer, circuit fabricator, assembler with their recipe types; silicon, wafers, chips I–III, rocket fuel, battery, airframe; new recipes for missiles, missile blocks and weapon parts and ammo (D72). |
-| **M14 Rocket launcher** | Rocket launcher weapon and model, rockets, lock-on, guided rocket, tactical helmet with implant, handheld radar, lock warning HUD and sounds. |
+| **M14 Rocket launcher** ✅ *implemented, waiting for the owner's test* | Rocket launcher weapon and model, rockets, lock-on, guided rocket, tactical helmet with implant, handheld radar, lock warning HUD and sounds. |
 | **M15 Integration & release** | Interceptor ammo and menu, 64×64 missile icons, crate loot, `docs/SERVER.md`, two-player playtest, release v0.3.0. |
 
 ---
@@ -754,6 +756,17 @@ The supply crate comes first because it is self-contained and proves out the sha
 - NeoForge's `SizedIngredient` (`NESTED_CODEC`: `{"ingredient": …, "count": n}`) is an ingredient with a count. `RecipeOutput.accept(key, recipe, null)` saves a recipe without an unlock advancement.
 - The data run deletes generated files it no longer writes (old crafting recipes vanish when they move to a machine).
 
+### Learned while building M14 (verified against 26.3 sources)
+
+- **Armor:** an `ArmorMaterial` record (durability, defense per `ArmorType`, toughness, repair tag, `ResourceKey<EquipmentAsset>`) and `Item.Properties.humanoidArmor(material, type)`. The worn look is `assets/<ns>/equipment/<name>.json` (`{"layers": {"humanoid": [{"texture": "<ns>:<name>"}]}}`), whose texture is `textures/entity/equipment/humanoid/<name>.png` in the vanilla 64x32 layout. Enchanting and trims come from the `minecraft:head_armor` (etc.) item tag.
+- **FE items:** `RegisterCapabilitiesEvent.registerItem(Capabilities.Energy.ITEM, (stack, access) -> new ItemAccessEnergyHandler(access, component, capacity, maxInsert, maxExtract), item)` keeps the energy in an `Integer` data component.
+- **HUD markers on entities:** `GameRenderer.projectPointToScreen(point)` gives normalized screen coordinates (-1..1); check the camera's `forwardVector()` first, points behind the camera project mirrored. The GUI pose (`graphics.pose()`, a JOML `Matrix3x2fStack`) can rotate fills, e.g. an arrow.
+- **Pushing entities:** `Entity.push` sets `needsSync`, which replaced `hurtMarked`, so players get the motion too. `ServerExplosion.getSeenPercent(center, entity)` is public for cover checks.
+- **Entities moved only by the server** get their new positions between client ticks, so `x - xo` is zero on the client. Draw them from a synced rotation instead (set `yRot`/`xRot` on the server; `Projectile.updateRotation` eases them, so set them directly).
+- **Hidden slots:** `Slot.isActive()` false hides a slot from drawing, hovering and clicks in the screen, so two slots can share a position (the implant field and the sight field).
+- **Mock players** in game tests aren't in the level (`level.players()`, `getEntity`) and have no connection, so lock-on between players can only be checked geometrically there; the full chain needs two clients.
+- **Trigger timing:** pressing and releasing the trigger within one client tick fires nothing, because the server fires from its player tick while the trigger is held. Real clicks span a tick.
+
 ### Learned while bumping NeoForge to 26.3.0.86 (2026-10-17)
 
 - **Datapack registry entries** (loot tables, recipes, world gen, biome modifiers) are no longer generated from `GatherDataEvent.createReloadableRegistryObjects` / `createWorldRegistryObjects`. They come from `GatherDataRegistryEntriesEvent` (mod bus, fired before the providers), which has `add(registry, bootstrap)`, `lootTable(...)` and `recipe(...)` and sorts the layers itself. Only the mods given with `--mod` are written.
@@ -853,6 +866,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-16 | M12 details | Generator buffer 100k FE, pauses when full, pushes 2000 FE/t; solar panel 6 px high, half output in rain; cable networks split FE evenly and never send it back; charging station buffer 50k; recipes as in §6b.3; the power blocks share a machine base (menu, readout, energy gauge) that M13's machines will use. Game tests run with the dev config, so they now charge the blocks they fire and pass with `requirePower` on or off. *Provisional.* | Agent |
 | 2026-10-16 | M12 done | Owner tested generators, cables, the solar panel and power requirements, and approved them. | Owner |
 | 2026-10-16 | M13 details | Recipes and times as in §6b.4–§6b.5. A machine recipe must use every item in the input slots, so recipes are told apart by item kinds (the barrel gained a copper ingot to differ from the airframe). Rocket fuel burns 6400 ticks in furnaces and generators. Machines have a 50k FE buffer and pause without power. All four machines share one block entity and one screen, laid out per machine. *Provisional.* | Agent |
+| 2026-10-17 | M14 details | Lock cone 5°, lock progress holds during the grace time, only players can be locked; the launcher fires at most once a second; the blast is measured to hitboxes, reduced by cover, pushes, uses its own `rocket` damage type (explosion tag) and hurts the shooter too; rockets burst when their fuel runs out. The range upgrade raises the launcher's lock range. The launcher's sights sit on a left rail. Recipes (assembler): rockets as in §6b.6, helmet, implant and handheld radar as in §6b.7. The implant field takes the sight field's place in the workbench. The radar's charge is taken once a second. Warnings have three levels (seeking, locked, incoming). Placeholder sounds are vanilla note blocks and fireworks. *Provisional.* | Agent |
 | 2026-10-17 | M13 done | Owner tested the machines, the material chain and the JEI plugin, and approved them. | Owner |
 | 2026-10-17 | NeoForge 26.3.0.86 | Owner asked for the newest NeoForge that JEI supports: `26.3.0.86` (JEI 31.15 accepts any 26.3 build). The mod now needs 26.3.0.86 or newer. No Mekanism build for 26.3 exists yet (§6.3). | Owner |
 | 2026-10-17 | JEI plugin | Owner asked for one. The server always sends the machine recipes to clients (small; needed for any recipe viewer). JEI shows one category per machine, laid out like its screen, with FE/t, time and total FE; the machines are the catalysts; clicking a machine's arrow shows its recipes; the transfer button fills the first input slots in order (needs JEI on the server). | Owner / Agent |

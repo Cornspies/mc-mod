@@ -10,7 +10,7 @@ Install the mod jar on the server **and** on every client. It has no other mod d
 
 | File | What's in it | When changes apply |
 |---|---|---|
-| `config/fusionfactions-synced.toml` | Supply crates, weapon upgrades and missiles | Restart the server. Clients receive the values when they join. |
+| `config/fusionfactions-synced.toml` | Supply crates, weapon upgrades, missiles, power and the rocket launcher | Restart the server. Clients receive the values when they join. |
 | `<world>/syncedconfig/fusionfactions-synced.toml` | Optional per-world copy of the file above; overrides it for that world | Restart the server. |
 | `config/fusionfactions-startup.toml` | Heavy weapon recipes | Restart the server. Also applies to the whole server, not per world. |
 
@@ -106,6 +106,20 @@ New in the upcoming 0.3.0. Generators, cables and the charging station.
 | `cableThroughput` | `2000` | FE per tick one network of connected cables carries in total. |
 | `chargingRate` | `500` | FE per tick the charging station puts into the item in its slot. |
 
+### Rocket launcher: `[rocketLauncher]`
+
+New in the upcoming 0.3.0. How the rocket launcher locks on, how its rockets steer and what the handheld radar uses. The launcher's own numbers (16 damage at the blast's centre, one rocket per load, 3 s reload, rockets at 1.5 blocks per tick for 10 s) are fixed like every weapon's.
+
+| Option | Default | Meaning |
+|---|---|---|
+| `lockTicks` | `30` | Ticks (20 = 1 s) a player has to stay near the crosshair while aiming before the launcher locks on. |
+| `lockGraceTicks` | `10` | Ticks the target may leave the crosshair or go behind cover before the lock is lost. |
+| `lockRange` | `96` | Blocks within which the launcher can lock on. The range upgrade raises it. |
+| `lockConeDegrees` | `5.0` | How far from the crosshair a player may be and still count as aimed at. |
+| `turnDegrees` | `6.0` | How far a guided rocket can turn per tick. Lower makes it easier to dodge. |
+| `blastRadius` | `3.0` | Blocks over which a rocket's damage falls off to nothing. Rockets never break blocks. |
+| `radarDrain` | `10` | FE per tick a handheld radar uses while held. |
+
 ### Machines and recipes
 
 New in the upcoming 0.3.0. Missiles, the missile blocks and the weapons' parts (barrel, grip, fusion core) are no longer crafted: they come out of four machines that need power (crusher, chemical mixer, circuit fabricator, assembler). Their recipes are datapack recipes of the types `fusionfactions:crushing`, `mixing`, `fabricating` and `assembling`; replace or add them with a datapack in `data/<namespace>/recipe/`, for example:
@@ -178,4 +192,6 @@ Permission level 2 (operators).
 - Missiles: mark a target with the target designator (right click a block, up to 256 blocks away), put it and a missile into a missile launcher under open sky, and press Launch. Anyone can use any launcher. Explosive missiles blow craters, breaching missiles also break obsidian, EMP missiles drain power and shut down launchers, radars and interceptors, incendiary missiles set fires.
 - Power: combustion generators burn anything a furnace burns, solar panels work by day. FE cables carry the power to launchers, radars, interceptors and machines, split evenly between them. Any mod's FE cables work too.
 - Production: ores go through the crusher (two dusts each), quartz becomes silicon, the circuit fabricator makes wafers and the three chips, the chemical mixer makes rocket fuel (which also burns well in generators), and the assembler builds airframes, batteries, weapon parts, missile blocks and missiles. Ammo is copper, niter and redstone at a crafting table.
+- Rocket launcher (from legendary crates): hold right click on a player to lock on (a tone, then brackets that close in and turn red), then left click. The rocket homes on them but turns slowly, so a sharp dodge or cover can beat it. It hurts players and mobs, never blocks. Rockets are its ammo, built in the assembler.
+- Lock warnings: only a tactical helmet with a threat-warning implant (installed at the weapon workbench, like an upgrade part) or a charged handheld radar held in either hand warns you that someone is locking on, has locked on, or that a rocket is coming, with tones and an arrow pointing at the threat. The radar is charged at the charging station. Without the gear, all you get is the rocket's sound and smoke.
 - Defense: a radar alerts your `/team` in chat when a missile comes into its range, with the area it was launched from; its dish stops turning while it is shut down. Interceptors shoot down missiles coming down near them (right click one to see whether it's ready), and a missile on its way down can be shot with any weapon.
