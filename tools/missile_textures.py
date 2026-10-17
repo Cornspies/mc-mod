@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Generates the 2D textures for missiles (DESIGN.md §6.4).
 
-- the missile item icons, one per type and tier, with the tier color (blue / orange / red)
-- the target designator icon
+- the target designator icon (the missile icons are drawn at 64x64 by tools/missile_icons.py)
 - the missile launcher screen background (176x176 on a 256x256 sheet) and its empty-slot silhouettes
 - the missile launcher block (top, side, bottom)
 - the missile silo blocks: casing, hatch (closed and open) and controller
@@ -12,12 +11,10 @@ Run from the repository root:  python3 tools/missile_textures.py
 """
 import json
 
-from workbench_textures import ASSETS, BG, BODY, DARK, DARK_EDGE, LIGHT, LIGHT_EDGE, SLOT_BG, SLOT_DARK, TIER_COLORS, icon_pixels, silhouette, write_png
+from workbench_textures import ASSETS, BG, BODY, DARK, DARK_EDGE, LIGHT, LIGHT_EDGE, SLOT_BG, SLOT_DARK, icon_pixels, silhouette, write_png
 
-# The band in the middle of the icon shows the type, like on the 3D model.
-TYPES = {'explosive': (24, 26, 30), 'breaching': (130, 80, 190), 'emp': (70, 210, 250), 'incendiary': (230, 140, 40)}
-
-# 16x16. '#' body, '-' light metal, '+' tier color, 'o' dark detail, '*' exhaust glow, '.' transparent.
+# 16x16, for the launcher's empty missile slot. '#' body, '-' light metal, '+' tier color, 'o' dark detail, '*' exhaust
+# glow, '.' transparent.
 MISSILE_ICON = [
     '..............+.',
     '.............+++',
@@ -57,18 +54,12 @@ DESIGNATOR_ICON = [
 ]
 
 DESIGNATOR_COLOR = (230, 50, 40)
-EXHAUST = (255, 170, 60)
 
 GUI_W, GUI_H = 176, 176
 MISSILE_SLOT, DESIGNATOR_SLOT = (25, 34), (25, 56)  # top-left of the slot frames (the menu's slot positions minus 1)
 SCREEN = (49, 17, 170, 58)  # the readout panel, x0, y0, x1, y1
 INVENTORY_Y = 93
 SCREEN_BG, SCREEN_EDGE = (16, 26, 20), (40, 60, 46)
-
-
-def missile_icon(kind, tier):
-    return icon_pixels(MISSILE_ICON, {'#': BODY + (255,), '-': LIGHT + (255,), '+': TIER_COLORS[tier] + (255,),
-                                      'o': TYPES[kind] + (255,), '*': EXHAUST + (255,)})
 
 
 def designator_icon():
@@ -402,9 +393,6 @@ def radar_face(kind):
 def main():
     for rows in (MISSILE_ICON, DESIGNATOR_ICON):
         assert len(rows) == 16 and all(len(r) == 16 for r in rows)
-    for kind in TYPES:
-        for tier in (1, 2, 3):
-            write_png(ASSETS / f'item/{kind}_missile_{tier}.png', 16, 16, missile_icon(kind, tier))
     write_png(ASSETS / 'item/target_designator.png', 16, 16, designator_icon())
     write_png(ASSETS / 'gui/container/missile_launcher.png', 256, 256, gui())
     sprites = ASSETS / 'gui/sprites/container/missile_launcher'
