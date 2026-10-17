@@ -15,8 +15,8 @@ import net.minecraft.world.entity.player.Inventory;
 // Screen of a processing machine (crusher, chemical mixer, circuit fabricator, assembler): the arrow between inputs
 // and output fills as the recipe progresses. Hovering it shows the state, which the assembler has no readout for.
 public class ProcessingMachineScreen extends MachineScreen {
-    private static final int ARROW_WIDTH = 22;
-    private static final int ARROW_HEIGHT = 16;
+    public static final int ARROW_WIDTH = 22;
+    public static final int ARROW_HEIGHT = 16;
     private static final int CAPACITY = 50_000;
 
     private final Machine machine;
@@ -24,6 +24,10 @@ public class ProcessingMachineScreen extends MachineScreen {
     public ProcessingMachineScreen(Machine machine, MachineMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, machine.id());
         this.machine = machine;
+    }
+
+    public Machine machine() {
+        return this.machine;
     }
 
     @Override

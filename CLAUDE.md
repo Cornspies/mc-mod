@@ -36,7 +36,7 @@ The full design, including what is decided and what is still open, is in **@DESI
 
 Don't bump NeoForge or add dependencies without the owner's OK.
 
-- **JEI** (`jei_version` in `gradle.properties`) is loaded in every dev run as `localRuntime`, at the owner's request. It is not a dependency of the mod and is not in the jar.
+- **JEI** (`jei_version` in `gradle.properties`) is loaded in every dev run as `localRuntime`, at the owner's request. It is not a dependency of the mod and is not in the jar. Our JEI plugin (`client.compat.jei`) compiles against JEI's API (`compileOnly`) and is only loaded by JEI.
 
 ## Commands
 

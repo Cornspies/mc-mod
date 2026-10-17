@@ -4,6 +4,8 @@ For server admins running Fusion Factions 0.2.0 on Minecraft 26.3 with NeoForge 
 
 Install the mod jar on the server **and** on every client. It has no other mod dependencies.
 
+**JEI** is optional. With it, players see the machine recipes (crushing, mixing, fabricating, assembling) in JEI, with the machine as the place to make them. Its transfer button, which moves the ingredients into a machine, needs JEI on the server too.
+
 ## Config files
 
 | File | What's in it | When changes apply |

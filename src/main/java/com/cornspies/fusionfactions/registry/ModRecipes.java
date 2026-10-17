@@ -11,6 +11,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -40,6 +41,14 @@ public final class ModRecipes {
 
     public static RecipeSerializer<MachineRecipe> serializer(Machine machine) {
         return SERIALIZER_BY_MACHINE.get(machine).get();
+    }
+
+    // Recipes stay on the server since 1.21.2. Sending the machine recipes lets the client show them in recipe
+    // viewers (our JEI plugin, client.compat.jei); the machines themselves only look them up on the server.
+    public static void sendToClients(OnDatapackSyncEvent event) {
+        for (Machine machine : Machine.values()) {
+            event.sendRecipes(type(machine));
+        }
     }
 
     private ModRecipes() {

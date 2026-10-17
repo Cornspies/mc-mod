@@ -133,6 +133,9 @@ dependencies {
     // JEI in every dev run (client, server, game tests, data), so recipes can be looked up while testing.
     // localRuntime keeps it out of the mod jar and out of the published dependencies.
     localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    // JEI's API for our plugin (client.compat.jei), which JEI loads only when it's installed. Not in the jar.
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

@@ -88,6 +88,7 @@ public class FusionFactions {
         NeoForge.EVENT_BUS.addListener(MissileCommands::register);
         NeoForge.EVENT_BUS.addListener(BulletEntity::onIncomingDamage);
         NeoForge.EVENT_BUS.addListener(Trigger::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(ModRecipes::sendToClients);
     }
 
     public static Identifier id(String path) {

@@ -43,6 +43,8 @@ public class FusionFactionsClient {
         modEventBus.addListener(UpgradeTierProperty::register);
         modEventBus.addListener(AimData::register);
         modEventBus.addListener(FusionFactionsClient::registerScreens);
+        NeoForge.EVENT_BUS.addListener(ClientMachineRecipes::onRecipesReceived);
+        NeoForge.EVENT_BUS.addListener(ClientMachineRecipes::onLoggingOut);
         NeoForge.EVENT_BUS.addListener(WeaponKeys::onClientTick);
         NeoForge.EVENT_BUS.addListener(WeaponClientEffects::onClientTick);
         NeoForge.EVENT_BUS.addListener(WeaponKeys::onInteraction);

@@ -348,5 +348,6 @@
   "fusionfactions.machine.working": "Working",
   "fusionfactions.machine.no_power": "No power",
   "fusionfactions.machine.output_full": "Output full",
-  "fusionfactions.machine.progress": "%s%% done"
+  "fusionfactions.machine.progress": "%s%% done",
+  "fusionfactions.jei.machine_cost": "%1$s FE/t, %2$s s, %3$s FE"
 }

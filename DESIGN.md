@@ -757,6 +757,8 @@ The supply crate comes first because it is self-contained and proves out the sha
 ### Learned while bumping NeoForge to 26.3.0.86 (2026-10-17)
 
 - **Datapack registry entries** (loot tables, recipes, world gen, biome modifiers) are no longer generated from `GatherDataEvent.createReloadableRegistryObjects` / `createWorldRegistryObjects`. They come from `GatherDataRegistryEntriesEvent` (mod bus, fired before the providers), which has `add(registry, bootstrap)`, `lootTable(...)` and `recipe(...)` and sorts the layers itself. Only the mods given with `--mod` are written.
+- **Recipes on the client:** since 1.21.2 recipes stay on the server. A mod asks NeoForge to send a recipe type with `OnDatapackSyncEvent.sendRecipes(type)`; the client gets them in `RecipesReceivedEvent` (also in single player). JEI listens to that event with the lowest priority and only starts afterwards, so a normal listener can store the recipes for a JEI plugin; JEI's API doesn't expose them.
+- **JEI 31 on 26.3:** categories extend `AbstractRecipeCategory` with an `IRecipeHolderType.create(vanillaType)`; slots are placed at the item position (the background is drawn 1 px outside, like vanilla slots); `addAnimatedRecipeArrowWidget` replaces `addAnimatedRecipeArrow`. `Ingredient.items()` is deprecated in favour of `SlotDisplay`, which has no count, so a counted input still needs `items()`.
 - **Shared block and item tags** moved to `Tags.BlockItems` (`BlockItemTagId`, `.item()` / `.block()`); the old `Tags.Items.SANDS`, `OBSIDIANS`, `STORAGE_BLOCKS_*`, `GLASS_*` are deprecated for removal in 26.4.
 
 ### Reference code
@@ -852,6 +854,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-16 | M12 done | Owner tested generators, cables, the solar panel and power requirements, and approved them. | Owner |
 | 2026-10-16 | M13 details | Recipes and times as in §6b.4–§6b.5. A machine recipe must use every item in the input slots, so recipes are told apart by item kinds (the barrel gained a copper ingot to differ from the airframe). Rocket fuel burns 6400 ticks in furnaces and generators. Machines have a 50k FE buffer and pause without power. All four machines share one block entity and one screen, laid out per machine. *Provisional.* | Agent |
 | 2026-10-17 | NeoForge 26.3.0.86 | Owner asked for the newest NeoForge that JEI supports: `26.3.0.86` (JEI 31.15 accepts any 26.3 build). The mod now needs 26.3.0.86 or newer. No Mekanism build for 26.3 exists yet (§6.3). | Owner |
+| 2026-10-17 | JEI plugin | Owner asked for one. The server always sends the machine recipes to clients (small; needed for any recipe viewer). JEI shows one category per machine, laid out like its screen, with FE/t, time and total FE; the machines are the catalysts; clicking a machine's arrow shows its recipes; the transfer button fills the first input slots in order (needs JEI on the server). | Owner / Agent |
 | 2026-10-17 | JEI in dev | JEI (31.15.0.75 for 26.3, from maven.blamejared.com) runs in the dev client, server, game tests and data run, so recipes can be looked up while testing. Only as `localRuntime`: no dependency, not in the jar. Our machine recipes don't show in it until a JEI plugin is written. | Owner |
 
 ---
