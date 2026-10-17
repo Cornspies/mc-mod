@@ -1,6 +1,6 @@
 # Fusion Factions: server guide
 
-For server admins running Fusion Factions 0.2.0 on Minecraft 26.3 with NeoForge 26.3.0.52-beta.
+For server admins running Fusion Factions 0.2.0 on Minecraft 26.3 with NeoForge 26.3.0.52-beta. The next version (0.3.0) needs NeoForge 26.3.0.86 or newer, on the server and on every client.
 
 Install the mod jar on the server **and** on every client. It has no other mod dependencies.
 

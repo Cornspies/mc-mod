@@ -33,6 +33,7 @@ public class FusionFactionsClient {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
         modEventBus.addListener(DataGenerators::gatherData);
+        modEventBus.addListener(DataGenerators::gatherRegistries);
         modEventBus.addListener(FusionFactionsClient::registerRenderers);
         modEventBus.addListener(FusionFactionsClient::registerStandaloneModels);
         modEventBus.addListener(WeaponKeys::register);

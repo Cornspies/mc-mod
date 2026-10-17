@@ -61,7 +61,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("GGG")
                 .pattern("ADA")
                 .pattern("III")
-                .define('G', Tags.Items.GLASS_PANES)
+                .define('G', Tags.BlockItems.GLASS_PANES.item())
                 .define('A', ModTags.INGOTS_ALUMINUM)
                 .define('D', Items.DAYLIGHT_DETECTOR)
                 .define('I', Tags.Items.INGOTS_IRON)
@@ -82,7 +82,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('I', Tags.Items.INGOTS_IRON)
                 .define('C', Tags.Items.INGOTS_COPPER)
                 .define('A', ModTags.INGOTS_ALUMINUM)
-                .define('R', Tags.Items.STORAGE_BLOCKS_REDSTONE)
+                .define('R', Tags.BlockItems.STORAGE_BLOCKS_REDSTONE.item())
                 .unlockedBy(getHasName(ModItems.ALUMINUM_INGOT.get()), this.has(ModTags.INGOTS_ALUMINUM))
                 .save(this.output);
 
@@ -172,7 +172,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("GCG")
                 .pattern("IPI")
                 .define('A', ModTags.INGOTS_ALUMINUM)
-                .define('G', Tags.Items.GLASS_BLOCKS)
+                .define('G', Tags.BlockItems.GLASS_BLOCKS.item())
                 .define('C', Items.CAULDRON)
                 .define('I', Tags.Items.INGOTS_IRON)
                 .define('P', Items.PISTON)
@@ -197,7 +197,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('P', Items.PISTON)
                 .define('C', Items.CRAFTING_TABLE)
                 .define('I', Tags.Items.INGOTS_IRON)
-                .define('R', Tags.Items.STORAGE_BLOCKS_REDSTONE)
+                .define('R', Tags.BlockItems.STORAGE_BLOCKS_REDSTONE.item())
                 .unlockedBy(getHasName(ModItems.ALUMINUM_INGOT.get()), this.has(ModTags.INGOTS_ALUMINUM))
                 .save(this.output);
     }
@@ -216,7 +216,7 @@ public class ModRecipeProvider extends RecipeProvider {
         this.machine(Machine.CRUSHER, ModItems.LITHIUM_DUST.get(), 2).input(this.tag(c("ores/lithium")), 1).save(this.output, "lithium_dust_from_ore");
         this.machine(Machine.CRUSHER, ModItems.NITER.get(), 5).input(this.tag(c("ores/niter")), 1).save(this.output, "niter_from_ore");
         this.machine(Machine.CRUSHER, ModItems.SILICON_DUST.get(), 2).input(this.tag(Tags.Items.GEMS_QUARTZ), 1).save(this.output, "silicon_dust_from_quartz");
-        this.machine(Machine.CRUSHER, ModItems.SILICON_DUST.get(), 1).input(this.tag(Tags.Items.SANDS), 1).ticks(200).save(this.output,
+        this.machine(Machine.CRUSHER, ModItems.SILICON_DUST.get(), 1).input(this.tag(Tags.BlockItems.SANDS.item()), 1).ticks(200).save(this.output,
                 "silicon_dust_from_sand");
     }
 
@@ -291,16 +291,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(this.output, "target_designator");
         this.machine(Machine.ASSEMBLER, ModItems.MISSILE_LAUNCHER.get(), 1)
                 .input(aluminum, 4)
-                .input(this.tag(Tags.Items.OBSIDIANS), 2)
-                .input(this.tag(Tags.Items.STORAGE_BLOCKS_IRON), 1)
+                .input(this.tag(Tags.BlockItems.OBSIDIANS.item()), 2)
+                .input(this.tag(Tags.BlockItems.STORAGE_BLOCKS_IRON.item()), 1)
                 .input(ModItems.ADVANCED_CHIP.get())
                 .input(Items.DISPENSER)
                 .ticks(200)
                 .save(this.output, "missile_launcher");
         this.machine(Machine.ASSEMBLER, ModItems.SILO_CASING.get(), 8)
-                .input(this.tag(Tags.Items.OBSIDIANS), 4)
+                .input(this.tag(Tags.BlockItems.OBSIDIANS.item()), 4)
                 .input(aluminum, 4)
-                .input(this.tag(Tags.Items.STORAGE_BLOCKS_IRON), 1)
+                .input(this.tag(Tags.BlockItems.STORAGE_BLOCKS_IRON.item()), 1)
                 .save(this.output, "silo_casing");
         this.machine(Machine.ASSEMBLER, ModItems.SILO_HATCH.get(), 1)
                 .input(ModItems.SILO_CASING.get(), 2)
@@ -312,7 +312,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .input(ModItems.SILO_CASING.get(), 2)
                 .input(ModItems.MISSILE_LAUNCHER.get())
                 .input(ModItems.MILITARY_CHIP.get())
-                .input(this.tag(Tags.Items.STORAGE_BLOCKS_REDSTONE), 1)
+                .input(this.tag(Tags.BlockItems.STORAGE_BLOCKS_REDSTONE.item()), 1)
                 .ticks(300)
                 .save(this.output, "silo_controller");
         this.machine(Machine.ASSEMBLER, ModItems.RADAR.get(), 1)
@@ -320,7 +320,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .input(Items.COMPASS)
                 .input(Items.AMETHYST_SHARD, 2)
                 .input(ModItems.ADVANCED_CHIP.get())
-                .input(this.tag(Tags.Items.STORAGE_BLOCKS_REDSTONE), 1)
+                .input(this.tag(Tags.BlockItems.STORAGE_BLOCKS_REDSTONE.item()), 1)
                 .ticks(200)
                 .save(this.output, "radar");
         this.machine(Machine.ASSEMBLER, ModItems.INTERCEPTOR.get(), 1)
@@ -337,7 +337,7 @@ public class ModRecipeProvider extends RecipeProvider {
         this.missile(MissileType.BREACHING, List.of(payload(this.tag(Tags.Items.GEMS_DIAMOND), 1), payload(Items.TNT, 1)),
                 List.of(payload(Ingredient.of(Items.NETHERITE_SCRAP), 2), payload(Items.TNT, 2)));
         this.missile(MissileType.EMP, List.of(payload(this.tag(BlockItemTags.LIGHTNING_RODS.item()), 2)),
-                List.of(payload(this.tag(BlockItemTags.LIGHTNING_RODS.item()), 2), payload(this.tag(Tags.Items.STORAGE_BLOCKS_REDSTONE), 2)));
+                List.of(payload(this.tag(BlockItemTags.LIGHTNING_RODS.item()), 2), payload(this.tag(Tags.BlockItems.STORAGE_BLOCKS_REDSTONE.item()), 2)));
         this.missile(MissileType.INCENDIARY, List.of(payload(Items.BLAZE_POWDER, 4), payload(Items.TNT, 1)),
                 List.of(payload(Items.BLAZE_ROD, 4), payload(Items.TNT, 2)));
     }

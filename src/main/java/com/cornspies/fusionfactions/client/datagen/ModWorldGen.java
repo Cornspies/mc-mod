@@ -7,7 +7,6 @@ import com.cornspies.fusionfactions.registry.ModBlocks;
 
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
@@ -29,14 +28,14 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
+import net.neoforged.neoforge.data.event.DatapackRegistryGatherer;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 // Ore generation (D69, DESIGN.md §6b.2): one ore feature per ore, its placement, and a biome modifier that adds it to
 // the biomes in the ore's biome tag (industry.Ores).
 public final class ModWorldGen {
-    public static RegistrySetBuilder entries() {
-        return new RegistrySetBuilder()
-                .add(Registries.FEATURE, ModWorldGen::features)
+    public static void gather(DatapackRegistryGatherer registries) {
+        registries.add(Registries.FEATURE, ModWorldGen::features)
                 .add(Registries.PLACED_FEATURE, ModWorldGen::placedFeatures)
                 .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldGen::biomeModifiers);
     }

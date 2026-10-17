@@ -30,7 +30,7 @@ The full design, including what is decided and what is still open, is in **@DESI
 ## Version pins (do not change without asking)
 
 - Minecraft **26.3**
-- NeoForge **26.3.0.52-beta**, pinned in `gradle.properties`
+- NeoForge **26.3.0.86** (the first stable 26.3 builds came after the 26.3.0.75-beta), pinned in `gradle.properties`
 - Java **25**
 - ModDevGradle, from the NeoForge MDK: <https://github.com/NeoForgeMDKs/MDK-26.3-ModDevGradle>
 

@@ -120,6 +120,7 @@ A NeoForge mod for a **faction server, where teams fight each other**:
   - As of 2026-09-27 the MDK ships ModDevGradle `2.0.147`, Gradle `9.2.1`, Java toolchain `25`, and `neo_version=26.3.0.23-beta`.
 - At project start, **bump `neo_version` to the newest `26.3.0.x` build**. Mekanism builds against `26.3.0.52-beta` as of 2026-10-06.
   - Done in M0: pinned to **`26.3.0.52-beta`**, the newest build on 2026-10-06.
+  - Bumped on 2026-10-17 (owner) to **`26.3.0.86`**, the newest build; NeoForge 26.3 left beta with `26.3.0.76`. Mekanism's `26.3` branch requires `[26.3.0.76,)`.
 - **Pin the NeoForge version and only bump it on purpose.** NeoForge for 26.3 is still beta and breaking changes are still landing. Read the changelog when bumping.
 - IDE: IntelliJ IDEA **2025.3 or newer** (needed for full Java 25 support).
 - Gradle run tasks from the MDK: `runClient`, `runServer`, `runGameTestServer`, `runData`.
@@ -366,9 +367,9 @@ Decided in D46–D59. The numbers below are first defaults, *provisional* until 
 - Raid windows (D46); claim mods are respected through the explosion event (§6.6), without direct integration (D45).
 - Powered with FE (Mekanism-compatible), optional (D59).
 
-### 6.3 Mekanism status (as of 2026-10-06)
+### 6.3 Mekanism status (as of 2026-10-06, checked again 2026-10-17)
 
-- **Not yet released for 26.3.** The latest public release is 10.7.19 for 1.21.1.
+- **Not yet released for 26.3.** The latest public release is 10.7.19 for 1.21.1. On 2026-10-17 there was still no 26.3 build anywhere: not on Modrinth, GitHub releases or their Maven (modmaven.dev), and their CI only publishes from `release/**` branches. The `26.3` branch now needs NeoForge `[26.3.0.76,)`.
 - Active development is on the `26.3` branch of <https://github.com/mekanism/Mekanism>:
   - mod version `10.8.0`, NeoForge `26.3.0.52-beta`, Java 25
   - about 130 commits in the last 30 days
@@ -753,6 +754,11 @@ The supply crate comes first because it is self-contained and proves out the sha
 - NeoForge's `SizedIngredient` (`NESTED_CODEC`: `{"ingredient": …, "count": n}`) is an ingredient with a count. `RecipeOutput.accept(key, recipe, null)` saves a recipe without an unlock advancement.
 - The data run deletes generated files it no longer writes (old crafting recipes vanish when they move to a machine).
 
+### Learned while bumping NeoForge to 26.3.0.86 (2026-10-17)
+
+- **Datapack registry entries** (loot tables, recipes, world gen, biome modifiers) are no longer generated from `GatherDataEvent.createReloadableRegistryObjects` / `createWorldRegistryObjects`. They come from `GatherDataRegistryEntriesEvent` (mod bus, fired before the providers), which has `add(registry, bootstrap)`, `lootTable(...)` and `recipe(...)` and sorts the layers itself. Only the mods given with `--mod` are written.
+- **Shared block and item tags** moved to `Tags.BlockItems` (`BlockItemTagId`, `.item()` / `.block()`); the old `Tags.Items.SANDS`, `OBSIDIANS`, `STORAGE_BLOCKS_*`, `GLASS_*` are deprecated for removal in 26.4.
+
 ### Reference code
 
 - **Mekanism `26.3` branch** (MIT): <https://github.com/mekanism/Mekanism/tree/26.3>. Real-world code for block entities, menus and screens, energy, models and data generation on this exact version.
@@ -845,6 +851,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-16 | M12 details | Generator buffer 100k FE, pauses when full, pushes 2000 FE/t; solar panel 6 px high, half output in rain; cable networks split FE evenly and never send it back; charging station buffer 50k; recipes as in §6b.3; the power blocks share a machine base (menu, readout, energy gauge) that M13's machines will use. Game tests run with the dev config, so they now charge the blocks they fire and pass with `requirePower` on or off. *Provisional.* | Agent |
 | 2026-10-16 | M12 done | Owner tested generators, cables, the solar panel and power requirements, and approved them. | Owner |
 | 2026-10-16 | M13 details | Recipes and times as in §6b.4–§6b.5. A machine recipe must use every item in the input slots, so recipes are told apart by item kinds (the barrel gained a copper ingot to differ from the airframe). Rocket fuel burns 6400 ticks in furnaces and generators. Machines have a 50k FE buffer and pause without power. All four machines share one block entity and one screen, laid out per machine. *Provisional.* | Agent |
+| 2026-10-17 | NeoForge 26.3.0.86 | Owner asked for the newest NeoForge that JEI supports: `26.3.0.86` (JEI 31.15 accepts any 26.3 build). The mod now needs 26.3.0.86 or newer. No Mekanism build for 26.3 exists yet (§6.3). | Owner |
 | 2026-10-17 | JEI in dev | JEI (31.15.0.75 for 26.3, from maven.blamejared.com) runs in the dev client, server, game tests and data run, so recipes can be looked up while testing. Only as `localRuntime`: no dependency, not in the jar. Our machine recipes don't show in it until a JEI plugin is written. | Owner |
 
 ---
