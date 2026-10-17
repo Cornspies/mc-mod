@@ -40,6 +40,8 @@ public class FusionFactionsClient {
         modEventBus.addListener(FusionFactionsClient::registerGuiLayers);
         modEventBus.addListener(WeaponItemExtensions::register);
         modEventBus.addListener(GunshotSounds::register);
+        modEventBus.addListener(LockOnHud::register);
+        modEventBus.addListener(ThreatWarningHud::register);
         modEventBus.addListener(UpgradeTierProperty::register);
         modEventBus.addListener(AimData::register);
         modEventBus.addListener(FusionFactionsClient::registerScreens);
@@ -54,12 +56,17 @@ public class FusionFactionsClient {
         NeoForge.EVENT_BUS.addListener(WeaponAim::onPlayerTurn);
         NeoForge.EVENT_BUS.addListener(WeaponAim::onRenderGuiLayer);
         NeoForge.EVENT_BUS.addListener(WeaponAim::onRenderHand);
+        NeoForge.EVENT_BUS.addListener(LockOnHud::onClientTick);
+        NeoForge.EVENT_BUS.addListener(LockOnHud::onLoggingOut);
+        NeoForge.EVENT_BUS.addListener(ThreatWarningHud::onClientTick);
+        NeoForge.EVENT_BUS.addListener(ThreatWarningHud::onLoggingOut);
     }
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntityTypes.FALLING_CRATE.get(), FallingCrateRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.MISSILE.get(), MissileRenderer::new);
-        event.registerEntityRenderer(ModEntityTypes.INTERCEPTOR_ROCKET.get(), InterceptorRocketRenderer::new);
+        event.registerEntityRenderer(ModEntityTypes.INTERCEPTOR_ROCKET.get(), RocketRenderer::interceptor);
+        event.registerEntityRenderer(ModEntityTypes.GUIDED_ROCKET.get(), RocketRenderer::guided);
         event.registerBlockEntityRenderer(ModBlockEntityTypes.RADAR.get(), RadarDishRenderer::new);
         // Bullets are drawn as a particle trail by the entity itself.
         event.registerEntityRenderer(ModEntityTypes.BULLET.get(), NoopRenderer::new);
@@ -68,7 +75,8 @@ public class FusionFactionsClient {
     // Models drawn by renderers rather than as a block or item (tools/machine_models.py).
     private static void registerStandaloneModels(ModelEvent.RegisterStandalone event) {
         event.register(RadarDishRenderer.DISH, SimpleUnbakedStandaloneModel.simpleModelWrapper(FusionFactions.id("block/radar_dish")));
-        event.register(InterceptorRocketRenderer.MODEL, SimpleUnbakedStandaloneModel.simpleModelWrapper(FusionFactions.id("entity/interceptor_rocket")));
+        event.register(RocketRenderer.INTERCEPTOR, SimpleUnbakedStandaloneModel.simpleModelWrapper(FusionFactions.id("entity/interceptor_rocket")));
+        event.register(RocketRenderer.GUIDED, SimpleUnbakedStandaloneModel.simpleModelWrapper(FusionFactions.id("entity/guided_rocket")));
     }
 
     private static void registerScreens(RegisterMenuScreensEvent event) {
@@ -86,5 +94,7 @@ public class FusionFactionsClient {
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.CAMERA_OVERLAYS, FusionFactions.id("scope"), WeaponAim::renderOverlay);
         event.registerAbove(VanillaGuiLayers.HOTBAR, FusionFactions.id("ammo"), AmmoHud::render);
+        event.registerAbove(VanillaGuiLayers.CROSSHAIR, FusionFactions.id("lock_on"), LockOnHud::render);
+        event.registerAbove(VanillaGuiLayers.CROSSHAIR, FusionFactions.id("threat_warning"), ThreatWarningHud::render);
     }
 }

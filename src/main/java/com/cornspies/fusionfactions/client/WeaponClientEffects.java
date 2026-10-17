@@ -58,6 +58,13 @@ public final class WeaponClientEffects {
             for (int i = 0; i < 6; i++) {
                 level.addParticle(ParticleTypes.BUBBLE, muzzle.x, muzzle.y, muzzle.z, look.x * 0.2, look.y * 0.2, look.z * 0.2);
             }
+        } else if (stats.guided()) {
+            // A rocket leaves a back blast instead of a tracer; the rocket draws its own trail.
+            for (int i = 0; i < 8; i++) {
+                level.addParticle(ParticleTypes.LARGE_SMOKE, eye.x - look.x * 0.8, eye.y - look.y * 0.8 - 0.1, eye.z - look.z * 0.8,
+                        -look.x * 0.15 + (player.getRandom().nextDouble() - 0.5) * 0.1, 0.02, -look.z * 0.15 + (player.getRandom().nextDouble() - 0.5) * 0.1);
+            }
+            level.addParticle(ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, look.x * 0.1, look.y * 0.1, look.z * 0.1);
         } else {
             level.addParticle(ParticleTypes.SMALL_FLAME, muzzle.x, muzzle.y, muzzle.z, 0.0, 0.0, 0.0);
             for (int i = 0; i < 3; i++) {

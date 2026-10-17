@@ -27,7 +27,7 @@ public final class AimData implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Identifier FILE = FusionFactions.id("weapon_aim.json");
     // Used for a weapon without data: roughly in front of the eye, a bit low.
-    private static final float[] FALLBACK = { -0.25F, -0.4F };
+    private static final float[] FALLBACK = { -0.25F, -0.4F, 0.0F };
 
     private static Map<Item, float[][]> offsets = Map.of();
 
@@ -53,8 +53,10 @@ public final class AimData implements ResourceManagerReloadListener {
                     Item item = BuiltInRegistries.ITEM.getValue(FusionFactions.id(weapon.getKey()));
                     float[][] tiers = new float[4][];
                     for (Map.Entry<String, JsonElement> tier : weapon.getValue().getAsJsonObject().entrySet()) {
-                        var pair = tier.getValue().getAsJsonArray();
-                        tiers[Integer.parseInt(tier.getKey())] = new float[] { pair.get(0).getAsFloat(), pair.get(1).getAsFloat() };
+                        // Height and depth, and a sideways offset for weapons whose sights aren't on their middle.
+                        var values = tier.getValue().getAsJsonArray();
+                        tiers[Integer.parseInt(tier.getKey())] = new float[] { values.get(0).getAsFloat(), values.get(1).getAsFloat(),
+                                values.size() > 2 ? values.get(2).getAsFloat() : 0.0F };
                     }
                     loaded.put(item, tiers);
                 }

@@ -53,7 +53,7 @@ public final class WeaponItemExtensions implements IClientItemExtensions {
         float[] eye = AimData.offset(stack.getItem(), WeaponAim.sightTier(stack));
         float drop = equipProcess * EQUIP_DROP;
         // No vanilla swing: the attack button fires instead of swinging.
-        poseStack.translate(Mth.lerp(aim, side * HIP_X, 0.0F), Mth.lerp(aim, HIP_Y, eye[0]) + drop, Mth.lerp(aim, HIP_Z, eye[1]) + kick);
+        poseStack.translate(Mth.lerp(aim, side * HIP_X, eye[2]), Mth.lerp(aim, HIP_Y, eye[0]) + drop, Mth.lerp(aim, HIP_Z, eye[1]) + kick);
         return true;
     }
 
