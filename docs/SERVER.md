@@ -1,10 +1,19 @@
 # Fusion Factions: server guide
 
-For server admins running Fusion Factions 0.2.0 on Minecraft 26.3 with NeoForge 26.3.0.52-beta. The next version (0.3.0) needs NeoForge 26.3.0.86 or newer, on the server and on every client.
+For server admins running Fusion Factions 0.3.0 on Minecraft 26.3 with NeoForge 26.3.0.86 or newer.
 
 Install the mod jar on the server **and** on every client. It has no other mod dependencies.
 
 **JEI** is optional. With it, players see the machine recipes (crushing, mixing, fabricating, assembling) in JEI, with the machine as the place to make them. Its transfer button, which moves the ingredients into a machine, needs JEI on the server too.
+
+## Updating from 0.2.0
+
+- **NeoForge 26.3.0.86 or newer** is needed, on the server and on every client (0.2.0 ran on 26.3.0.52-beta).
+- **Power:** an existing config keeps `requirePower = false`. Set it to `true` to make launchers, silos, radars and the new machines need FE (see `[missiles]`). Interceptors always need FE now.
+- **Interceptors need ammo:** every shot uses one interceptor rocket from its menu (right click it). Existing interceptors stay quiet until someone loads them.
+- **Recipes moved into machines:** weapon parts (barrel, grip, fusion core), missiles and the missile blocks are built in the assembler; the old crafting recipes are gone. Ammo is now copper, niter and redstone. Players who had parts keep them.
+- **Ores only generate in new chunks** (see Ores below).
+- New config sections `[power]` and `[rocketLauncher]` are added with their defaults when the server first starts with 0.3.0.
 
 ## Config files
 
@@ -85,7 +94,7 @@ New in 0.2.0. A config file from 0.1.0 gets this section with its defaults when 
 | `interceptor.range` | `96` | How far an interceptor reaches. It needs a clear line of sight. |
 | `interceptor.cooldownTicks` | `40` | Ticks between two interceptor shots. |
 | `interceptor.damage` | `20.0` | Damage of one interceptor hit. |
-| `interceptor.energyPerShot` | `10000` | FE per interceptor shot. Interceptors always need it. |
+| `interceptor.energyPerShot` | `10000` | FE per interceptor shot. Interceptors always need it, and one interceptor rocket per shot. |
 
 Missile blasts break blocks without dropping them; containers spill their contents. Blocks in the block tag `fusionfactions:missile_immune` never break (bedrock, barriers, portals, command blocks and supply crates by default). Add your own with a datapack at `data/fusionfactions/tags/block/missile_immune.json`. Protection and claim mods that stop explosions also stop missiles.
 
@@ -97,7 +106,7 @@ Missiles in flight are saved with the world and keep flying after a restart. The
 
 ### Power: `[power]`
 
-New in the upcoming 0.3.0. Generators, cables and the charging station.
+New in 0.3.0. Generators, cables and the charging station.
 
 | Option | Default | Meaning |
 |---|---|---|
@@ -108,7 +117,7 @@ New in the upcoming 0.3.0. Generators, cables and the charging station.
 
 ### Rocket launcher: `[rocketLauncher]`
 
-New in the upcoming 0.3.0. How the rocket launcher locks on, how its rockets steer and what the handheld radar uses. The launcher's own numbers (16 damage at the blast's centre, one rocket per load, 3 s reload, rockets at 1.5 blocks per tick for 10 s) are fixed like every weapon's.
+New in 0.3.0. How the rocket launcher locks on, how its rockets steer and what the handheld radar uses. The launcher's own numbers (16 damage at the blast's centre, one rocket per load, 3 s reload, rockets at 1.5 blocks per tick for 10 s) are fixed like every weapon's.
 
 | Option | Default | Meaning |
 |---|---|---|
@@ -122,7 +131,7 @@ New in the upcoming 0.3.0. How the rocket launcher locks on, how its rockets ste
 
 ### Machines and recipes
 
-New in the upcoming 0.3.0. Missiles, the missile blocks and the weapons' parts (barrel, grip, fusion core) are no longer crafted: they come out of four machines that need power (crusher, chemical mixer, circuit fabricator, assembler). Their recipes are datapack recipes of the types `fusionfactions:crushing`, `mixing`, `fabricating` and `assembling`; replace or add them with a datapack in `data/<namespace>/recipe/`, for example:
+New in 0.3.0. Missiles, the missile blocks and the weapons' parts (barrel, grip, fusion core) are no longer crafted: they come out of four machines that need power (crusher, chemical mixer, circuit fabricator, assembler). Their recipes are datapack recipes of the types `fusionfactions:crushing`, `mixing`, `fabricating` and `assembling`; replace or add them with a datapack in `data/<namespace>/recipe/`, for example:
 
 ```json
 {
@@ -138,7 +147,7 @@ A recipe matches when the machine's input slots hold at least its inputs and not
 
 ### Ores
 
-New in the upcoming 0.3.0 (Phase 3, in development). Four ores generate in the overworld:
+New in 0.3.0. Four ores generate in the overworld:
 
 | Ore | Where | Mined with |
 |---|---|---|
@@ -165,7 +174,7 @@ Default contents:
 |---|---|---|
 | Common | 16–32 ammo, 1–2 stacks of weapon parts, 1–2 tier I upgrades | 50%: pistol or auto pistol |
 | Rare | 32–48 ammo, 2–3 stacks of weapon parts, 1–2 tier II upgrades | 50%: an extra tier I upgrade. 70%: SMG, shotgun or auto pistol |
-| Legendary | 48–64 ammo, 1–2 tier III upgrades, 1–2 tier II upgrades | 50%: sniper rifle or gatling gun. 33%: SMG or shotgun. 25%: a tier III missile |
+| Legendary | 48–64 ammo, 1–2 tier III upgrades, 1–2 tier II upgrades | 50%: sniper rifle or gatling gun. 33%: SMG or shotgun. 25%: a tier III missile. 25%: the rocket launcher with 4–8 rockets |
 
 Weapons in crates come loaded.
 
@@ -194,4 +203,4 @@ Permission level 2 (operators).
 - Production: ores go through the crusher (two dusts each), quartz becomes silicon, the circuit fabricator makes wafers and the three chips, the chemical mixer makes rocket fuel (which also burns well in generators), and the assembler builds airframes, batteries, weapon parts, missile blocks and missiles. Ammo is copper, niter and redstone at a crafting table.
 - Rocket launcher (from legendary crates): hold right click on a player to lock on (a tone, then brackets that close in and turn red), then left click. The rocket homes on them but turns slowly, so a sharp dodge or cover can beat it. It hurts players and mobs, never blocks. Rockets are its ammo, built in the assembler.
 - Lock warnings: only a tactical helmet with a threat-warning implant (installed at the weapon workbench, like an upgrade part) or a charged handheld radar held in either hand warns you that someone is locking on, has locked on, or that a rocket is coming, with tones and an arrow pointing at the threat. The radar is charged at the charging station. Without the gear, all you get is the rocket's sound and smoke.
-- Defense: a radar alerts your `/team` in chat when a missile comes into its range, with the area it was launched from; its dish stops turning while it is shut down. Interceptors shoot down missiles coming down near them (right click one to see whether it's ready), and a missile on its way down can be shot with any weapon.
+- Defense: a radar alerts your `/team` in chat when a missile comes into its range, with the area it was launched from; its dish stops turning while it is shut down. Interceptors shoot down missiles coming down near them, one interceptor rocket per shot (built in the assembler; load them in the interceptor's menu or with a hopper), and a missile on its way down can be shot with any weapon.
