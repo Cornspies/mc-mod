@@ -570,57 +570,31 @@ def mixer_loop(rng):
 
 
 def fabricator_loop(rng):
-    s = 2.0
+    """A soft electrical hum with a quiet cooling fan, swelling very slowly. No beeps or other events."""
+    s = 4.0
     out = Track(s, loop=True)
-    out.add(0.25 * periodic(100, s) + 0.1 * periodic(200, s) + 0.04 * periodic(3150, s))
-    at = 0.0
-    for f in (1800, 2400, 2100, 2700, 2400, 3000, 2100, 2700):
-        dur = rng.uniform(0.06, 0.12)
-        out.add(tone(f, dur, 'square', 0.004, 0.01, 0.5), at, 0.15)
-        out.add(noise(rng, dur, 0.0, hp(4000, 2)) * gate(dur, 0.004, 0.01), at, 0.08)
-        at += dur + rng.uniform(0.08, 0.14)
-    for at in (0.1, 1.1):
-        out.add(sine(glide(400, 600, 0.05, 0.15), 0.15) * gate(0.15, 0.02, 0.04), at, 0.15)
+    hum = filt(0.5 * periodic(100, s) + 0.25 * periodic(200, s) + 0.1 * periodic(300, s), lp(400, 2))
+    out.add(hum * (1 + 0.08 * periodic(0.25, s)), 0.0, 0.5)
+    out.add(noise(rng, s, 1.0, bp(1800, 0.5)) * (1 + 0.1 * periodic(0.5, s)), 0.0, 0.25)
     return out.buf
 
 
 def assembler_loop(rng):
+    """A low motor drone with a soft whir that rises and falls slowly, like a conveyor. No clanks or servos."""
     s = 4.0
     out = Track(s, loop=True)
-    out.add(periodic(60, s), 0.0, 0.12)
-
-    def servo(at, dur, f0, f1):
-        f = np.linspace(f0, f1, n(dur))
-        out.add(filt(wave(f, dur), lp(1500, 2)) * gate(dur, 0.03, 0.05), at, 0.3)
-
-    def clank(at):
-        out.add(metal(rng, (520, 1380, 2470, 3900), (0.25, 0.15, 0.1, 0.06), 0.6), at, 0.5)
-        out.add(click(rng, 2500, 0.004), at, 0.5)
-
-    def hiss(at):
-        out.add(noise(rng, 0.6, 0.0, hp(2500, 2)) * env(0.6, 0.01, 0.2), at, 0.25)
-
-    servo(0.0, 0.6, 220, 330)
-    clank(0.7)
-    servo(1.2, 0.6, 330, 220)
-    hiss(2.0)
-    servo(2.6, 0.6, 240, 360)
-    clank(3.4)
+    out.add(filt(0.5 * periodic(60, s) + 0.3 * periodic(120, s), lp(300, 2)), 0.0, 0.5)
+    out.add(noise(rng, s, 1.0, bp(320, 0.8)) * (0.8 + 0.2 * periodic(0.5, s)), 0.0, 0.45)
+    out.add(noise(rng, s, 2.0, lp(150, 2)), 0.0, 0.25)
     return out.buf
 
 
 def generator_loop(rng):
+    """The burner's low rumble and its soft roar, without beats or crackle."""
     s = 2.0
     out = Track(s, loop=True)
-    for k in range(15):
-        at = k / 7.5 + rng.uniform(-0.004, 0.004)
-        g = rng.uniform(0.8, 1.1)
-        out.add(sine(48, 0.3) * env(0.3, 0.003, 0.05), at, 0.9 * g)
-        out.add(noise(rng, 0.1, 0.0, lp(600, 2)) * env(0.1, 0.002, 0.04), at, 0.5 * g)
     out.add(noise(rng, s, 2.0, lp(150, 2)), 0.0, 0.4)
     out.add(noise(rng, s, 0.0, bp(800, 0.5)), 0.0, 0.08)
-    for _ in range(25):
-        out.add(click(rng, rng.uniform(2500, 6000), 0.002, 1.5), rng.uniform(0, s), rng.uniform(0.05, 0.2))
     return out.buf
 
 
