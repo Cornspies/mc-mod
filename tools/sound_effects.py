@@ -580,26 +580,16 @@ def fabricator_loop(rng):
 
 
 def assembler_loop(rng):
-    """A robot arm at work: a soft, low servo whir that glides up while the arm moves and back down on the return,
-    with a gentle gear purr and a muffled stop at the end of each move, over a quiet hum. Only sines and dark
-    noise, so nothing in it is sharp."""
+    """Gears running inside the machine: a soft, dark noise purr that pulses faster than a beat (22 times a second),
+    the faint steady tone of the teeth meshing, a quiet hum and a little low body. Steady, with no events."""
     s = 4.0
-    t = time(s)
     out = Track(s, loop=True)
-    out.add(filt(periodic(60, s), lp(200, 2)), 0.0, 0.15)
-    # Two moves per loop: up from 0.2 s to 1.4 s, back down from 2.2 s to 3.4 s.
-    level = np.zeros(n(s))
-    freq = np.full(n(s), 140.0)
-    for start, end, f0, f1 in ((0.2, 1.4, 140.0, 190.0), (2.2, 3.4, 190.0, 140.0)):
-        inside = (t >= start) & (t < end)
-        x = (t[inside] - start) / (end - start)
-        level[inside] = np.sin(np.pi * x) ** 2
-        freq[inside] = f0 + (f1 - f0) * (0.5 - 0.5 * np.cos(np.pi * x))
-        freq[t >= end] = f1
-        out.add(filt(thump(70, 50, 0.05, 0.3), lp(400, 2)), end - 0.05, 0.25)
-    whir = sine(freq, s) + 0.3 * sine(2 * freq, s) + 0.1 * sine(3 * freq, s)
-    purr = noise(rng, s, 1.0, bp(500, 1.0)) * (0.6 + 0.4 * periodic(25, s))
-    out.add((whir + 0.5 * purr) * level, 0.0, 0.5)
+    pulse = (0.5 + 0.5 * periodic(22, s)) ** 2
+    depth = 0.3 + 0.08 * wobble(rng, s, 1)
+    out.add(noise(rng, s, 1.0, bp(400, 0.7), lp(800, 2)) * (1 - depth + depth * pulse), 0.0, 0.5)
+    out.add(filt(periodic(220, s) + 0.35 * periodic(440, s), lp(600, 2)) * (0.85 + 0.15 * pulse), 0.0, 0.07)
+    out.add(filt(periodic(60, s), lp(200, 2)), 0.0, 0.12)
+    out.add(noise(rng, s, 2.0, lp(120, 2)), 0.0, 0.15)
     return out.buf
 
 
