@@ -579,32 +579,29 @@ def fabricator_loop(rng):
     return out.buf
 
 
-def gear_bed(rng, s):
-    """Gears running inside a machine: a soft, dark noise purr that pulses faster than a beat (22 times a second),
-    the faint steady tone of the teeth meshing, a quiet hum and a little low body. Loops in s seconds."""
+def assembler_loop(rng):
+    """A mechanism stepping like clockwork, twice a second: a soft tick (alternately higher and lower, like tick and
+    tock), then a short whirr of gears as the work moves on, over a quiet hum and a little low body. Everything stays
+    dark (below about 1.5 kHz)."""
+    s = 4.0
+    t = time(s)
     out = Track(s, loop=True)
-    pulse = (0.5 + 0.5 * periodic(22, s)) ** 2
-    depth = 0.3 + 0.08 * wobble(rng, s, 1)
-    out.add(noise(rng, s, 1.0, bp(400, 0.7), lp(800, 2)) * (1 - depth + depth * pulse), 0.0, 0.5)
-    out.add(filt(periodic(220, s) + 0.35 * periodic(440, s), lp(600, 2)) * (0.85 + 0.15 * pulse), 0.0, 0.07)
     out.add(filt(periodic(60, s), lp(200, 2)), 0.0, 0.12)
     out.add(noise(rng, s, 2.0, lp(120, 2)), 0.0, 0.15)
-    return out.buf
-
-
-def assembler_loop(rng):
-    """Gears running (gear_bed), and every 2 s a part put together: a muffled press, then two soft clicks as it
-    seats. Everything stays dark (below about 1.5 kHz), so nothing in it is sharp."""
-    s = 4.0
-    out = Track(s, loop=True).add(gear_bed(rng, s), 0.0, 0.7)
-    # Each event is scaled to a fixed peak: the peak of a short noise burst varies a lot from seed to seed, and one
-    # click louder than the others would stand out.
-    for at in (0.4, 2.4):
-        press = filt(thump(65, 45, 0.06, 0.4), lp(300, 2)) + 0.4 * noise(rng, 0.4, 0.0, lp(500, 2)) * env(0.4, 0.001, 0.02)
-        out.add(press / np.max(np.abs(press)), at, 1.3)
-    for at, center in ((1.05, 750), (1.3, 650), (3.1, 750), (3.3, 650)):
-        click = noise(rng, 0.05, 0.0, bp(center, 1.2), lp(1500, 2)) * env(0.05, 0.0005, 0.006)
-        out.add(click / np.max(np.abs(click)), at, 1.2)
+    purr = noise(rng, s, 1.0, bp(400, 0.7), lp(800, 2)) * (0.7 + 0.3 * (0.5 + 0.5 * periodic(22, s)) ** 2)
+    whirr = np.zeros(n(s))
+    # The steps start 0.1 s in, so the loop's seam falls in the quiet gap after a whirr: a click right at the start
+    # of an Ogg file comes out of the encoder with a small jump there, which would click on every repeat.
+    for k in range(8):
+        at = 0.1 + k * 0.5
+        # Each tick is scaled to a fixed peak: the peak of a short noise burst varies a lot from seed to seed, and
+        # one tick louder than the others would stand out.
+        tick = noise(rng, 0.05, 0.0, bp(900 if k % 2 == 0 else 650, 1.2), lp(1500, 2)) * env(0.05, 0.0005, 0.006)
+        out.add(tick / np.max(np.abs(tick)), at, 0.9)
+        x = (t - at - 0.06) / 0.3
+        inside = (x >= 0) & (x < 1)
+        whirr[inside] = np.sin(np.pi * x[inside]) ** 2
+    out.add(purr * whirr, 0.0, 0.4)
     return out.buf
 
 
