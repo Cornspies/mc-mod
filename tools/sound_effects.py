@@ -570,22 +570,36 @@ def mixer_loop(rng):
 
 
 def fabricator_loop(rng):
-    """A soft electrical hum with a quiet cooling fan, swelling very slowly. No beeps or other events."""
+    """A soft electrical hum with a faint, dark cooling fan under it, swelling very slowly. No beeps or other events."""
     s = 4.0
     out = Track(s, loop=True)
     hum = filt(0.5 * periodic(100, s) + 0.25 * periodic(200, s) + 0.1 * periodic(300, s), lp(400, 2))
     out.add(hum * (1 + 0.08 * periodic(0.25, s)), 0.0, 0.5)
-    out.add(noise(rng, s, 1.0, bp(1800, 0.5)) * (1 + 0.1 * periodic(0.5, s)), 0.0, 0.25)
+    out.add(noise(rng, s, 1.0, lp(1000, 2)) * (1 + 0.1 * periodic(0.5, s)), 0.0, 0.06)
     return out.buf
 
 
 def assembler_loop(rng):
-    """A low motor drone with a soft whir that rises and falls slowly, like a conveyor. No clanks or servos."""
+    """A robot arm at work: a soft, low servo whir that glides up while the arm moves and back down on the return,
+    with a gentle gear purr and a muffled stop at the end of each move, over a quiet hum. Only sines and dark
+    noise, so nothing in it is sharp."""
     s = 4.0
+    t = time(s)
     out = Track(s, loop=True)
-    out.add(filt(0.5 * periodic(60, s) + 0.3 * periodic(120, s), lp(300, 2)), 0.0, 0.5)
-    out.add(noise(rng, s, 1.0, bp(320, 0.8)) * (0.8 + 0.2 * periodic(0.5, s)), 0.0, 0.45)
-    out.add(noise(rng, s, 2.0, lp(150, 2)), 0.0, 0.25)
+    out.add(filt(periodic(60, s), lp(200, 2)), 0.0, 0.15)
+    # Two moves per loop: up from 0.2 s to 1.4 s, back down from 2.2 s to 3.4 s.
+    level = np.zeros(n(s))
+    freq = np.full(n(s), 140.0)
+    for start, end, f0, f1 in ((0.2, 1.4, 140.0, 190.0), (2.2, 3.4, 190.0, 140.0)):
+        inside = (t >= start) & (t < end)
+        x = (t[inside] - start) / (end - start)
+        level[inside] = np.sin(np.pi * x) ** 2
+        freq[inside] = f0 + (f1 - f0) * (0.5 - 0.5 * np.cos(np.pi * x))
+        freq[t >= end] = f1
+        out.add(filt(thump(70, 50, 0.05, 0.3), lp(400, 2)), end - 0.05, 0.25)
+    whir = sine(freq, s) + 0.3 * sine(2 * freq, s) + 0.1 * sine(3 * freq, s)
+    purr = noise(rng, s, 1.0, bp(500, 1.0)) * (0.6 + 0.4 * periodic(25, s))
+    out.add((whir + 0.5 * purr) * level, 0.0, 0.5)
     return out.buf
 
 
