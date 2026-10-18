@@ -1,10 +1,6 @@
 package com.cornspies.fusionfactions.registry;
 
-import java.util.EnumMap;
-import java.util.Map;
-
 import com.cornspies.fusionfactions.FusionFactions;
-import com.cornspies.fusionfactions.industry.Machine;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
@@ -55,17 +51,6 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SILO_FORMED = register("silo.formed");
     public static final DeferredHolder<SoundEvent, SoundEvent> SILO_UNFORMED = register("silo.unformed");
     public static final DeferredHolder<SoundEvent, SoundEvent> SUPPLY_CRATE_LAND = register("supply_crate.land");
-
-    // Loops the client plays while a block works (its LIT state is on).
-    public static final Map<Machine, DeferredHolder<SoundEvent, SoundEvent>> MACHINE_RUNNING = new EnumMap<>(Machine.class);
-    public static final DeferredHolder<SoundEvent, SoundEvent> GENERATOR_RUNNING = register("combustion_generator.running");
-    public static final DeferredHolder<SoundEvent, SoundEvent> CHARGING_STATION_RUNNING = register("charging_station.running");
-
-    static {
-        for (Machine machine : Machine.values()) {
-            MACHINE_RUNNING.put(machine, register("machine." + machine.id()));
-        }
-    }
 
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
         return SOUND_EVENTS.register(name, id -> SoundEvent.createVariableRangeEvent(id));

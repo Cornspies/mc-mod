@@ -1,22 +1,4 @@
 {
-  "charging_station.running": {
-    "subtitle": "subtitles.fusionfactions.charging_station.running",
-    "sounds": [
-      {
-        "name": "fusionfactions:block/charging_station",
-        "attenuation_distance": 8
-      }
-    ]
-  },
-  "combustion_generator.running": {
-    "subtitle": "subtitles.fusionfactions.combustion_generator.running",
-    "sounds": [
-      {
-        "name": "fusionfactions:block/combustion_generator",
-        "attenuation_distance": 12
-      }
-    ]
-  },
   "designator.mark": {
     "subtitle": "subtitles.fusionfactions.designator.mark",
     "sounds": [
@@ -49,42 +31,6 @@
     "sounds": [
       {
         "name": "fusionfactions:ui/lock_seeking"
-      }
-    ]
-  },
-  "machine.assembler": {
-    "subtitle": "subtitles.fusionfactions.machine.assembler",
-    "sounds": [
-      {
-        "name": "fusionfactions:block/assembler",
-        "attenuation_distance": 12
-      }
-    ]
-  },
-  "machine.chemical_mixer": {
-    "subtitle": "subtitles.fusionfactions.machine.chemical_mixer",
-    "sounds": [
-      {
-        "name": "fusionfactions:block/chemical_mixer",
-        "attenuation_distance": 12
-      }
-    ]
-  },
-  "machine.circuit_fabricator": {
-    "subtitle": "subtitles.fusionfactions.machine.circuit_fabricator",
-    "sounds": [
-      {
-        "name": "fusionfactions:block/circuit_fabricator",
-        "attenuation_distance": 12
-      }
-    ]
-  },
-  "machine.crusher": {
-    "subtitle": "subtitles.fusionfactions.machine.crusher",
-    "sounds": [
-      {
-        "name": "fusionfactions:block/crusher",
-        "attenuation_distance": 12
       }
     ]
   },

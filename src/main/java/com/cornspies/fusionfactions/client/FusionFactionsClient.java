@@ -60,7 +60,6 @@ public class FusionFactionsClient {
         NeoForge.EVENT_BUS.addListener(LockOnHud::onLoggingOut);
         NeoForge.EVENT_BUS.addListener(ThreatWarningHud::onClientTick);
         NeoForge.EVENT_BUS.addListener(ThreatWarningHud::onLoggingOut);
-        NeoForge.EVENT_BUS.addListener(LoopingSounds::onClientTick);
         NeoForge.EVENT_BUS.addListener(LoopingSounds::onEntityJoin);
     }
 

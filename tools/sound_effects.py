@@ -10,11 +10,14 @@ number of variants (Minecraft picks one at random per play), the volume and the 
 - explosions: crack, sub-bass drop, saturated boom, a long rumble and debris crackle.
 - tones (lock-on, warnings, radar): short soft-edged tones; the shooter's lock tones are sines, the target's
   warnings harsher squares, so the two never sound alike.
-- loops (machines, generator, charging station, rocket in flight): built circularly, every noise and modulation
+- loops (rocket in flight, and the shelved block loops): built circularly, every noise and modulation
   repeats exactly after the loop length, so they loop without a seam.
 
 Needs numpy and ffmpeg with libvorbis. Writes mono Ogg Vorbis (positional sounds must be mono) to
 assets/fusionfactions/sounds/ and assets/fusionfactions/sounds.json. Edit this script, not the files.
+
+Sounds in SHELVED are kept for later but are not in the game: they are written to tools/shelved_sounds/ (outside
+the mod's resources, so they aren't in the jar) and left out of sounds.json.
 
 Run from the repository root:  python3 tools/sound_effects.py
 """
@@ -688,6 +691,13 @@ EVENTS = {
     'silo.formed': ('missile/silo_formed', silo_formed, 1, -2.0, {}),
     'silo.unformed': ('missile/silo_unformed', silo_unformed, 1, -3.0, {}),
     'supply_crate.land': ('block/supply_crate_land', supply_crate_land, 2, -1.0, {'attenuation_distance': 32}),
+}
+
+# The blocks' running sounds, taken out of the game for now (owner, 2026-10-18) but kept: they are still made, into
+# SHELVED_DIR, and left out of sounds.json. To bring one back, move it to EVENTS, register its event in ModSounds and
+# play it again (the block loops were in client.LoopingSounds).
+SHELVED_DIR = Path('tools/shelved_sounds')
+SHELVED = {
     'machine.crusher': ('block/crusher', crusher_loop, 1, -24.0, {'attenuation_distance': 12}, True),
     'machine.chemical_mixer': ('block/chemical_mixer', mixer_loop, 1, -25.0, {'attenuation_distance': 12}, True),
     'machine.circuit_fabricator': ('block/circuit_fabricator', fabricator_loop, 1, -27.0, {'attenuation_distance': 12}, True),
@@ -697,24 +707,32 @@ EVENTS = {
 }
 
 
+def render(event, spec, directory):
+    """Writes the event's sound files into directory and returns their sounds.json entries."""
+    file, make, variants, level, extra = spec[:5]
+    loop = len(spec) > 5 and spec[5]
+    sounds = []
+    for i in range(variants):
+        rng = np.random.default_rng(zlib.crc32(f'{event}/{i}'.encode()))
+        x = make(rng)
+        x = finish(x, rms_db=level, loop=True) if loop else finish(x, peak_db=level)
+        name = file if variants == 1 else f'{file}_{i + 1}'
+        write_ogg(directory / f'{name}.ogg', x)
+        sounds.append({'name': f'fusionfactions:{name}', **extra})
+    return sounds
+
+
 def main():
     definitions = {}
     for event, spec in sorted(EVENTS.items()):
-        file, make, variants, level, extra = spec[:5]
-        loop = len(spec) > 5 and spec[5]
-        sounds = []
-        for i in range(variants):
-            rng = np.random.default_rng(zlib.crc32(f'{event}/{i}'.encode()))
-            x = make(rng)
-            x = finish(x, rms_db=level, loop=True) if loop else finish(x, peak_db=level)
-            name = file if variants == 1 else f'{file}_{i + 1}'
-            write_ogg(SOUNDS / f'{name}.ogg', x)
-            sounds.append({'name': f'fusionfactions:{name}', **extra})
-        definitions[event] = {'subtitle': f'subtitles.fusionfactions.{event}', 'sounds': sounds}
+        definitions[event] = {'subtitle': f'subtitles.fusionfactions.{event}', 'sounds': render(event, spec, SOUNDS)}
+    for event, spec in sorted(SHELVED.items()):
+        render(event, spec, SHELVED_DIR)
     with open(ROOT / 'sounds.json', 'w') as out:
         json.dump(definitions, out, indent=2)
         out.write('\n')
-    print(f'wrote {sum(len(d["sounds"]) for d in definitions.values())} sounds for {len(definitions)} events')
+    print(f'wrote {sum(len(d["sounds"]) for d in definitions.values())} sounds for {len(definitions)} events '
+          f'and {len(SHELVED)} shelved sounds to {SHELVED_DIR}')
 
 
 if __name__ == '__main__':

@@ -16,10 +16,6 @@ public class ProcessingMachineBlock extends MachineBlock {
         this.machine = machine;
     }
 
-    public Machine machine() {
-        return this.machine;
-    }
-
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new ProcessingMachineBlockEntity(this.machine, pos, state);
