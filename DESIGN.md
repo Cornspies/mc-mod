@@ -1,7 +1,7 @@
 # Fusion Factions — Design Document
 
 > **Mod ID:** `fusionfactions` · **Package:** `com.cornspies.fusionfactions` · **License:** MIT
-> **Status:** Phase 1 released as v0.1.0; Phase 2 released as v0.2.0; Phase 3 released as v0.3.0 · **Last updated:** 2026-10-17
+> **Status:** Phase 1 released as v0.1.0; Phase 2 released as v0.2.0; Phase 3 released as v0.3.0 · **Last updated:** 2026-11-06
 > **Audience:** the project owner and the coding agent (Claude Code). Read together with `CLAUDE.md`.
 
 ---
@@ -121,6 +121,7 @@ A NeoForge mod for a **faction server, where teams fight each other**:
 - At project start, **bump `neo_version` to the newest `26.3.0.x` build**. Mekanism builds against `26.3.0.52-beta` as of 2026-10-06.
   - Done in M0: pinned to **`26.3.0.52-beta`**, the newest build on 2026-10-06.
   - Bumped on 2026-10-17 (owner) to **`26.3.0.86`**, the newest build; NeoForge 26.3 left beta with `26.3.0.76`. Mekanism's `26.3` branch requires `[26.3.0.76,)`.
+  - Bumped on 2026-11-06 (owner) to **`26.3.0.101`**, the newest build, together with JEI `31.17.0.109`.
 - **Pin the NeoForge version and only bump it on purpose.** NeoForge for 26.3 is still beta and breaking changes are still landing. Read the changelog when bumping.
 - IDE: IntelliJ IDEA **2025.3 or newer** (needed for full Java 25 support).
 - Gradle run tasks from the MDK: `runClient`, `runServer`, `runGameTestServer`, `runData`.
@@ -892,6 +893,7 @@ The supply crate comes first because it is self-contained and proves out the sha
 | 2026-10-17 | NeoForge 26.3.0.86 | Owner asked for the newest NeoForge that JEI supports: `26.3.0.86` (JEI 31.15 accepts any 26.3 build). The mod now needs 26.3.0.86 or newer. No Mekanism build for 26.3 exists yet (§6.3). | Owner |
 | 2026-10-17 | JEI plugin | Owner asked for one. The server always sends the machine recipes to clients (small; needed for any recipe viewer). JEI shows one category per machine, laid out like its screen, with FE/t, time and total FE; the machines are the catalysts; clicking a machine's arrow shows its recipes; the transfer button fills the first input slots in order (needs JEI on the server). | Owner / Agent |
 | 2026-10-17 | JEI in dev | JEI (31.15.0.75 for 26.3, from maven.blamejared.com) runs in the dev client, server, game tests and data run, so recipes can be looked up while testing. Only as `localRuntime`: no dependency, not in the jar. Our machine recipes don't show in it until a JEI plugin is written. | Owner |
+| 2026-11-06 | NeoForge 26.3.0.101, JEI 31.17 | Owner asked to update both and check the JEI plugin. NeoForge 26.3.0.87–.101 changed nothing we use (generated data is byte-identical, all game tests pass). JEI 31.15 → 31.17 only added to its API (sprite drawables, a runtime ingredient refresh, search storage deletion); it still starts after `RecipesReceivedEvent` at the lowest priority, and our plugin registers all four machine categories on a dedicated server. Builds from now on need NeoForge 26.3.0.101 or newer; the 0.3.0 release still runs on 26.3.0.86. | Owner |
 
 ---
 

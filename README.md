@@ -27,7 +27,7 @@ Keys can be changed under Controls → Fusion Factions; firing and aiming follow
 
 ## For server admins
 
-Install the jar on the server and on every client (NeoForge 26.3.0.86 or newer). Config options, crate loot, recipes and admin commands are described in [docs/SERVER.md](docs/SERVER.md).
+Install the jar on the server and on every client (NeoForge 26.3.0.101 or newer; the 0.3.0 release needs 26.3.0.86 or newer). Config options, crate loot, recipes and admin commands are described in [docs/SERVER.md](docs/SERVER.md).
 
 ## Development
 
